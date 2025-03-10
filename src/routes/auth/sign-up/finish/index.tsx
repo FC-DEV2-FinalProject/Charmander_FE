@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
 import styled from 'styled-components';
-import finishImg from '@/assets/finish-img.svg';
+import check from '@/assets/auth/check-active.svg';
 import theme from '@/styles/theme';
 import LinkButton from '@/components/common/button/linkButton';
 
-export const Route = createFileRoute('/auth/signUp/finish/')({
+export const Route = createFileRoute('/auth/sign-up/finish/')({
   component: RouteComponent,
 });
 
@@ -13,7 +13,7 @@ function RouteComponent() {
     <S.SignUpFinishWrapper>
       <S.SignUpFinishContainer>
         <img
-          src={finishImg}
+          src={check}
           alt="finishImg"
         />
         <h2>회원가입이 완료되었습니다</h2>
