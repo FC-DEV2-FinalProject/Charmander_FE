@@ -18,6 +18,7 @@ import { Route as AuthLoginIndexImport } from './routes/auth/login/index'
 import { Route as SideBarLayoutVideoArchiveIndexImport } from './routes/_sideBarLayout/video-archive/index'
 import { Route as SideBarLayoutMyProjectIndexImport } from './routes/_sideBarLayout/my-project/index'
 import { Route as SideBarLayoutDashboardIndexImport } from './routes/_sideBarLayout/dashboard/index'
+import { Route as AuthSignUpFinishIndexImport } from './routes/auth/sign-up/finish/index'
 import { Route as AuthCallbackKakaoIndexImport } from './routes/auth/callback/kakao/index'
 import { Route as AuthCallbackGoogleIndexImport } from './routes/auth/callback/google/index'
 import { Route as SideBarLayoutDashboardComponentsCardImport } from './routes/_sideBarLayout/dashboard/_components/card'
@@ -67,6 +68,12 @@ const SideBarLayoutDashboardIndexRoute =
     path: '/dashboard/',
     getParentRoute: () => SideBarLayoutRoute,
   } as any)
+
+const AuthSignUpFinishIndexRoute = AuthSignUpFinishIndexImport.update({
+  id: '/auth/sign-up/finish/',
+  path: '/auth/sign-up/finish/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AuthCallbackKakaoIndexRoute = AuthCallbackKakaoIndexImport.update({
   id: '/auth/callback/kakao/',
@@ -161,6 +168,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackKakaoIndexImport
       parentRoute: typeof rootRoute
     }
+    '/auth/sign-up/finish/': {
+      id: '/auth/sign-up/finish/'
+      path: '/auth/sign-up/finish'
+      fullPath: '/auth/sign-up/finish'
+      preLoaderRoute: typeof AuthSignUpFinishIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -196,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/card': typeof SideBarLayoutDashboardComponentsCardRoute
   '/auth/callback/google': typeof AuthCallbackGoogleIndexRoute
   '/auth/callback/kakao': typeof AuthCallbackKakaoIndexRoute
+  '/auth/sign-up/finish': typeof AuthSignUpFinishIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -209,6 +224,7 @@ export interface FileRoutesByTo {
   '/dashboard/card': typeof SideBarLayoutDashboardComponentsCardRoute
   '/auth/callback/google': typeof AuthCallbackGoogleIndexRoute
   '/auth/callback/kakao': typeof AuthCallbackKakaoIndexRoute
+  '/auth/sign-up/finish': typeof AuthSignUpFinishIndexRoute
 }
 
 export interface FileRoutesById {
@@ -223,6 +239,7 @@ export interface FileRoutesById {
   '/_sideBarLayout/dashboard/_components/card': typeof SideBarLayoutDashboardComponentsCardRoute
   '/auth/callback/google/': typeof AuthCallbackGoogleIndexRoute
   '/auth/callback/kakao/': typeof AuthCallbackKakaoIndexRoute
+  '/auth/sign-up/finish/': typeof AuthSignUpFinishIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -238,6 +255,7 @@ export interface FileRouteTypes {
     | '/dashboard/card'
     | '/auth/callback/google'
     | '/auth/callback/kakao'
+    | '/auth/sign-up/finish'
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
@@ -250,6 +268,7 @@ export interface FileRouteTypes {
     | '/dashboard/card'
     | '/auth/callback/google'
     | '/auth/callback/kakao'
+    | '/auth/sign-up/finish'
   id:
     | '__root__'
     | '/_sideBarLayout'
@@ -262,6 +281,7 @@ export interface FileRouteTypes {
     | '/_sideBarLayout/dashboard/_components/card'
     | '/auth/callback/google/'
     | '/auth/callback/kakao/'
+    | '/auth/sign-up/finish/'
   fileRoutesById: FileRoutesById
 }
 
@@ -272,6 +292,7 @@ export interface RootRouteChildren {
   HelpPasswordIndexRoute: typeof HelpPasswordIndexRoute
   AuthCallbackGoogleIndexRoute: typeof AuthCallbackGoogleIndexRoute
   AuthCallbackKakaoIndexRoute: typeof AuthCallbackKakaoIndexRoute
+  AuthSignUpFinishIndexRoute: typeof AuthSignUpFinishIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -281,6 +302,7 @@ const rootRouteChildren: RootRouteChildren = {
   HelpPasswordIndexRoute: HelpPasswordIndexRoute,
   AuthCallbackGoogleIndexRoute: AuthCallbackGoogleIndexRoute,
   AuthCallbackKakaoIndexRoute: AuthCallbackKakaoIndexRoute,
+  AuthSignUpFinishIndexRoute: AuthSignUpFinishIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -298,7 +320,8 @@ export const routeTree = rootRoute
         "/auth/sign-in/",
         "/help/password/",
         "/auth/callback/google/",
-        "/auth/callback/kakao/"
+        "/auth/callback/kakao/",
+        "/auth/sign-up/finish/"
       ]
     },
     "/_sideBarLayout": {
@@ -340,6 +363,9 @@ export const routeTree = rootRoute
     },
     "/auth/callback/kakao/": {
       "filePath": "auth/callback/kakao/index.tsx"
+    },
+    "/auth/sign-up/finish/": {
+      "filePath": "auth/sign-up/finish/index.tsx"
     }
   }
 }
