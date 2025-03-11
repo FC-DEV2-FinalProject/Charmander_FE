@@ -12,20 +12,32 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SideBarLayoutImport } from './routes/_sideBarLayout'
+import { Route as ProjectSideBarLayoutImport } from './routes/_projectSideBarLayout'
 import { Route as HelpPasswordIndexImport } from './routes/help/password/index'
 import { Route as AuthSignInIndexImport } from './routes/auth/sign-in/index'
 import { Route as AuthLoginIndexImport } from './routes/auth/login/index'
 import { Route as SideBarLayoutVideoArchiveIndexImport } from './routes/_sideBarLayout/video-archive/index'
 import { Route as SideBarLayoutMyProjectIndexImport } from './routes/_sideBarLayout/my-project/index'
 import { Route as SideBarLayoutDashboardIndexImport } from './routes/_sideBarLayout/dashboard/index'
+import { Route as AuthSignUpFinishIndexImport } from './routes/auth/signUp/finish/index'
 import { Route as AuthCallbackKakaoIndexImport } from './routes/auth/callback/kakao/index'
 import { Route as AuthCallbackGoogleIndexImport } from './routes/auth/callback/google/index'
+import { Route as ProjectSideBarLayoutProjectTemplateIndexImport } from './routes/_projectSideBarLayout/$project/template/index'
+import { Route as ProjectSideBarLayoutProjectScriptIndexImport } from './routes/_projectSideBarLayout/$project/script/index'
+import { Route as ProjectSideBarLayoutProjectBackgroundIndexImport } from './routes/_projectSideBarLayout/$project/background/index'
+import { Route as ProjectSideBarLayoutProjectAvatarIndexImport } from './routes/_projectSideBarLayout/$project/avatar/index'
+import { Route as ProjectSideBarLayoutProjectArticleIndexImport } from './routes/_projectSideBarLayout/$project/article/index'
 import { Route as SideBarLayoutDashboardComponentsCardImport } from './routes/_sideBarLayout/dashboard/_components/card'
 
 // Create/Update Routes
 
 const SideBarLayoutRoute = SideBarLayoutImport.update({
   id: '/_sideBarLayout',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ProjectSideBarLayoutRoute = ProjectSideBarLayoutImport.update({
+  id: '/_projectSideBarLayout',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -68,6 +80,12 @@ const SideBarLayoutDashboardIndexRoute =
     getParentRoute: () => SideBarLayoutRoute,
   } as any)
 
+const AuthSignUpFinishIndexRoute = AuthSignUpFinishIndexImport.update({
+  id: '/auth/signUp/finish/',
+  path: '/auth/signUp/finish/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AuthCallbackKakaoIndexRoute = AuthCallbackKakaoIndexImport.update({
   id: '/auth/callback/kakao/',
   path: '/auth/callback/kakao/',
@@ -80,6 +98,41 @@ const AuthCallbackGoogleIndexRoute = AuthCallbackGoogleIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const ProjectSideBarLayoutProjectTemplateIndexRoute =
+  ProjectSideBarLayoutProjectTemplateIndexImport.update({
+    id: '/$project/template/',
+    path: '/$project/template/',
+    getParentRoute: () => ProjectSideBarLayoutRoute,
+  } as any)
+
+const ProjectSideBarLayoutProjectScriptIndexRoute =
+  ProjectSideBarLayoutProjectScriptIndexImport.update({
+    id: '/$project/script/',
+    path: '/$project/script/',
+    getParentRoute: () => ProjectSideBarLayoutRoute,
+  } as any)
+
+const ProjectSideBarLayoutProjectBackgroundIndexRoute =
+  ProjectSideBarLayoutProjectBackgroundIndexImport.update({
+    id: '/$project/background/',
+    path: '/$project/background/',
+    getParentRoute: () => ProjectSideBarLayoutRoute,
+  } as any)
+
+const ProjectSideBarLayoutProjectAvatarIndexRoute =
+  ProjectSideBarLayoutProjectAvatarIndexImport.update({
+    id: '/$project/avatar/',
+    path: '/$project/avatar/',
+    getParentRoute: () => ProjectSideBarLayoutRoute,
+  } as any)
+
+const ProjectSideBarLayoutProjectArticleIndexRoute =
+  ProjectSideBarLayoutProjectArticleIndexImport.update({
+    id: '/$project/article/',
+    path: '/$project/article/',
+    getParentRoute: () => ProjectSideBarLayoutRoute,
+  } as any)
+
 const SideBarLayoutDashboardComponentsCardRoute =
   SideBarLayoutDashboardComponentsCardImport.update({
     id: '/dashboard/_components/card',
@@ -91,6 +144,13 @@ const SideBarLayoutDashboardComponentsCardRoute =
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_projectSideBarLayout': {
+      id: '/_projectSideBarLayout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof ProjectSideBarLayoutImport
+      parentRoute: typeof rootRoute
+    }
     '/_sideBarLayout': {
       id: '/_sideBarLayout'
       path: ''
@@ -147,6 +207,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SideBarLayoutDashboardComponentsCardImport
       parentRoute: typeof SideBarLayoutImport
     }
+    '/_projectSideBarLayout/$project/article/': {
+      id: '/_projectSideBarLayout/$project/article/'
+      path: '/$project/article'
+      fullPath: '/$project/article'
+      preLoaderRoute: typeof ProjectSideBarLayoutProjectArticleIndexImport
+      parentRoute: typeof ProjectSideBarLayoutImport
+    }
+    '/_projectSideBarLayout/$project/avatar/': {
+      id: '/_projectSideBarLayout/$project/avatar/'
+      path: '/$project/avatar'
+      fullPath: '/$project/avatar'
+      preLoaderRoute: typeof ProjectSideBarLayoutProjectAvatarIndexImport
+      parentRoute: typeof ProjectSideBarLayoutImport
+    }
+    '/_projectSideBarLayout/$project/background/': {
+      id: '/_projectSideBarLayout/$project/background/'
+      path: '/$project/background'
+      fullPath: '/$project/background'
+      preLoaderRoute: typeof ProjectSideBarLayoutProjectBackgroundIndexImport
+      parentRoute: typeof ProjectSideBarLayoutImport
+    }
+    '/_projectSideBarLayout/$project/script/': {
+      id: '/_projectSideBarLayout/$project/script/'
+      path: '/$project/script'
+      fullPath: '/$project/script'
+      preLoaderRoute: typeof ProjectSideBarLayoutProjectScriptIndexImport
+      parentRoute: typeof ProjectSideBarLayoutImport
+    }
+    '/_projectSideBarLayout/$project/template/': {
+      id: '/_projectSideBarLayout/$project/template/'
+      path: '/$project/template'
+      fullPath: '/$project/template'
+      preLoaderRoute: typeof ProjectSideBarLayoutProjectTemplateIndexImport
+      parentRoute: typeof ProjectSideBarLayoutImport
+    }
     '/auth/callback/google/': {
       id: '/auth/callback/google/'
       path: '/auth/callback/google'
@@ -161,10 +256,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackKakaoIndexImport
       parentRoute: typeof rootRoute
     }
+    '/auth/signUp/finish/': {
+      id: '/auth/signUp/finish/'
+      path: '/auth/signUp/finish'
+      fullPath: '/auth/signUp/finish'
+      preLoaderRoute: typeof AuthSignUpFinishIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
+
+interface ProjectSideBarLayoutRouteChildren {
+  ProjectSideBarLayoutProjectArticleIndexRoute: typeof ProjectSideBarLayoutProjectArticleIndexRoute
+  ProjectSideBarLayoutProjectAvatarIndexRoute: typeof ProjectSideBarLayoutProjectAvatarIndexRoute
+  ProjectSideBarLayoutProjectBackgroundIndexRoute: typeof ProjectSideBarLayoutProjectBackgroundIndexRoute
+  ProjectSideBarLayoutProjectScriptIndexRoute: typeof ProjectSideBarLayoutProjectScriptIndexRoute
+  ProjectSideBarLayoutProjectTemplateIndexRoute: typeof ProjectSideBarLayoutProjectTemplateIndexRoute
+}
+
+const ProjectSideBarLayoutRouteChildren: ProjectSideBarLayoutRouteChildren = {
+  ProjectSideBarLayoutProjectArticleIndexRoute:
+    ProjectSideBarLayoutProjectArticleIndexRoute,
+  ProjectSideBarLayoutProjectAvatarIndexRoute:
+    ProjectSideBarLayoutProjectAvatarIndexRoute,
+  ProjectSideBarLayoutProjectBackgroundIndexRoute:
+    ProjectSideBarLayoutProjectBackgroundIndexRoute,
+  ProjectSideBarLayoutProjectScriptIndexRoute:
+    ProjectSideBarLayoutProjectScriptIndexRoute,
+  ProjectSideBarLayoutProjectTemplateIndexRoute:
+    ProjectSideBarLayoutProjectTemplateIndexRoute,
+}
+
+const ProjectSideBarLayoutRouteWithChildren =
+  ProjectSideBarLayoutRoute._addFileChildren(ProjectSideBarLayoutRouteChildren)
 
 interface SideBarLayoutRouteChildren {
   SideBarLayoutDashboardIndexRoute: typeof SideBarLayoutDashboardIndexRoute
@@ -194,8 +320,14 @@ export interface FileRoutesByFullPath {
   '/auth/sign-in': typeof AuthSignInIndexRoute
   '/help/password': typeof HelpPasswordIndexRoute
   '/dashboard/card': typeof SideBarLayoutDashboardComponentsCardRoute
+  '/$project/article': typeof ProjectSideBarLayoutProjectArticleIndexRoute
+  '/$project/avatar': typeof ProjectSideBarLayoutProjectAvatarIndexRoute
+  '/$project/background': typeof ProjectSideBarLayoutProjectBackgroundIndexRoute
+  '/$project/script': typeof ProjectSideBarLayoutProjectScriptIndexRoute
+  '/$project/template': typeof ProjectSideBarLayoutProjectTemplateIndexRoute
   '/auth/callback/google': typeof AuthCallbackGoogleIndexRoute
   '/auth/callback/kakao': typeof AuthCallbackKakaoIndexRoute
+  '/auth/signUp/finish': typeof AuthSignUpFinishIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -207,12 +339,19 @@ export interface FileRoutesByTo {
   '/auth/sign-in': typeof AuthSignInIndexRoute
   '/help/password': typeof HelpPasswordIndexRoute
   '/dashboard/card': typeof SideBarLayoutDashboardComponentsCardRoute
+  '/$project/article': typeof ProjectSideBarLayoutProjectArticleIndexRoute
+  '/$project/avatar': typeof ProjectSideBarLayoutProjectAvatarIndexRoute
+  '/$project/background': typeof ProjectSideBarLayoutProjectBackgroundIndexRoute
+  '/$project/script': typeof ProjectSideBarLayoutProjectScriptIndexRoute
+  '/$project/template': typeof ProjectSideBarLayoutProjectTemplateIndexRoute
   '/auth/callback/google': typeof AuthCallbackGoogleIndexRoute
   '/auth/callback/kakao': typeof AuthCallbackKakaoIndexRoute
+  '/auth/signUp/finish': typeof AuthSignUpFinishIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/_projectSideBarLayout': typeof ProjectSideBarLayoutRouteWithChildren
   '/_sideBarLayout': typeof SideBarLayoutRouteWithChildren
   '/_sideBarLayout/dashboard/': typeof SideBarLayoutDashboardIndexRoute
   '/_sideBarLayout/my-project/': typeof SideBarLayoutMyProjectIndexRoute
@@ -221,8 +360,14 @@ export interface FileRoutesById {
   '/auth/sign-in/': typeof AuthSignInIndexRoute
   '/help/password/': typeof HelpPasswordIndexRoute
   '/_sideBarLayout/dashboard/_components/card': typeof SideBarLayoutDashboardComponentsCardRoute
+  '/_projectSideBarLayout/$project/article/': typeof ProjectSideBarLayoutProjectArticleIndexRoute
+  '/_projectSideBarLayout/$project/avatar/': typeof ProjectSideBarLayoutProjectAvatarIndexRoute
+  '/_projectSideBarLayout/$project/background/': typeof ProjectSideBarLayoutProjectBackgroundIndexRoute
+  '/_projectSideBarLayout/$project/script/': typeof ProjectSideBarLayoutProjectScriptIndexRoute
+  '/_projectSideBarLayout/$project/template/': typeof ProjectSideBarLayoutProjectTemplateIndexRoute
   '/auth/callback/google/': typeof AuthCallbackGoogleIndexRoute
   '/auth/callback/kakao/': typeof AuthCallbackKakaoIndexRoute
+  '/auth/signUp/finish/': typeof AuthSignUpFinishIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -236,8 +381,14 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/help/password'
     | '/dashboard/card'
+    | '/$project/article'
+    | '/$project/avatar'
+    | '/$project/background'
+    | '/$project/script'
+    | '/$project/template'
     | '/auth/callback/google'
     | '/auth/callback/kakao'
+    | '/auth/signUp/finish'
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
@@ -248,10 +399,17 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/help/password'
     | '/dashboard/card'
+    | '/$project/article'
+    | '/$project/avatar'
+    | '/$project/background'
+    | '/$project/script'
+    | '/$project/template'
     | '/auth/callback/google'
     | '/auth/callback/kakao'
+    | '/auth/signUp/finish'
   id:
     | '__root__'
+    | '/_projectSideBarLayout'
     | '/_sideBarLayout'
     | '/_sideBarLayout/dashboard/'
     | '/_sideBarLayout/my-project/'
@@ -260,27 +418,37 @@ export interface FileRouteTypes {
     | '/auth/sign-in/'
     | '/help/password/'
     | '/_sideBarLayout/dashboard/_components/card'
+    | '/_projectSideBarLayout/$project/article/'
+    | '/_projectSideBarLayout/$project/avatar/'
+    | '/_projectSideBarLayout/$project/background/'
+    | '/_projectSideBarLayout/$project/script/'
+    | '/_projectSideBarLayout/$project/template/'
     | '/auth/callback/google/'
     | '/auth/callback/kakao/'
+    | '/auth/signUp/finish/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
+  ProjectSideBarLayoutRoute: typeof ProjectSideBarLayoutRouteWithChildren
   SideBarLayoutRoute: typeof SideBarLayoutRouteWithChildren
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
   AuthSignInIndexRoute: typeof AuthSignInIndexRoute
   HelpPasswordIndexRoute: typeof HelpPasswordIndexRoute
   AuthCallbackGoogleIndexRoute: typeof AuthCallbackGoogleIndexRoute
   AuthCallbackKakaoIndexRoute: typeof AuthCallbackKakaoIndexRoute
+  AuthSignUpFinishIndexRoute: typeof AuthSignUpFinishIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  ProjectSideBarLayoutRoute: ProjectSideBarLayoutRouteWithChildren,
   SideBarLayoutRoute: SideBarLayoutRouteWithChildren,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
   AuthSignInIndexRoute: AuthSignInIndexRoute,
   HelpPasswordIndexRoute: HelpPasswordIndexRoute,
   AuthCallbackGoogleIndexRoute: AuthCallbackGoogleIndexRoute,
   AuthCallbackKakaoIndexRoute: AuthCallbackKakaoIndexRoute,
+  AuthSignUpFinishIndexRoute: AuthSignUpFinishIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -293,12 +461,24 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/_projectSideBarLayout",
         "/_sideBarLayout",
         "/auth/login/",
         "/auth/sign-in/",
         "/help/password/",
         "/auth/callback/google/",
-        "/auth/callback/kakao/"
+        "/auth/callback/kakao/",
+        "/auth/signUp/finish/"
+      ]
+    },
+    "/_projectSideBarLayout": {
+      "filePath": "_projectSideBarLayout.tsx",
+      "children": [
+        "/_projectSideBarLayout/$project/article/",
+        "/_projectSideBarLayout/$project/avatar/",
+        "/_projectSideBarLayout/$project/background/",
+        "/_projectSideBarLayout/$project/script/",
+        "/_projectSideBarLayout/$project/template/"
       ]
     },
     "/_sideBarLayout": {
@@ -335,11 +515,34 @@ export const routeTree = rootRoute
       "filePath": "_sideBarLayout/dashboard/_components/card.tsx",
       "parent": "/_sideBarLayout"
     },
+    "/_projectSideBarLayout/$project/article/": {
+      "filePath": "_projectSideBarLayout/$project/article/index.tsx",
+      "parent": "/_projectSideBarLayout"
+    },
+    "/_projectSideBarLayout/$project/avatar/": {
+      "filePath": "_projectSideBarLayout/$project/avatar/index.tsx",
+      "parent": "/_projectSideBarLayout"
+    },
+    "/_projectSideBarLayout/$project/background/": {
+      "filePath": "_projectSideBarLayout/$project/background/index.tsx",
+      "parent": "/_projectSideBarLayout"
+    },
+    "/_projectSideBarLayout/$project/script/": {
+      "filePath": "_projectSideBarLayout/$project/script/index.tsx",
+      "parent": "/_projectSideBarLayout"
+    },
+    "/_projectSideBarLayout/$project/template/": {
+      "filePath": "_projectSideBarLayout/$project/template/index.tsx",
+      "parent": "/_projectSideBarLayout"
+    },
     "/auth/callback/google/": {
       "filePath": "auth/callback/google/index.tsx"
     },
     "/auth/callback/kakao/": {
       "filePath": "auth/callback/kakao/index.tsx"
+    },
+    "/auth/signUp/finish/": {
+      "filePath": "auth/signUp/finish/index.tsx"
     }
   }
 }
