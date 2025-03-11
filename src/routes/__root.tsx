@@ -8,6 +8,7 @@ import {
 import GlobalStyles from '@/styles/GlobalStyles';
 import { ThemeProvider } from 'styled-components';
 import theme from '@/styles/theme';
+import Dialog from '@/components/common/dialog';
 
 // 임시 로그인 상태
 const isAuthenticated = false;
@@ -29,6 +30,7 @@ function RootComponent() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles />
+      <Dialog />
       <Outlet />
     </ThemeProvider>
   );

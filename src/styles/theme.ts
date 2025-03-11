@@ -64,13 +64,14 @@ const theme = {
 
   // line-heights
   lineHeights: {
-    small: '1.2',
+    small: '1.3',
     medium: '1.5',
     large: '1.8',
   },
 
   // radius
   radius: {
+    xsmall: '4px',
     small: '6px',
     medium: '8px',
     large: '10px',
