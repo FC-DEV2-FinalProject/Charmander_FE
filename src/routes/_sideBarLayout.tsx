@@ -36,6 +36,7 @@ function RouteComponent() {
   const ref = useRef<HTMLDivElement | null>(null);
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>('');
 
   const _handleHelpBtn = () => {
     alert('서비스 준비중입니다.');
@@ -62,6 +63,17 @@ function RouteComponent() {
       document.removeEventListener('mousedown', _handleClickOutside);
     };
   }, [isVisible]);
+
+  useEffect(() => {
+    if (location.pathname === '/dashboard') {
+      setTitle('대시보드');
+    } else if (location.pathname === '/my-project') {
+      setTitle('내 프로젝트');
+    } else if (location.pathname === '/video-archive') {
+      setTitle('영상 보관함');
+    }
+  }, [location.pathname]);
+
   return (
     <S.SideBarPageLayout>
       {/* 사이드바 */}
@@ -135,6 +147,7 @@ function RouteComponent() {
 
       {/* 메인 컨텐츠 */}
       <S.Content>
+        <S.ContentTitle>{title}</S.ContentTitle>
         <Outlet />
       </S.Content>
     </S.SideBarPageLayout>
@@ -153,6 +166,7 @@ const S = {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border-right: 1px solid ${({ theme }) => theme.colors.lightGray1};
   `,
   SideBarContent: styled.div`
     margin-top: 15px;
@@ -296,7 +310,14 @@ const S = {
 
   Content: styled.main`
     background-color: #f7f8fa;
-    padding: 20px;
     overflow: auto;
+  `,
+
+  ContentTitle: styled.h2`
+    padding: 25px;
+    background-color: ${({ theme }) => theme.colors.white};
+    font-size: ${({ theme }) => theme.fontSizes.fz18};
+    font-weight: ${({ theme }) => theme.fontWeights.medium};
+    box-shadow: ${({ theme }) => theme.boxShadow.subtle};
   `,
 };
