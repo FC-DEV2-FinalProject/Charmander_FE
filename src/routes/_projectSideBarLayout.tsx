@@ -11,6 +11,7 @@ import Avatar from '@/assets/projectIcon/avatar.svg?react';
 import Gallery from '@/assets/projectIcon/gallery.svg?react';
 import Script from '@/assets/projectIcon/script.svg?react';
 import theme from '@/styles/theme';
+import ProjectHeader from '@/components/project-editor/header';
 
 export const Route = createFileRoute('/_projectSideBarLayout')({
   component: RouteComponent,
@@ -20,68 +21,71 @@ function RouteComponent() {
   const id = '1';
   const matchRoute = useMatchRoute();
   return (
-    <S.ProjectLayout>
-      <S.ProjectSideBar>
-        <S.IconBox active={!!matchRoute({ to: '/$project/article' })}>
-          <Link
-            to="/$project/article"
-            params={{ project: id }}>
-            <Article
-              width={80}
-              height={60}
-            />
-            <p>기사 입력</p>
-          </Link>
-        </S.IconBox>
-        <S.IconBox active={!!matchRoute({ to: '/$project/template' })}>
-          <Link
-            to="/$project/template"
-            params={{ project: id }}>
-            <ChooseTemplate
-              width={80}
-              height={60}
-            />
-            <p>템플릿 선택</p>
-          </Link>
-        </S.IconBox>
-        <S.IconBox active={!!matchRoute({ to: '/$project/avatar' })}>
-          <Link
-            to="/$project/avatar"
-            params={{ project: id }}>
-            <Avatar
-              width={80}
-              height={60}
-            />
-            <p>아바타 선택</p>
-          </Link>
-        </S.IconBox>
-        <S.IconBox active={!!matchRoute({ to: '/$project/background' })}>
-          <Link
-            to="/$project/background"
-            params={{ project: id }}>
-            <Gallery
-              width={80}
-              height={60}
-            />
-            <p>배경 선택</p>
-          </Link>
-        </S.IconBox>
-        <S.IconBox active={!!matchRoute({ to: '/$project/script' })}>
-          <Link
-            to="/$project/script"
-            params={{ project: id }}>
-            <Script
-              width={80}
-              height={60}
-            />
-            <p>대사/자막</p>
-          </Link>
-        </S.IconBox>
-      </S.ProjectSideBar>
-      <Content>
-        <Outlet />
-      </Content>
-    </S.ProjectLayout>
+    <>
+      <ProjectHeader />
+      <S.ProjectLayout>
+        <S.ProjectSideBar>
+          <S.IconBox active={!!matchRoute({ to: '/$project/article' })}>
+            <Link
+              to="/$project/article"
+              params={{ project: id }}>
+              <Article
+                width={80}
+                height={60}
+              />
+              <p>기사 입력</p>
+            </Link>
+          </S.IconBox>
+          <S.IconBox active={!!matchRoute({ to: '/$project/template' })}>
+            <Link
+              to="/$project/template"
+              params={{ project: id }}>
+              <ChooseTemplate
+                width={80}
+                height={60}
+              />
+              <p>템플릿 선택</p>
+            </Link>
+          </S.IconBox>
+          <S.IconBox active={!!matchRoute({ to: '/$project/avatar' })}>
+            <Link
+              to="/$project/avatar"
+              params={{ project: id }}>
+              <Avatar
+                width={80}
+                height={60}
+              />
+              <p>아바타 선택</p>
+            </Link>
+          </S.IconBox>
+          <S.IconBox active={!!matchRoute({ to: '/$project/background' })}>
+            <Link
+              to="/$project/background"
+              params={{ project: id }}>
+              <Gallery
+                width={80}
+                height={60}
+              />
+              <p>배경 선택</p>
+            </Link>
+          </S.IconBox>
+          <S.IconBox active={!!matchRoute({ to: '/$project/script' })}>
+            <Link
+              to="/$project/script"
+              params={{ project: id }}>
+              <Script
+                width={80}
+                height={60}
+              />
+              <p>대사/자막</p>
+            </Link>
+          </S.IconBox>
+        </S.ProjectSideBar>
+        <Content>
+          <Outlet />
+        </Content>
+      </S.ProjectLayout>
+    </>
   );
 }
 

@@ -471,6 +471,16 @@ export const routeTree = rootRoute
         "/auth/sign-up/finish/"
       ]
     },
+    "/_projectSideBarLayout": {
+      "filePath": "_projectSideBarLayout.tsx",
+      "children": [
+        "/_projectSideBarLayout/$project/article/",
+        "/_projectSideBarLayout/$project/avatar/",
+        "/_projectSideBarLayout/$project/background/",
+        "/_projectSideBarLayout/$project/script/",
+        "/_projectSideBarLayout/$project/template/"
+      ]
+    },
     "/_sideBarLayout": {
       "filePath": "_sideBarLayout.tsx",
       "children": [
