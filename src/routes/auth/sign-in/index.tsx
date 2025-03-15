@@ -11,7 +11,7 @@ import nPhone from '@/assets/auth/phone-none-active.svg';
 import { VscTriangleLeft } from 'react-icons/vsc';
 import AgreeComponent from '@/components/auth/sign-in/agreement';
 import PhoneComponent from '@/components/auth/sign-in/phone';
-import PasswordComponent from '@/components/auth/sign-in/password';
+import InfoComponent from '@/components/auth/sign-in/info';
 
 export const Route = createFileRoute('/auth/sign-in/')({
   component: RouteComponent,
@@ -91,7 +91,7 @@ function RouteComponent() {
     } else if (currentStep === 1) {
       return <PhoneComponent setIsCheckPhone={handlePhoneVerification} />;
     } else if (currentStep === 2) {
-      return <PasswordComponent />;
+      return <InfoComponent />;
     }
   };
 
