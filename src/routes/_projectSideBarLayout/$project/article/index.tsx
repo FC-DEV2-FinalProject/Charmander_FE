@@ -1,4 +1,5 @@
 import { useDebounce } from '@/hook/useDebounce';
+import useArticlePDFStore from '@/store/useArticlePDFStore';
 import theme from '@/styles/theme';
 import { createFileRoute } from '@tanstack/react-router';
 import React, { useEffect, useState } from 'react';
@@ -12,16 +13,12 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const [article, setArticle] = useState('');
-  const [articleTitle, setArticleTitle] = useState('');
+  const { articlePDFText } = useArticlePDFStore();
 
   const debouncedArticle = useDebounce(article, 1000);
-  const debouncedArticleTitle = useDebounce(articleTitle, 1000);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setArticle(e.target.value);
-  };
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setArticleTitle(e.target.value);
   };
 
   useEffect(() => {
@@ -29,25 +26,18 @@ function RouteComponent() {
       // console.log(debouncedArticle);
       //추후 저장 로직으로 변경 예정
     }
-    if (debouncedArticleTitle) {
-      // console.log(debouncedArticleTitle);
-      //추후 저장 로직으로 변경
+  }, [debouncedArticle]);
+
+  useEffect(() => {
+    if (articlePDFText != '') {
+      setArticle(articlePDFText);
     }
-  }, [debouncedArticle, debouncedArticleTitle]);
+  }, [articlePDFText]);
 
   return (
     <S.ArticleBox>
       <S.ArticleContentsBox>
-        <label htmlFor="article-title">기사 제목</label>
-        <S.ArticleTitle
-          placeholder="제목을 입력해 주세요"
-          value={articleTitle}
-          onChange={handleTitleChange}
-          id="article-title"
-        />
-      </S.ArticleContentsBox>
-      <S.ArticleContentsBox>
-        <label htmlFor="article-contents">기사 내용</label>
+        <label htmlFor="article-contents">기사 입력</label>
         <S.ArticleContentsText
           placeholder="기사를 입력해주세요"
           value={article}
@@ -66,9 +56,6 @@ const S = {
     flex-direction: column;
     width: 100%;
     height: 100%;
-    background-color: ${theme.colors.primary};
-    border: 1px solid ${theme.colors.black};
-    border-radius: ${theme.radius.medium};
     padding: ${theme.spacing.md};
   `,
   ArticleContentsBox: styled.div`
@@ -81,16 +68,9 @@ const S = {
     }
     label {
       font-size: ${theme.fontSizes.fz30};
-      color: ${theme.colors.white};
     }
   `,
-  ArticleTitle: styled.input`
-    width: 100%;
-    border-radius: ${theme.radius.medium};
-    padding: ${theme.spacing.md};
-    box-sizing: border-box;
-    font: inherit;
-  `,
+
   ArticleContentsText: styled.textarea`
     width: 100%;
     height: 100%;
