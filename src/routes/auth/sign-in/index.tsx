@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import theme from '@/styles/theme';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import styled from 'styled-components';
 import check from '@/assets/auth/check-active.svg';
 import nCheck from '@/assets/auth/check-none-active.svg';
@@ -18,17 +18,19 @@ export const Route = createFileRoute('/auth/sign-in/')({
 });
 
 type StyledProps = {
-  inGroup?: boolean;
-  isActive?: boolean;
+  $inGroup?: boolean;
+  $isActive?: boolean;
   disabled?: boolean;
-  isChecked?: boolean;
+  $isChecked?: boolean;
 };
 
 function RouteComponent() {
+  const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
   const [isPhoned, setIsPhoned] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [isCheckPhone, setIsCheckPhone] = useState(false);
+  const [isCheckInfo, setIsCheckInfo] = useState(false);
   // eslint-disable-next-line no-console
   console.log(isChecked, isPhoned, isLocked);
   const [requiredAgreementsChecked, setRequiredAgreementsChecked] =
@@ -57,6 +59,8 @@ function RouteComponent() {
     } else if (currentStep === 1 && isCheckPhone) {
       setCurrentStep(2);
       setIsLocked(true);
+    } else if (currentStep === 2 && isCheckInfo) {
+      navigate({ to: '/auth/sign-up/finish' });
     }
   };
 
@@ -78,6 +82,10 @@ function RouteComponent() {
     setIsCheckPhone(verified);
   };
 
+  const handleInfoVerification = (verified: boolean) => {
+    setIsCheckInfo(verified);
+  };
+
   const renderComponent = () => {
     if (currentStep === 0) {
       return (
@@ -91,7 +99,7 @@ function RouteComponent() {
     } else if (currentStep === 1) {
       return <PhoneComponent setIsCheckPhone={handlePhoneVerification} />;
     } else if (currentStep === 2) {
-      return <InfoComponent />;
+      return <InfoComponent setIsCheckInfo={handleInfoVerification} />;
     }
   };
 
@@ -99,10 +107,10 @@ function RouteComponent() {
     if (currentStep === 0) {
       return (
         <S.NextButtonContainer
-          inGroup={false}
+          $inGroup={false}
           onClick={goToNext}
           disabled={!requiredAgreementsChecked}
-          isActive={requiredAgreementsChecked}>
+          $isActive={requiredAgreementsChecked}>
           <p>다음</p>
         </S.NextButtonContainer>
       );
@@ -113,10 +121,13 @@ function RouteComponent() {
             <p>이전</p>
           </S.PrevButtonContainer>
           <S.NextButtonContainer
-            inGroup={true}
+            $inGroup={true}
             onClick={goToNext}
-            isActive={currentStep === 1 ? isCheckPhone : true}
-            disabled={currentStep === 1 && !isCheckPhone}>
+            $isActive={currentStep === 1 ? isCheckPhone : isCheckInfo}
+            disabled={
+              (currentStep === 1 && !isCheckPhone) ||
+              (currentStep === 2 && !isCheckInfo)
+            }>
             <p>{currentStep === 2 ? '완료' : '다음'}</p>
           </S.NextButtonContainer>
         </S.ButtonGroup>
@@ -239,13 +250,13 @@ const S = {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: ${(props) => (props.inGroup ? '60%' : '100%')};
+    width: ${(props) => (props.$inGroup ? '60%' : '100%')};
     height: 6vh;
     border-radius: ${theme.radius.medium};
     background-color: ${(props) =>
-      props.isActive ? theme.colors.primary : '#ccc'};
+      props.$isActive ? theme.colors.primary : '#ccc'};
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-    opacity: ${(props) => (props.isActive ? 1 : 0.7)};
+    opacity: ${(props) => (props.$isActive ? 1 : 0.7)};
 
     p {
       font-size: ${theme.fontSizes.fz24};
