@@ -28,6 +28,7 @@ function RouteComponent() {
   const [isChecked, setIsChecked] = useState(false);
   const [isPhoned, setIsPhoned] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
+  const [isCheckPhone, setIsCheckPhone] = useState(false);
   // eslint-disable-next-line no-console
   console.log(isChecked, isPhoned, isLocked);
   const [requiredAgreementsChecked, setRequiredAgreementsChecked] =
@@ -53,7 +54,7 @@ function RouteComponent() {
     if (currentStep === 0 && requiredAgreementsChecked) {
       setCurrentStep(1);
       setIsPhoned(true);
-    } else if (currentStep === 1) {
+    } else if (currentStep === 1 && isCheckPhone) {
       setCurrentStep(2);
       setIsLocked(true);
     }
@@ -73,6 +74,10 @@ function RouteComponent() {
     setRequiredAgreementsChecked(isValid);
   };
 
+  const handlePhoneVerification = (verified: boolean) => {
+    setIsCheckPhone(verified);
+  };
+
   const renderComponent = () => {
     if (currentStep === 0) {
       return (
@@ -84,7 +89,7 @@ function RouteComponent() {
         />
       );
     } else if (currentStep === 1) {
-      return <PhoneComponent />;
+      return <PhoneComponent setIsCheckPhone={handlePhoneVerification} />;
     } else if (currentStep === 2) {
       return <PasswordComponent />;
     }
@@ -110,8 +115,8 @@ function RouteComponent() {
           <S.NextButtonContainer
             inGroup={true}
             onClick={goToNext}
-            isActive={true}
-            disabled={currentStep === 1}>
+            isActive={currentStep === 1 ? isCheckPhone : true}
+            disabled={currentStep === 1 && !isCheckPhone}>
             <p>{currentStep === 2 ? '완료' : '다음'}</p>
           </S.NextButtonContainer>
         </S.ButtonGroup>
