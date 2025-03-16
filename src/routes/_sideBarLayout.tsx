@@ -122,7 +122,7 @@ function RouteComponent() {
               return (
                 <S.SideBarMenuItems
                   key={to}
-                  isActive={isActive}
+                  $isActive={isActive}
                   style={{ backgroundColor: isActive ? '#F6F6FA' : '#fff' }}>
                   <Link to={to}>
                     <Icon active={isActive} />
@@ -247,15 +247,15 @@ const S = {
     margin-top: 40px;
   `,
 
-  SideBarMenuItems: styled.li<{ isActive?: boolean }>`
+  SideBarMenuItems: styled.li<{ $isActive?: boolean }>`
     margin-bottom: 10px;
     border-radius: ${({ theme }) => theme.radius.large};
-    background-color: ${({ theme, isActive }) =>
-      isActive ? theme.colors.background1 : theme.colors.white};
-    color: ${({ theme, isActive }) =>
-      isActive ? theme.colors.text : theme.colors.darkGray2};
-    font-weight: ${({ theme, isActive }) =>
-      isActive ? theme.fontWeights.medium : theme.fontWeights.regular};
+    background-color: ${({ theme, $isActive }) =>
+      $isActive ? theme.colors.background1 : theme.colors.white};
+    color: ${({ theme, $isActive }) =>
+      $isActive ? theme.colors.text : theme.colors.darkGray2};
+    font-weight: ${({ theme, $isActive }) =>
+      $isActive ? theme.fontWeights.medium : theme.fontWeights.regular};
     cursor: pointer;
     transition: all 0.3s ease-in-out;
 
