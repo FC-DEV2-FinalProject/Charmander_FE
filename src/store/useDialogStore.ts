@@ -22,7 +22,12 @@ const useDialogStore = create<DialogState>((set) => ({
   onCancel: () => {},
 
   openAlert: (messages: string[]) => {
-    set({ isOpen: true, isConfirm: false, messages: messages });
+    set({
+      isOpen: true,
+      isConfirm: false,
+      messages: messages,
+      onConfirm: () => set({ isOpen: false }),
+    });
   },
 
   openConfirm: (messages: string[]) => {
