@@ -1,6 +1,8 @@
 import theme from '@/styles/theme';
 import { useState } from 'react';
 import styled from 'styled-components';
+import { IoEyeOutline } from 'react-icons/io5';
+import { FaRegEyeSlash } from 'react-icons/fa';
 
 type InputType = {
   type?: 'email' | 'password' | '';
@@ -37,8 +39,11 @@ const Input = ({ type, value, onChange, propsPlaceholder }: InputType) => {
       />
       {type === 'password' && (
         <S.EyeIconContainer onClick={handleShow}>
-          <S.EyeIcon>👁️</S.EyeIcon>
-          {showPassword && <S.Slash />}
+          {showPassword ? (
+            <FaRegEyeSlash size={20} />
+          ) : (
+            <IoEyeOutline size={20} />
+          )}
         </S.EyeIconContainer>
       )}
     </S.InputContainer>
@@ -75,22 +80,8 @@ const S = {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 1.25vw;
-    height: 2.22vh;
-  `,
-
-  EyeIcon: styled.span`
-    font-size: ${theme.fontSizes.fz18};
-    z-index: 1;
-  `,
-
-  Slash: styled.div`
-    position: absolute;
-    width: 0.1vw;
-    height: 2.22vh;
-    background-color: #ff0000;
-    transform: rotate(45deg);
-    z-index: 1;
+    width: 2vw;
+    height: 2.5vh;
   `,
 };
 
