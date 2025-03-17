@@ -23,7 +23,7 @@ type AgreementComponentType = {
 };
 
 type StyledProps = {
-  isChecked?: boolean;
+  $isChecked?: boolean;
 };
 
 export const AgreeComponent = ({
@@ -103,7 +103,7 @@ export const AgreeComponent = ({
         <S.SelectionList>
           <S.SelectionItem
             onClick={() => handleSingleAgree('privacy')}
-            isChecked={agreements.privacy}>
+            $isChecked={agreements.privacy}>
             {agreements.privacy ? (
               <img
                 src={miniCheck}
@@ -120,7 +120,7 @@ export const AgreeComponent = ({
 
           <S.SelectionItem
             onClick={() => handleSingleAgree('terms')}
-            isChecked={agreements.terms}>
+            $isChecked={agreements.terms}>
             {agreements.terms ? (
               <img
                 src={miniCheck}
@@ -137,7 +137,7 @@ export const AgreeComponent = ({
 
           <S.SelectionItem
             onClick={() => handleSingleAgree('marketing')}
-            isChecked={agreements.marketing}>
+            $isChecked={agreements.marketing}>
             {agreements.marketing ? (
               <img
                 src={miniCheck}
@@ -204,7 +204,7 @@ const S = {
     p {
       font-size: ${theme.fontSizes.fz24};
       font-weight: ${theme.fontWeights.medium};
-      color: ${(props) => (props.isChecked ? 'inherit' : '#9e9e9e')};
+      color: ${(props) => (props.$isChecked ? 'inherit' : '#9e9e9e')};
       transition: color 0.2s ease;
     }
   `,
