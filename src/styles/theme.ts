@@ -4,6 +4,7 @@ const theme = {
     white: '#fff',
     black: '#000',
     primary: '#0C2764',
+    primaryOpacity: '#0C27640b',
     secondary1: '#3372FF',
     secondary2: '#365AF9',
     error: '#FF402B',

@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import React, { useRef, useState } from 'react';
 import theme from '@/styles/theme';
-import { HiChevronLeft } from 'react-icons/hi';
-import { FiEdit } from 'node_modules/react-icons/fi';
+import BackIcon from '@/assets/projectIcon/back.svg?react';
+import EditIcon from '@/assets/projectIcon/edit-2.svg?react';
 import { Link, useLocation } from '@tanstack/react-router';
 import useArticlePDFStore from '@/store/useArticlePDFStore';
 import { pdfjs } from 'react-pdf';
@@ -81,7 +81,7 @@ const ProjectHeader = () => {
       <S.HeaderContainer>
         <S.HeaderLeftContents>
           <Link to={'/dashboard'}>
-            <HiChevronLeft size={50} />
+            <BackIcon />
           </Link>
           <S.TitleBox>
             {isEdit ? (
@@ -94,10 +94,9 @@ const ProjectHeader = () => {
                 {projectTitle}
               </S.ViewText>
             )}
-            <FiEdit
-              color="white"
+            <EditIcon
+              color="black"
               onClick={() => setIsEdit(!isEdit)}
-              size={30}
             />
           </S.TitleBox>
         </S.HeaderLeftContents>
@@ -135,11 +134,10 @@ const S = {
   HeaderContainer: styled.div`
     width: 100%;
     height: 60px;
-    background-color: ${theme.colors.primary};
+    background-color: ${theme.colors.white};
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: white;
     svg {
       cursor: pointer;
       margin-left: ${theme.spacing.sm};
@@ -159,8 +157,6 @@ const S = {
   ProjectTitle: styled.input`
     width: 100%;
     background-color: theme.colors.white;
-    border: none;
-    outline: none;
     color: theme.colors.black;
     font-size: ${theme.fontSizes.fz30};
   `,
@@ -173,7 +169,7 @@ const S = {
   `,
 
   HeaderButton: styled.button`
-    background-color: ${theme.colors.white};
+    background-color: ${theme.colors.primaryOpacity};
     margin-right: ${theme.spacing.md};
     border-radius: ${theme.radius.small};
     padding: ${theme.spacing.sm} ${theme.spacing.md};
@@ -181,7 +177,7 @@ const S = {
     font-weight: ${theme.fontWeights.bold};
   `,
   ArticleUploadButton: styled.button`
-    background-color: ${theme.colors.white};
+    background-color: ${theme.colors.primaryOpacity};
     margin-right: ${theme.spacing.md};
     border-radius: ${theme.radius.small};
     padding: ${theme.spacing.sm} ${theme.spacing.md};

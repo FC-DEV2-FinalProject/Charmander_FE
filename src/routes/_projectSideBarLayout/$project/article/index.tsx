@@ -80,5 +80,7 @@ const S = {
     font: inherit;
     box-sizing: border-box;
     resize: none;
+    border-color: ${theme.colors.primary};
+    outline-color: ${theme.colors.primary};
   `,
 };
