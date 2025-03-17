@@ -2,7 +2,7 @@ const theme = {
   // Colors
   colors: {
     white: '#fff',
-    black: '#000',
+    black: '#1d1d1d',
     primary: '#0C2764',
     primaryOpacity: '#0C27640b',
     secondary1: '#3372FF',
@@ -18,8 +18,8 @@ const theme = {
     darkGray2: '#8B8B9D',
     darkGray3: '#6E6E84',
     darkGray4: '#5D5D5D',
-    text: '#2E2E37',
-    textSecond: '#484554',
+    text: '#1d1d1d',
+    textSecond: '#555555',
     border1: '#E8E8E8',
     border2: '#EAF0FD',
     border3: '#BCBCBC',
@@ -104,8 +104,8 @@ const theme = {
 
   // box-shadow
   boxShadow: {
-    subtle: '0px 0px 5px rgba(46, 46, 55, 0.8)',
-    regular: '0px 4px 10px rgba(0, 0, 0, 0.8)',
+    subtle: '0px 0px 10px rgba(46, 46, 55, 0.1)',
+    regular: '0px 4px 10px rgba(0, 0, 0, 0.09)',
   },
 };
 
