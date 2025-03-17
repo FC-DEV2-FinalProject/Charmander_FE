@@ -1,4 +1,9 @@
+import { useDebounce } from '@/hook/useDebounce';
+import useArticlePDFStore from '@/store/useArticlePDFStore';
+import theme from '@/styles/theme';
 import { createFileRoute } from '@tanstack/react-router';
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
 export const Route = createFileRoute(
   '/_projectSideBarLayout/$project/article/'
@@ -7,5 +12,75 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  return <div>기사 입력 창입니다다!</div>;
+  const [article, setArticle] = useState('');
+  const { articlePDFText } = useArticlePDFStore();
+
+  const debouncedArticle = useDebounce(article, 1000);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setArticle(e.target.value);
+  };
+
+  useEffect(() => {
+    if (debouncedArticle) {
+      // console.log(debouncedArticle);
+      //추후 저장 로직으로 변경 예정
+    }
+  }, [debouncedArticle]);
+
+  useEffect(() => {
+    if (articlePDFText != '') {
+      setArticle(articlePDFText);
+    }
+  }, [articlePDFText]);
+
+  return (
+    <S.ArticleBox>
+      <S.ArticleContentsBox>
+        <label htmlFor="article-contents">기사 입력</label>
+        <S.ArticleContentsText
+          placeholder="기사를 입력해주세요"
+          value={article}
+          onChange={handleChange}
+          id="article-contents"
+        />
+      </S.ArticleContentsBox>
+    </S.ArticleBox>
+  );
 }
+
+const S = {
+  ArticleBox: styled.div`
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: ${theme.spacing.md};
+  `,
+  ArticleContentsBox: styled.div`
+    width: 100%;
+    gap: ${theme.spacing.sm};
+    &:last-child {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-size: ${theme.fontSizes.fz30};
+    }
+  `,
+
+  ArticleContentsText: styled.textarea`
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    border-radius: ${theme.radius.medium};
+    padding: ${theme.spacing.md};
+    font: inherit;
+    box-sizing: border-box;
+    resize: none;
+    border-color: ${theme.colors.primary};
+    outline-color: ${theme.colors.primary};
+  `,
+};

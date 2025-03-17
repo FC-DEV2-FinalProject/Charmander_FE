@@ -1,15 +1,79 @@
 import styled from 'styled-components';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import theme from '@/styles/theme';
-import { HiChevronLeft } from 'react-icons/hi';
-import { FiEdit } from 'node_modules/react-icons/fi';
+import BackIcon from '@/assets/projectIcon/back.svg?react';
+import EditIcon from '@/assets/projectIcon/edit-2.svg?react';
 import { Link, useLocation } from '@tanstack/react-router';
+import useArticlePDFStore from '@/store/useArticlePDFStore';
+import { pdfjs } from 'react-pdf';
+import { TextItem } from 'pdfjs-dist/types/src/display/api';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 const ProjectHeader = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [projectTitle, setProjectTitle] = useState('새 프로젝트');
+  const { setArticlePDFText, clearArticlePDFText } = useArticlePDFStore();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleInput = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
   const onChangeProjectTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProjectTitle(e.target.value);
+  };
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.pdf')) {
+      alert('PDF 파일만 업로드 가능합니다.');
+      return;
+    }
+
+    await extractTextFromPDF(file);
+  };
+
+  const extractTextFromPDF = async (file: File): Promise<void> => {
+    clearArticlePDFText();
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+
+    reader.onload = async () => {
+      try {
+        const loadingTask = pdfjs.getDocument(
+          new Uint8Array(reader.result as ArrayBuffer)
+        );
+        const pdf = await loadingTask.promise;
+
+        let extractedText = '';
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
+
+          extractedText +=
+            textContent.items
+              .map((item) => {
+                if ('str' in item) {
+                  return (item as TextItem).str;
+                }
+                return '';
+              })
+              .join(' ') + '\n';
+        }
+
+        setArticlePDFText(extractedText);
+      } catch (error) {
+        alert(error);
+      }
+    };
   };
   const location = useLocation();
   return (
@@ -17,7 +81,7 @@ const ProjectHeader = () => {
       <S.HeaderContainer>
         <S.HeaderLeftContents>
           <Link to={'/dashboard'}>
-            <HiChevronLeft size={50} />
+            <BackIcon />
           </Link>
           <S.TitleBox>
             {isEdit ? (
@@ -30,17 +94,24 @@ const ProjectHeader = () => {
                 {projectTitle}
               </S.ViewText>
             )}
-            <FiEdit
-              color="white"
+            <EditIcon
+              color="black"
               onClick={() => setIsEdit(!isEdit)}
-              size={30}
             />
           </S.TitleBox>
         </S.HeaderLeftContents>
         <S.ButtonBox>
           {location.pathname.endsWith('/article') ? (
             <>
-              <S.HeaderButton>기사 파일 업로드</S.HeaderButton>
+              <S.ArticleUploadButton onClick={handleInput}>
+                기사 파일 업로드
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleFileUpload}
+                  ref={inputRef}
+                />
+              </S.ArticleUploadButton>
               <S.HeaderButton>템플릿 추천</S.HeaderButton>
               <Link
                 to="/$project/avatar"
@@ -63,11 +134,10 @@ const S = {
   HeaderContainer: styled.div`
     width: 100%;
     height: 60px;
-    background-color: ${theme.colors.primary};
+    background-color: ${theme.colors.white};
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: white;
     svg {
       cursor: pointer;
       margin-left: ${theme.spacing.sm};
@@ -87,8 +157,6 @@ const S = {
   ProjectTitle: styled.input`
     width: 100%;
     background-color: theme.colors.white;
-    border: none;
-    outline: none;
     color: theme.colors.black;
     font-size: ${theme.fontSizes.fz30};
   `,
@@ -101,11 +169,22 @@ const S = {
   `,
 
   HeaderButton: styled.button`
-    background-color: ${theme.colors.white};
+    background-color: ${theme.colors.primaryOpacity};
     margin-right: ${theme.spacing.md};
     border-radius: ${theme.radius.small};
     padding: ${theme.spacing.sm} ${theme.spacing.md};
     color: ${theme.colors.primary};
     font-weight: ${theme.fontWeights.bold};
+  `,
+  ArticleUploadButton: styled.button`
+    background-color: ${theme.colors.primaryOpacity};
+    margin-right: ${theme.spacing.md};
+    border-radius: ${theme.radius.small};
+    padding: ${theme.spacing.sm} ${theme.spacing.md};
+    color: ${theme.colors.primary};
+    font-weight: ${theme.fontWeights.bold};
+    input {
+      display: none;
+    }
   `,
 };
