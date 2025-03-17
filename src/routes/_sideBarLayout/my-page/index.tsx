@@ -9,7 +9,6 @@ export const Route = createFileRoute('/_sideBarLayout/my-page/')({
 });
 
 function RouteComponent() {
-  const [id, setId] = useState('');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -21,7 +20,6 @@ function RouteComponent() {
   }
 
   function handleReset() {
-    setId('');
     setEmail('');
     setName('');
     setPhoneNumber('');
@@ -44,22 +42,17 @@ function RouteComponent() {
             <h2>기본 정보 수정</h2>
             <S.InputLabel>
               아이디
-              <S.Input
-                value={id}
-                onChange={(e) => setId(e.target.value)}
-                placeholder=""
-              />
+              <S.Row>
+                <S.Input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder=""
+                />
+                <S.CertifiButton>인증하기</S.CertifiButton>
+              </S.Row>
             </S.InputLabel>
             <S.InputLabel>
-              이메일
-              <S.Input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder=""
-              />
-            </S.InputLabel>
-            <S.InputLabel>
-              이름
+              닉네임
               <S.Row>
                 <S.Input
                   value={name}
@@ -132,7 +125,7 @@ const S = {
   MyPageTitle: styled.div`
     display: flex;
     align-items: center;
-    width: 100%;
+    width: 70%;
     height: 5vh;
     background-color: ${theme.colors.white};
     padding-left: 2vw;
@@ -162,7 +155,7 @@ const S = {
   MyPageBasic: styled.div`
     margin-top: 6vh;
     width: 100%;
-    height: 45vh;
+    height: 40vh;
     padding: 2vh 0;
     padding-left: 2vw;
     background-color: ${theme.colors.white};
