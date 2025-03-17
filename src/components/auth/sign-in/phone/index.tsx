@@ -50,7 +50,7 @@ export const PhoneComponent = ({ setIsCheckPhone }: PhoneComponentProps) => {
               type="text"
               value={phoneNumber}
               onChange={handlePhoneChange}
-              placeholder="-를 빼고 입력해주세요"
+              placeholder="휴대폰 번호를 입력해주세요"
               maxLength={11}
             />
           </S.PhoneNumber>
