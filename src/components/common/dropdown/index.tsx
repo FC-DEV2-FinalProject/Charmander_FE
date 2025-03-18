@@ -5,13 +5,21 @@ import ArrowUp from '@/assets/arrow_drop_up.svg?react';
 import styled from 'styled-components';
 import theme from '@/styles/theme';
 
-const DropDown = ({ placeholder, dropDownData, width }: DropDownProps) => {
+const DropDown = ({
+  placeholder,
+  dropDownData,
+  width,
+  onSelect,
+}: DropDownProps) => {
   const [view, setView] = useState<boolean>(false);
   const [currentValue, setCurrentValue] = useState(placeholder);
 
   const handleValue = (data: string) => {
     setCurrentValue(data);
     setView(!view);
+    if (onSelect) {
+      onSelect(data);
+    }
   };
 
   return (

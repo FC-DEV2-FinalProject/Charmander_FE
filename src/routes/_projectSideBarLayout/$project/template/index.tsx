@@ -22,13 +22,19 @@ const templates: Template[] = [
   { id: 1, name: '템플릿 1', imageUrl: image1 },
   { id: 2, name: '템플릿 2', imageUrl: image2 },
   { id: 3, name: '템플릿 1', imageUrl: image3 },
-  { id: 4, name: '템플릿 4', imageUrl: image1 },
+  { id: 4, name: '템플릿 3', imageUrl: image1 },
   { id: 5, name: '템플릿 1', imageUrl: image2 },
-  { id: 6, name: '템플릿 6', imageUrl: image3 },
+  { id: 6, name: '템플릿 3', imageUrl: image3 },
 ];
 
 function RouteComponent() {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTemplate, setSelectTemplate] = useState<Template | null>(null);
+
+  const filteredTemplates = templates.filter(
+    (template) => template.name === selectedCategory
+  );
+
   return (
     <S.TemplateContainer>
       <S.TemplateMain>
@@ -42,20 +48,34 @@ function RouteComponent() {
       <S.TemplateToolbar>
         <DropDown
           placeholder="템플릿 선택"
-          dropDownData={['1', '2', '3']}
+          dropDownData={['템플릿 1', '템플릿 2', '템플릿 3']}
           width="90%"
+          onSelect={(value) => setSelectedCategory(value)}
         />
         <S.TemplateList>
-          {templates.map((template) => (
-            <S.TemplateCard
-              onClick={() => setSelectTemplate(template)}
-              key={template.id}>
-              <S.TemplateImg
-                src={template.imageUrl}
-                alt={template.name}
-              />
-            </S.TemplateCard>
-          ))}
+          {filteredTemplates.length > 0
+            ? filteredTemplates.map((template) => (
+                <S.TemplateCard
+                  onClick={() => setSelectTemplate(template)}
+                  key={template.id}>
+                  <S.TemplateImg
+                    isSelected={selectedTemplate?.id === template.id}
+                    src={template.imageUrl}
+                    alt={template.name}
+                  />
+                </S.TemplateCard>
+              ))
+            : templates.map((template) => (
+                <S.TemplateCard
+                  onClick={() => setSelectTemplate(template)}
+                  key={template.id}>
+                  <S.TemplateImg
+                    isSelected={selectedTemplate?.id === template.id}
+                    src={template.imageUrl}
+                    alt={template.name}
+                  />
+                </S.TemplateCard>
+              ))}
         </S.TemplateList>
       </S.TemplateToolbar>
     </S.TemplateContainer>
@@ -86,7 +106,8 @@ const S = {
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: ${theme.radius.medium};
+    border: ${`2px solid ${theme.colors.secondary1}`};
   `,
   TemplateToolbar: styled.div`
     background-color: ${theme.colors.white};
@@ -111,10 +132,18 @@ const S = {
   TemplateCard: styled.div`
     width: 100%;
   `,
-  TemplateImg: styled.img`
+  TemplateImg: styled.img<{ isSelected: boolean }>`
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: ${theme.radius.medium};
+    border: ${(props) =>
+      props.isSelected ? `2px solid ${theme.colors.secondary1}` : 'none'};
+    box-sizing: border-box;
+  `,
+  EmptyMessage: styled.p`
+    font-size: ${theme.fontSizes.fz30};
+    font-weight: ${theme.fontWeights.bold};
+    color: ${theme.colors.primary};
   `,
 };
