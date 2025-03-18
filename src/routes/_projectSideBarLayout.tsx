@@ -92,8 +92,8 @@ function RouteComponent() {
 const S = {
   ProjectLayout: styled.div`
     display: grid;
-    grid-template-columns: 320px 1fr;
-    height: 100vh;
+    grid-template-columns: 170px 1fr;
+    height: calc(100vh - 80px);
   `,
   ProjectSideBar: styled.div`
     padding: ${theme.spacing.lg};
@@ -102,18 +102,14 @@ const S = {
     flex-direction: column;
     align-items: center;
     gap: ${theme.spacing.lg};
+    border-right: 1px solid ${theme.colors.border1};
   `,
   IconBox: styled.div<{ active: boolean }>`
     padding: ${theme.spacing.md};
     border-radius: ${theme.radius.small};
     background-color: ${({ active }) =>
       active ? theme.colors.background2 : ''};
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     font-size: ${theme.fontSizes.fz18};
-    gap: ${theme.spacing.sm};
   `,
 };
 const Content = styled.main`

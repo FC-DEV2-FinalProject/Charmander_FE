@@ -85,13 +85,14 @@ function RouteComponent() {
 const S = {
   TemplateContainer: styled.div`
     width: 100%;
-    height: 100%;
+    height: calc(100vh - 128px);
     display: flex;
-    justify-contents: center;
+    justify-content: center;
     align-items: center;
     background-color: ${theme.colors.primary};
     padding: ${theme.spacing.xl};
     gap: ${theme.spacing.lg};
+    border-radius: ${theme.radius.large};
   `,
   TemplateMain: styled.div`
     background-color: ${theme.colors.white};
@@ -101,6 +102,7 @@ const S = {
     justify-content: center;
     align-items: center;
     padding: ${theme.spacing.sm};
+    border-radius: ${theme.radius.large};
   `,
   SelectedTemplateImage: styled.img`
     width: 100%;
@@ -118,6 +120,7 @@ const S = {
     align-items: center;
     padding: ${theme.spacing.lg};
     gap: ${theme.spacing.xl};
+    border-radius: ${theme.radius.large};
   `,
   TemplateList: styled.div`
     width: 90%;
