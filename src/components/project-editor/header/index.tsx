@@ -120,7 +120,7 @@ const ProjectHeader = () => {
               </Link>
             </>
           ) : (
-            <S.HeaderButton>제작하기</S.HeaderButton>
+            <S.ExportButton>제작하기</S.ExportButton>
           )}
         </S.ButtonBox>
       </S.HeaderContainer>
@@ -174,6 +174,14 @@ const S = {
     border-radius: ${theme.radius.small};
     padding: ${theme.spacing.sm} ${theme.spacing.md};
     color: ${theme.colors.primary};
+    font-weight: ${theme.fontWeights.bold};
+  `,
+  ExportButton: styled.button`
+    background-color: ${theme.colors.primary};
+    margin-right: ${theme.spacing.md};
+    border-radius: ${theme.radius.small};
+    padding: ${theme.spacing.sm} ${theme.spacing.md};
+    color: ${theme.colors.white};
     font-weight: ${theme.fontWeights.bold};
   `,
   ArticleUploadButton: styled.button`
