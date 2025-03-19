@@ -85,7 +85,7 @@ function RouteComponent() {
 const S = {
   TemplateContainer: styled.div`
     width: 100%;
-    height: calc(100vh - 128px);
+    height: calc(100vh - 180px);
     display: flex;
     justify-content: center;
     align-items: center;

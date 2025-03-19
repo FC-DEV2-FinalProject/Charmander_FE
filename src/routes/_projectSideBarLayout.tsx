@@ -114,6 +114,6 @@ const S = {
 };
 const Content = styled.main`
   background-color: ${theme.colors.background};
-  padding: ${theme.spacing.lg};
+  padding: 50px;
   overflow: auto;
 `;
