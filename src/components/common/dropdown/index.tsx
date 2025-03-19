@@ -5,13 +5,21 @@ import ArrowUp from '@/assets/arrow_drop_up.svg?react';
 import styled from 'styled-components';
 import theme from '@/styles/theme';
 
-const DropDown = ({ placeholder, dropDownData, width }: DropDownProps) => {
+const DropDown = ({
+  placeholder,
+  dropDownData,
+  width,
+  onSelect,
+}: DropDownProps) => {
   const [view, setView] = useState<boolean>(false);
   const [currentValue, setCurrentValue] = useState(placeholder);
 
   const handleValue = (data: string) => {
     setCurrentValue(data);
     setView(!view);
+    if (onSelect) {
+      onSelect(data);
+    }
   };
 
   return (
@@ -50,21 +58,22 @@ const S = {
   DropDownContainer: styled.div<{ width?: string }>`
     position: relative;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     flex-direction: column;
-    width: ${(props) => (props.width ? props.width : 'max-content')};
+    width: ${(props) => props.width || 'max-content'};
     font-size: ${theme.fontSizes.fz20};
     font-weight: ${theme.fontWeights.medium};
   `,
   DropDownBox: styled.div`
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: ${theme.spacing.xs};
+    padding: ${theme.spacing.md};
     border: ${theme.borderWidth.thin} solid ${theme.colors.black};
     border-radius: ${theme.radius.small};
+    box-sizing: borderBox;
   `,
   DropDownList: styled.ul`
     position: absolute;
@@ -76,7 +85,8 @@ const S = {
     border: ${theme.borderWidth.thin} solid ${theme.colors.black};
     border-radius: ${theme.radius.small};
     background-color: ${theme.colors.white};
-    shadow: ${theme.boxShadow.regular};
+    box-shadow: ${theme.boxShadow.regular};
+    box-sizing: border-box;
   `,
   DropDownItem: styled.li`
     display: flex;
