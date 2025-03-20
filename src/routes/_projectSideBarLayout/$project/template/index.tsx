@@ -1,35 +1,21 @@
 import DropDown from '@/components/common/dropdown';
+import { mockTemplateImage, Template } from '@/mock/mockTemplateImage';
 import theme from '@/styles/theme';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import styled from 'styled-components';
-import image1 from '@/assets/loginBanner/image1.png';
-import image2 from '@/assets/loginBanner/image2.png';
-import image3 from '@/assets/loginBanner/image3.png';
 
 export const Route = createFileRoute(
   '/_projectSideBarLayout/$project/template/'
 )({
   component: RouteComponent,
 });
-type Template = {
-  id: number;
-  name: string;
-  imageUrl: string;
-};
-
-const templates: Template[] = [
-  { id: 1, name: '템플릿 1', imageUrl: image1 },
-  { id: 2, name: '템플릿 2', imageUrl: image2 },
-  { id: 3, name: '템플릿 1', imageUrl: image3 },
-  { id: 4, name: '템플릿 3', imageUrl: image1 },
-  { id: 5, name: '템플릿 1', imageUrl: image2 },
-  { id: 6, name: '템플릿 3', imageUrl: image3 },
-];
 
 function RouteComponent() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTemplate, setSelectTemplate] = useState<Template | null>(null);
+
+  const templates = mockTemplateImage();
 
   const filteredTemplates = templates.filter(
     (template) => template.name === selectedCategory

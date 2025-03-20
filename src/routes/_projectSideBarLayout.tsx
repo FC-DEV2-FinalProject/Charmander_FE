@@ -47,17 +47,6 @@ function RouteComponent() {
               <p>템플릿 선택</p>
             </Link>
           </S.IconBox>
-          <S.IconBox active={!!matchRoute({ to: '/$project/avatar' })}>
-            <Link
-              to="/$project/avatar"
-              params={{ project: id }}>
-              <Avatar
-                width={80}
-                height={60}
-              />
-              <p>아바타 선택</p>
-            </Link>
-          </S.IconBox>
           <S.IconBox active={!!matchRoute({ to: '/$project/background' })}>
             <Link
               to="/$project/background"
@@ -67,6 +56,17 @@ function RouteComponent() {
                 height={60}
               />
               <p>배경 선택</p>
+            </Link>
+          </S.IconBox>
+          <S.IconBox active={!!matchRoute({ to: '/$project/avatar' })}>
+            <Link
+              to="/$project/avatar"
+              params={{ project: id }}>
+              <Avatar
+                width={80}
+                height={60}
+              />
+              <p>아바타 선택</p>
             </Link>
           </S.IconBox>
           <S.IconBox active={!!matchRoute({ to: '/$project/script' })}>
