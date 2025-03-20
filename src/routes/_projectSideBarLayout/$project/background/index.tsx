@@ -7,7 +7,6 @@ import { createFileRoute } from '@tanstack/react-router';
 import SidebarBackgroundStyleIcon from '@/assets/projectIcon/background-sidebarIcon.svg?react';
 import BackgroundFileUploadIcon from '@/assets/projectIcon/backgroundFileUploadIcon.svg?react';
 import ImageUploadIcon from '@/assets/projectIcon/imageUploadIcon.svg?react';
-import AspectRatioIcon from '@/assets/projectIcon/Frame.svg?react';
 import DeleteBackgroundIcon from '@/assets/projectIcon/deleteBackground.svg?react';
 import GenerateBackgroundIcon from '@/assets/projectIcon/generateBackground.svg?react';
 import DragImage from '@/components/project-editor/dragImage';
@@ -17,16 +16,11 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
 });
-interface ImageSize {
-  width?: string | string;
-  height?: string | string;
-}
 
 function RouteComponent() {
   const [SelectedBackgroundTemplate, setSelectedBackgroundTemplate] =
     useState<Template | null>(null);
   const [selectAspectRatio, setSelectAspectRatio] = useState('16:9(pc)');
-  const [imageSize, setImageSize] = useState<ImageSize | null>(null);
   const [templateImages, setTemplateImages] =
     useState<Template[]>(mockTemplateImage());
 
@@ -65,24 +59,6 @@ function RouteComponent() {
     reader.readAsDataURL(file);
   };
 
-  const handleImageSize = (key: 'width' | 'height', value: string) => {
-    if (!/^\d*$/.test(value)) {
-      alert('숫자만 입력 가능합니다.');
-      return;
-    }
-
-    const numericValue = Number(value);
-
-    if (numericValue > 1920) {
-      alert('최대 입력 가능한 값은 1920입니다.');
-      return;
-    }
-
-    setImageSize((prev) => ({
-      ...prev,
-      [key]: numericValue.toString(), // 문자열로 저장 (입력 필드 유지)
-    }));
-  };
   return (
     <S.BackgroundContainer>
       <S.BackgroundMain>
@@ -91,10 +67,6 @@ function RouteComponent() {
             aspectRatio={selectAspectRatio}
             src={SelectedBackgroundTemplate.imageUrl}
             alt={SelectedBackgroundTemplate.name}
-            size={{
-              width: imageSize?.width || null,
-              height: imageSize?.height || null,
-            }}
             containerRef={backgroundRef}
           />
         )}
@@ -107,23 +79,6 @@ function RouteComponent() {
           width="90%"
           onSelect={(value) => setSelectAspectRatio(value)}
         />
-        <S.AspectRatioControlSection>
-          <S.LabelSection>
-            <AspectRatioIcon />
-            <S.SidebarLabel>직접 입력</S.SidebarLabel>
-          </S.LabelSection>
-          <S.EnterAspectRatioData>
-            <S.AspectRatioInput
-              value={imageSize?.width || ''}
-              onChange={(e) => handleImageSize('width', e.target.value)}
-            />
-            <S.AspectRatioInput
-              value={imageSize?.height || ''}
-              onChange={(e) => handleImageSize('height', e.target.value)}
-            />
-            px
-          </S.EnterAspectRatioData>
-        </S.AspectRatioControlSection>
         <S.ImageUploadSection>
           <S.LabelSection>
             <BackgroundFileUploadIcon />
@@ -147,6 +102,7 @@ function RouteComponent() {
             <SidebarBackgroundStyleIcon />
             <S.SidebarLabel>배경 스타일</S.SidebarLabel>
           </S.LabelSection>
+
           <S.BackgroundTemplateList>
             {templateImages.map((template) => (
               <S.BackgroundTemplateCard
@@ -160,12 +116,14 @@ function RouteComponent() {
               </S.BackgroundTemplateCard>
             ))}
           </S.BackgroundTemplateList>
+
           <S.BackgroundButtonSection>
             <S.BackgroundButton
               onClick={() => setSelectedBackgroundTemplate(null)}>
               <DeleteBackgroundIcon />
               배경 제거
             </S.BackgroundButton>
+
             <S.BackgroundButton>
               <GenerateBackgroundIcon />
               배경 생성
@@ -195,7 +153,6 @@ const S = {
     border: 1px solid ${theme.colors.border1};
     border-radius: ${theme.radius.xxlarge} 0 0 ${theme.radius.xxlarge};
   `,
-
   BackgroundToolbar: styled.div`
     background-color: ${theme.colors.white};
     width: 30%;
@@ -211,30 +168,6 @@ const S = {
     &::-webkit-scrollbar {
       display: none;
     }
-  `,
-  AspectRatioControlSection: styled.div`
-    display: flex;
-    flex-direction: column;
-    width: 90%;
-    gap: ${theme.spacing.md};
-  `,
-  EnterAspectRatioData: styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    gap: ${theme.spacing.xs};
-    color: ${theme.colors.primary}
-    font-size: ${theme.fontSizes.fz20};
-    font-weight: ${theme.fontWeights.medium};
-  `,
-  AspectRatioInput: styled.input`
-    width: 45%;
-    height: 55px;
-    border: 1px solid ${theme.colors.primary};
-    border-radius: ${theme.radius.small};
-    font-size: ${theme.fontSizes.fz20};
-    text-align: center;
   `,
   ImageUploadSection: styled.div`
     width: 90%;
@@ -283,10 +216,10 @@ const S = {
     border-radius: ${theme.radius.medium};
     width: 100%;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+    max-height: 500px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 120px;
     padding: ${theme.spacing.sm};
     gap: ${theme.spacing.sm};
     overflow-x: hidden;
@@ -295,8 +228,8 @@ const S = {
     }
   `,
   BackgroundTemplateCard: styled.div`
-    width: 30%;
-    height: 30%;
+    width: 100%;
+    height: 100%;
   `,
   BackgroundTemplateImg: styled.img<{ isSelected: boolean }>`
     width: 100%;
