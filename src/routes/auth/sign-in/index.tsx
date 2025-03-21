@@ -230,11 +230,12 @@ const S = {
     background-color: ${theme.colors.background};
   `,
   SignInContainer: styled.div`
-    width: 30%;
+    width: 40%;
     height: 90vh;
     background-color: ${theme.colors.white};
     display: flex;
     flex-direction: column;
+    padding: 3%;
 
     h2 {
       font-size: ${theme.fontSizes.fz32};
