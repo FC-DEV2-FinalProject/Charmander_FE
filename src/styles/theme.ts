@@ -24,6 +24,7 @@ const theme = {
     border2: '#EAF0FD',
     border3: '#BCBCBC',
     loginTitle: '#484554',
+    withdraw: '#2E2E37',
   },
 
   // font-size

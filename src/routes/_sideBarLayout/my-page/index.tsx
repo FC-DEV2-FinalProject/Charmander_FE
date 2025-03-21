@@ -14,6 +14,7 @@ function RouteComponent() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [newCheckPassword, setNewCheckPassword] = useState('');
 
   function handleSubmit() {
     // API 호출 코드
@@ -25,11 +26,11 @@ function RouteComponent() {
     setPhoneNumber('');
     setCurrentPassword('');
     setNewPassword('');
+    setNewCheckPassword('');
   }
 
   return (
     <S.MyPageWrapper>
-      <S.MyPageTitle>계정 관리</S.MyPageTitle>
       <S.MyPageContainer>
         <S.MyPageHeader>
           <div>
@@ -95,8 +96,8 @@ function RouteComponent() {
             <S.InputLabel>
               새 비밀번호 확인
               <S.Input
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                value={newCheckPassword}
+                onChange={(e) => setNewCheckPassword(e.target.value)}
                 placeholder="새 비밀번호 확인"
               />
             </S.InputLabel>
@@ -107,7 +108,7 @@ function RouteComponent() {
           <div>
             <S.Row>
               <S.ResetButton onClick={handleReset}>초기화</S.ResetButton>
-              <S.SaveButton onClick={handleSubmit}>저장하기</S.SaveButton>
+              <S.SaveButton onClick={handleSubmit}>저장</S.SaveButton>
             </S.Row>
           </div>
         </S.MyPageFooter>
@@ -121,16 +122,7 @@ const S = {
     width: 100%;
     height: 100%;
     background-color: ${theme.colors.background};
-  `,
-  MyPageTitle: styled.div`
-    display: flex;
-    align-items: center;
-    width: 70%;
-    height: 5vh;
-    background-color: ${theme.colors.white};
-    padding-left: 2vw;
-    font-weight: ${theme.fontWeights.bold};
-    font-size: ${theme.fontSizes.fz30};
+    padding-left: 5%;
   `,
   MyPageContainer: styled.div`
     display: flex;
@@ -208,12 +200,12 @@ const S = {
     justify-content: center;
     align-items: center;
     border-radius: ${theme.radius.large};
-    width: 10%;
+    width: 8%;
     height: 5vh;
     background-color: ${theme.colors.primary};
     color: ${theme.colors.white};
     font-weight: ${theme.fontWeights.bold};
-    font-size: ${theme.fontSizes.fz16};
+    font-size: ${theme.fontSizes.fz14};
     cursor: pointer;
 
     &:hover {
@@ -226,12 +218,12 @@ const S = {
     justify-content: center;
     align-items: center;
     border-radius: ${theme.radius.large};
-    width: 10%;
+    width: 8%;
     height: 5vh;
     background-color: ${theme.colors.primary};
     color: ${theme.colors.white};
     font-weight: ${theme.fontWeights.bold};
-    font-size: ${theme.fontSizes.fz16};
+    font-size: ${theme.fontSizes.fz14};
     cursor: pointer;
 
     &:hover {
@@ -254,7 +246,8 @@ const S = {
     width: 10%;
     height: 5vh;
     background-color: ${theme.colors.lightGray1};
-    color: ${theme.colors.black};
+    color: ${theme.colors.withdraw};
+    font-size: ${theme.fontSizes.fz16};
     border-radius: ${theme.radius.medium};
     cursor: pointer;
     &:hover {
@@ -271,7 +264,8 @@ const S = {
     color: ${theme.colors.black};
     border-radius: ${theme.radius.medium};
     cursor: pointer;
-    font-weight: ${theme.fontWeights.bold};
+    font-size: ${theme.fontSizes.fz24};
+    font-weight: ${theme.fontWeights.medium};
 
     &:hover {
       background-color: ${theme.colors.lightGray1};
@@ -285,6 +279,7 @@ const S = {
     height: 6vh;
     background-color: ${theme.colors.primary};
     color: ${theme.colors.white};
+    font-size: ${theme.fontSizes.fz24};
     border-radius: ${theme.radius.medium};
     cursor: pointer;
     font-weight: ${theme.fontWeights.bold};
