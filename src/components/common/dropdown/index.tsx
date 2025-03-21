@@ -12,7 +12,9 @@ const DropDown = ({
   onSelect,
 }: DropDownProps) => {
   const [view, setView] = useState<boolean>(false);
-  const [currentValue, setCurrentValue] = useState(placeholder);
+  const [currentValue, setCurrentValue] = useState(
+    placeholder || dropDownData[0]
+  );
 
   const handleValue = (data: string) => {
     setCurrentValue(data);

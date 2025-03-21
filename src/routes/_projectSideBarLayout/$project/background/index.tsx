@@ -10,6 +10,7 @@ import ImageUploadIcon from '@/assets/projectIcon/imageUploadIcon.svg?react';
 import DeleteBackgroundIcon from '@/assets/projectIcon/deleteBackground.svg?react';
 import GenerateBackgroundIcon from '@/assets/projectIcon/generateBackground.svg?react';
 import DragImage from '@/components/project-editor/dragImage';
+import useAspectRatioStore from '@/store/useAspectRatioStore';
 
 export const Route = createFileRoute(
   '/_projectSideBarLayout/$project/background/'
@@ -18,9 +19,9 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
+  const { aspectRatio, setAspectRatio } = useAspectRatioStore();
   const [SelectedBackgroundTemplate, setSelectedBackgroundTemplate] =
     useState<Template | null>(null);
-  const [selectAspectRatio, setSelectAspectRatio] = useState('16:9(pc)');
   const [templateImages, setTemplateImages] =
     useState<Template[]>(mockTemplateImage());
 
@@ -64,7 +65,7 @@ function RouteComponent() {
       <S.BackgroundMain>
         {SelectedBackgroundTemplate && (
           <DragImage
-            aspectRatio={selectAspectRatio}
+            aspectRatio={aspectRatio}
             src={SelectedBackgroundTemplate.imageUrl}
             alt={SelectedBackgroundTemplate.name}
             containerRef={backgroundRef}
@@ -74,10 +75,9 @@ function RouteComponent() {
 
       <S.BackgroundToolbar>
         <DropDown
-          placeholder="화면 비율 선택"
           dropDownData={['16:9(pc)', '9:16(mobile)']}
           width="90%"
-          onSelect={(value) => setSelectAspectRatio(value)}
+          onSelect={(value) => setAspectRatio(value)}
         />
         <S.ImageUploadSection>
           <S.LabelSection>
