@@ -18,3 +18,14 @@ export const googleOAuth: OAuthProvider = {
   redirectUri: 'http://localhost:5173/auth/callback/google',
   scope: 'email profile',
 };
+
+export const youtubeOAuth: OAuthProvider = {
+  name: 'youtube',
+  authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+  tokenUrl: 'https://oauth2.googleapis.com/token',
+  clientId: import.meta.env.VITE_YOUTUBE_CLIENT_ID,
+  clientSecret: import.meta.env.VITE_CLIENT_SECRET,
+  redirectUri: `http://localhost:5173/auth/callback/youtube`,
+  scope:
+    'https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.upload',
+};
