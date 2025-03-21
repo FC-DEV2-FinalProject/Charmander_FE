@@ -20,8 +20,10 @@ type StyledProps = {
 
 function RouteComponent() {
   const navigate = useNavigate();
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+
   const [isChecked, setIsChecked] = useState(false);
+  // eslint-disable-next-line no-console
+  console.log(isChecked);
   const [agreements, setAgreements] = useState({
     privacy: false,
     terms: false,

@@ -1,4 +1,3 @@
-import React from 'react';
 import { getAuthorizationUrl } from '@/api/login/oauth-service';
 import { kakaoOAuth } from '@/api/login/oAuth-config';
 import kakao from '@/assets/logo/kakao-logo.png';

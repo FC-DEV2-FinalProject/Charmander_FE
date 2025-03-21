@@ -1,4 +1,3 @@
-import React from 'react';
 import { googleOAuth } from '@/api/login/oAuth-config';
 import google from '@/assets/logo/google-logo.png';
 const GoogleLoginButton = () => {
