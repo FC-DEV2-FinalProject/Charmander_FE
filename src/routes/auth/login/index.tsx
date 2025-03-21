@@ -1,5 +1,5 @@
 import theme from '@/styles/theme';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import styled from 'styled-components';
 import { loginBanner } from '@/mock/mock';
 import logo from '@/assets/logo/logo.png';
@@ -14,6 +14,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { LoginSchema, type LoginSchemaType } from '@/schema/LoginSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { login } from '@/api/login/api';
+import { setTokens } from '@/utils/Tokens';
 export const Route = createFileRoute('/auth/login/')({
   component: RouteComponent,
 });
@@ -21,7 +22,7 @@ export const Route = createFileRoute('/auth/login/')({
 function RouteComponent() {
   const { images } = loginBanner();
   const [isChecked, setIsChecked] = useState(false);
-
+  const navigate = useNavigate();
   const {
     control,
     formState: { errors },
@@ -42,19 +43,13 @@ function RouteComponent() {
     setIsChecked(!isChecked);
   }
 
-// 로그인 API 호출
-const onSubmit = async (data: LoginSchemaType) => {
-  // eslint-disable-next-line no-console
-  console.log(data);
-
-  try {
-      const { accessToken, refreshToken } = await login(data.email, data.password);
-      console.log(accessToken, refreshToken);
-  } catch (error) {
-      console.error('로그인 실패:', error);
-  }
-  
-};
+  const onSubmit = async (data: LoginSchemaType) => {
+    const accessToken = await login(data.email, data.password);
+    if (accessToken) {
+      setTokens(accessToken);
+      navigate({ to: '/dashboard' });
+    }
+  };
 
   return (
     <S.LoginWrapper>
