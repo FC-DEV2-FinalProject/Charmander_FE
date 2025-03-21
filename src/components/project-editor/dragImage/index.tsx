@@ -8,11 +8,7 @@ interface ImageProps {
   src: string;
   alt: string;
   containerRef: React.RefObject<HTMLDivElement | null>;
-}
-
-interface Size {
-  width?: string | null;
-  height?: string | null;
+  isAvatar?: boolean;
 }
 
 interface Position {
@@ -20,16 +16,30 @@ interface Position {
   y: number;
 }
 
-function DragImage({ aspectRatio, src, alt, containerRef }: ImageProps) {
+function DragImage({
+  aspectRatio,
+  src,
+  alt,
+  containerRef,
+  isAvatar,
+}: ImageProps) {
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [dragging, setDragging] = useState<boolean>(false);
   const [resizing, setResizing] = useState<boolean>(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [offset, setOffset] = useState<Position>({ x: 0, y: 0 });
-  const [dimensions, setDimensions] = useState<Size>({
-    width: '100%',
-    height: '100%',
-  });
+
+  const getDimensions = () => {
+    if (isAvatar) {
+      if (aspectRatio === '16:9(pc)') {
+        return { width: '20%', height: '60%' };
+      }
+      return { width: '40%', height: '50%' };
+    }
+    return { width: '100%', height: '100%' };
+  };
+  const [dimensions, setDimensions] = useState(getDimensions());
+
   const imageRef = useRef<HTMLImageElement | null>(null);
   const resizeDirection = useRef<string | null>(null);
 
@@ -156,7 +166,7 @@ function DragImage({ aspectRatio, src, alt, containerRef }: ImageProps) {
       ref={containerRef}
       aspectRatio={aspectRatio}>
       <S.ImageWrapper
-        aspectRatio={aspectRatio}
+        isAvatar={isAvatar}
         width={dimensions.width ?? null}
         height={dimensions.height ?? null}
         style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
@@ -164,6 +174,7 @@ function DragImage({ aspectRatio, src, alt, containerRef }: ImageProps) {
         onFocus={handleFocus}
         onBlur={handleBlur}>
         <S.SelectedBackgroundImage
+          isAvatar={isAvatar}
           ref={imageRef}
           src={src}
           draggable={false}
@@ -215,19 +226,19 @@ const S = {
     overflow: hidden;
   `,
   ImageWrapper: styled.div<{
-    aspectRatio: string;
+    isAvatar: boolean | undefined;
     width: string | null;
     height: string | null;
   }>`
     position: absolute;
     width: ${(props) => props.width};
     height: ${(props) => props.height};
-    aspect-ratio: ${(props) =>
-      props.aspectRatio === '16:9(pc)' ? '16 / 9' : '9 / 16'};
+    aspect-ratio: ${(props) => (props.isAvatar ? '9 / 16' : 'auto')};
   `,
-  SelectedBackgroundImage: styled.img`
+  SelectedBackgroundImage: styled.img<{ isAvatar: boolean | undefined }>`
     width: 100%;
     height: 100%;
+    aspect-ratio: ${(props) => (props.isAvatar ? '9 / 16' : 'auto')};
     object-fit: cover;
     position: absolute;
     cursor: grab;
