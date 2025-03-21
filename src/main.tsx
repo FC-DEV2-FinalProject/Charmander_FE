@@ -1,12 +1,7 @@
 import ReactDOM from 'react-dom/client';
-import { createRouter, RouterProvider } from '@tanstack/react-router';
-
-// 생성된 경로 트리 가져오기
-import { routeTree } from './routeTree.gen';
 import { StrictMode } from 'react';
-
-// 새 라우터 인스턴스 만들기
-const router = createRouter({ routeTree, notFoundMode: 'fuzzy' });
+import App from './App';
+import router from './App';
 
 // 유형 안전성을 위해 라우터 인스턴스 등록
 declare module '@tanstack/react-router' {
@@ -14,14 +9,13 @@ declare module '@tanstack/react-router' {
     router: typeof router;
   }
 }
-
 // Render the app
 const rootElement = document.getElementById('root')!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <App />
     </StrictMode>
   );
 }
