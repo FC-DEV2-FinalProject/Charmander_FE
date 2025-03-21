@@ -3,72 +3,71 @@ import styled from 'styled-components';
 import { useState, ChangeEvent, useEffect } from 'react';
 import {
   SignUpSchemaType,
-  BaseSchema,
   validateEmail,
-  validateNickname,
 } from '@/schema/SignUpSchema';
 import { validateField } from '@/utils/validation';
-import { ZodError } from 'zod';
+import { VerifyEmailEffect } from '@/api/sign-up/api';
 
 type InfoComponentProps = {
-  // eslint-disable-next-line no-unused-vars
+  formData: SignUpSchemaType;
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setIsCheckInfo: (verified: boolean) => void;
+  setFormData: React.Dispatch<React.SetStateAction<SignUpSchemaType>>;
 };
 
-export const InfoComponent = ({ setIsCheckInfo }: InfoComponentProps) => {
-  const [formData, setFormData] = useState<SignUpSchemaType>({
-    nickname: '',
-    email: '',
-    password: '',
-    checkPassword: '',
-  });
-
+export const InfoComponent = ({ formData, onInputChange, setIsCheckInfo }: InfoComponentProps) => {
   const [errors, setErrors] = useState<{
-    nickname?: string;
     email?: string;
+    code?: string;
     password?: string;
     checkPassword?: string;
   }>({});
 
   const [isChecking, setIsChecking] = useState({
-    nickname: false,
     email: false,
   });
 
   const [isVerified, setIsVerified] = useState({
-    nickname: false,
     email: false,
   });
 
+  // 이메일 인증 상태를 추가
+  const [emailVerificationStatus, setEmailVerificationStatus] = useState<'idle' | 'verifying' | 'verified'>('idle');
+
+  // 이메일 확인번호 컴포넌트 표시 상태
+  const [showVerificationCode, setShowVerificationCode] = useState(false);
+
   const [validationStatus, setValidationStatus] = useState({
-    nickname: false,
     email: false,
     password: false,
     checkPassword: false,
   });
 
+  const [checkPassword, setCheckPassword] = useState('');
+
   useEffect(() => {
     const allFieldsValid = Object.values(validationStatus).every(
       (status) => status
     );
-    const allVerified = isVerified.nickname && isVerified.email;
+    const allVerified = isVerified.email;
+    const passwordValid = validationStatus.password && validationStatus.checkPassword;
 
-    // 모든 필드가 유효하고 닉네임과 이메일이 중복 확인된 경우에만 완료
-    setIsCheckInfo(allFieldsValid && allVerified);
+    // 모든 필드가 유효하고 이메일이 인증된 경우에만 완료
+    setIsCheckInfo(allFieldsValid && allVerified && passwordValid);
   }, [validationStatus, isVerified, setIsCheckInfo]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
 
-    if (name === 'nickname' || name === 'email') {
-      setIsVerified((prev) => ({
-        ...prev,
-        [name]: false,
-      }));
+    // 부모 컴포넌트의 formData 업데이트 (checkPassword 제외)
+    if (name !== 'checkPassword') {
+      onInputChange(e);
+    }
+
+    // 이메일이 변경되면 인증 상태 초기화
+    if (name === 'email') {
+      setEmailVerificationStatus('idle');
+      setShowVerificationCode(false);
     }
 
     const validationResult = validateField(name, value, formData);
@@ -77,11 +76,11 @@ export const InfoComponent = ({ setIsCheckInfo }: InfoComponentProps) => {
       [name]: validationResult.error,
     }));
 
-    // 해당 필드의 유효성 검사 상태 업데이트
-    if (name === 'password' && formData.checkPassword) {
+    // 비밀번호 유효성 검사
+    if (name === 'password' && checkPassword) {
       const checkPasswordResult = validateField(
         'checkPassword',
-        formData.checkPassword,
+        checkPassword,
         {
           ...formData,
           password: value,
@@ -96,7 +95,7 @@ export const InfoComponent = ({ setIsCheckInfo }: InfoComponentProps) => {
       setValidationStatus((prev) => ({
         ...prev,
         checkPassword:
-          !checkPasswordResult.error && Boolean(formData.checkPassword),
+          !checkPasswordResult.error && Boolean(checkPassword),
       }));
     }
 
@@ -106,54 +105,26 @@ export const InfoComponent = ({ setIsCheckInfo }: InfoComponentProps) => {
     }));
   };
 
-  // 닉네임 중복 확인
-  const handleNicknameCheck = async () => {
-    if (!formData.nickname) {
-      setErrors((prev) => ({
-        ...prev,
-        nickname: '닉네임을 입력해주세요',
-      }));
-      return;
-    }
+  const handleCheckPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCheckPassword(value);
 
-    setIsChecking((prev) => ({ ...prev, nickname: true }));
+    const validationResult = validateField('checkPassword', value, {
+      ...formData,
+      password: formData.password,
+    });
 
-    try {
-      // baseSchema를 사용하여 닉네임 부분만 유효성 검사
-      await BaseSchema.pick({ nickname: true }).parseAsync({
-        nickname: formData.nickname,
-      });
+    setErrors((prev) => ({
+      ...prev,
+      checkPassword: validationResult.error,
+    }));
 
-      // 닉네임 중복 검사 로직
-      const result = await validateNickname(formData.nickname);
-      if (result.success) {
-        setErrors((prev) => ({ ...prev, nickname: undefined }));
-        setValidationStatus((prev) => ({ ...prev, nickname: true }));
-        setIsVerified((prev) => ({ ...prev, nickname: true }));
-        alert('사용 가능한 닉네임입니다.');
-      } else {
-        setErrors((prev) => ({ ...prev, nickname: result.error as string }));
-        setValidationStatus((prev) => ({ ...prev, nickname: false }));
-        setIsVerified((prev) => ({ ...prev, nickname: false }));
-      }
-    } catch (error) {
-      const zodError = error as {
-        formErrors?: { fieldErrors?: { nickname?: string[] } };
-      };
-      if (zodError?.formErrors?.fieldErrors?.nickname?.[0]) {
-        setErrors((prev) => ({
-          ...prev,
-          nickname: zodError.formErrors!.fieldErrors!.nickname![0],
-        }));
-        setValidationStatus((prev) => ({ ...prev, nickname: false }));
-        setIsVerified((prev) => ({ ...prev, nickname: false }));
-      }
-    } finally {
-      setIsChecking((prev) => ({ ...prev, nickname: false }));
-    }
+    setValidationStatus((prev) => ({
+      ...prev,
+      checkPassword: !validationResult.error && Boolean(value),
+    }));
   };
 
-  // 이메일 중복 확인
   const handleEmailCheck = async () => {
     if (!formData.email) {
       setErrors((prev) => ({
@@ -164,80 +135,91 @@ export const InfoComponent = ({ setIsCheckInfo }: InfoComponentProps) => {
     }
 
     setIsChecking((prev) => ({ ...prev, email: true }));
-
     try {
-      // baseSchema를 사용하여 이메일 부분만 유효성 검사
-      await BaseSchema.pick({ email: true }).parseAsync({
-        email: formData.email,
-      });
-
-      // 이메일 중복 검사 로직
       const result = await validateEmail(formData.email);
+
       if (result.success) {
         setErrors((prev) => ({ ...prev, email: undefined }));
         setValidationStatus((prev) => ({ ...prev, email: true }));
         setIsVerified((prev) => ({ ...prev, email: true }));
-        alert('사용 가능한 이메일입니다.');
+
+        setShowVerificationCode(true);
       } else {
         setErrors((prev) => ({ ...prev, email: result.error as string }));
         setValidationStatus((prev) => ({ ...prev, email: false }));
         setIsVerified((prev) => ({ ...prev, email: false }));
       }
-    } catch (error: unknown) {
-      if (error instanceof ZodError) {
-        const emailErrors = error.formErrors?.fieldErrors?.email;
-        if (emailErrors && emailErrors.length > 0) {
-          setErrors((prev) => ({
-            ...prev,
-            email: emailErrors[0],
-          }));
-          setValidationStatus((prev) => ({ ...prev, email: false }));
-          setIsVerified((prev) => ({ ...prev, email: false }));
-        }
-      }
+    } catch (error) {
+      console.error('이메일 검증 중 오류 발생:', error);
+      setErrors((prev) => ({
+        ...prev,
+        email: '알 수 없는 오류가 발생했습니다',
+      }));
+      setValidationStatus((prev) => ({ ...prev, email: false }));
+      setIsVerified((prev) => ({ ...prev, email: false }));
+    } finally {
+      setIsChecking((prev) => ({ ...prev, email: false }));
     }
+  };
+
+  const handleVerifyEmail = async (email: string, number: string) => {
+    setEmailVerificationStatus('verifying');
+
+    try {
+      const result = await VerifyEmailEffect(email, number);
+
+      if (result.success) {
+        setEmailVerificationStatus('verified');
+        setIsVerified((prev) => ({ ...prev, email: true }));
+        setErrors((prev) => ({ ...prev, code: undefined }));
+        setShowVerificationCode(false);
+      } else {
+        setEmailVerificationStatus('idle');
+        setErrors((prev) => ({ ...prev, code: result.message }));
+      }
+    } catch (error) {
+      setEmailVerificationStatus('idle');
+      setErrors((prev) => ({ ...prev, code: '인증 처리 중 오류가 발생했습니다' }));
+      console.error('이메일 인증 처리 중 오류:', error);
+    }
+  };
+
+  const getVerifyButtonText = () => {
+    if (emailVerificationStatus === 'verifying') {
+      return '인증 중';
+    } else if (emailVerificationStatus === 'verified') {
+      return '인증 완료';
+    } else {
+      return '이메일 인증';
+    }
+  };
+
+  const VerifyButton = ({ onClick, disabled, children }: { onClick: () => void; disabled?: boolean; children: React.ReactNode }) => {
+    return (
+      <S.VerifyButton onClick={onClick} disabled={disabled}>
+        {children}
+      </S.VerifyButton>
+    );
   };
   return (
     <>
       <h2>회원정보를 설정해주세요</h2>
       <S.InfoWrapper>
         <S.InfoSetupContainer>
-          <S.InputSet>
-            <S.Row>
-              <S.Label>닉네임</S.Label>
-              <S.Duplicate
-                onClick={handleNicknameCheck}
-                disabled={isChecking.nickname}>
-                {isChecking.nickname
-                  ? '확인 중...'
-                  : isVerified.nickname
-                    ? '확인 완료'
-                    : '중복 확인'}
-              </S.Duplicate>
-            </S.Row>
-            <S.Input
-              type="text"
-              name="nickname"
-              value={formData.nickname}
-              onChange={handleInputChange}
-              placeholder="닉네임을 입력해주세요"
-            />
-            {errors.nickname && (
-              <S.ErrorMessage>{errors.nickname}</S.ErrorMessage>
-            )}
-          </S.InputSet>
 
           <S.InputSet>
             <S.Row>
               <S.Label>이메일</S.Label>
               <S.Duplicate
                 onClick={handleEmailCheck}
-                disabled={isChecking.email}>
-                {isChecking.email
-                  ? '확인 중...'
-                  : isVerified.email
-                    ? '인증 완료'
-                    : '이메일 인증'}
+                disabled={isChecking.email || emailVerificationStatus === 'verifying' || emailVerificationStatus === 'verified'}>
+                {emailVerificationStatus === 'verified' 
+                  ? '인증 완료' 
+                  : emailVerificationStatus === 'verifying'
+                    ? '인증 중'
+                    : isChecking.email
+                      ? '확인 중...'
+                      : '이메일 인증'}
               </S.Duplicate>
             </S.Row>
             <S.Input
@@ -246,9 +228,34 @@ export const InfoComponent = ({ setIsCheckInfo }: InfoComponentProps) => {
               value={formData.email}
               onChange={handleInputChange}
               placeholder="이메일을 입력해주세요"
+              disabled={emailVerificationStatus === 'verified'}
             />
             {errors.email && <S.ErrorMessage>{errors.email}</S.ErrorMessage>}
           </S.InputSet>
+
+          {/* 이메일 인증 버튼을 누른 후에만 확인번호 입력 필드 표시 */}
+          {showVerificationCode && emailVerificationStatus !== 'verified' && (
+            <S.InputSet>
+              <S.Row>
+                <S.Label>이메일 확인 번호</S.Label>
+              </S.Row>
+              <S.CodeVerificationContainer>
+                <S.Input
+                  type="text"
+                  name="code"
+                  value={formData.code}
+                  onChange={handleInputChange}
+                  placeholder="이메일 확인 번호를 입력해주세요"
+                />
+                <VerifyButton 
+                  onClick={() => handleVerifyEmail(formData.email, formData.code)}
+                  disabled={emailVerificationStatus === 'verifying'}>
+                  {getVerifyButtonText()}
+                </VerifyButton>
+              </S.CodeVerificationContainer>
+              {errors.code && <S.ErrorMessage>{errors.code}</S.ErrorMessage>}
+            </S.InputSet>
+          )}
 
           <S.InputSet>
             <S.Row>
@@ -273,8 +280,8 @@ export const InfoComponent = ({ setIsCheckInfo }: InfoComponentProps) => {
             <S.Input
               type="password"
               name="checkPassword"
-              value={formData.checkPassword}
-              onChange={handleInputChange}
+              value={checkPassword}
+              onChange={handleCheckPasswordChange}
               placeholder="다시 한번 비밀번호을 입력해주세요"
             />
             {errors.checkPassword && (
@@ -299,7 +306,7 @@ const S = {
   InfoSetupContainer: styled.div`
     width: 75%;
     height: auto;
-    min-height: 49vh;
+    min-height: 43vh;
     padding: 2vh 1.5vw;
     background-color: ${theme.colors.background};
     border-radius: ${theme.radius.medium};
@@ -345,6 +352,34 @@ const S = {
       cursor: not-allowed;
     }
   `,
+
+   CodeVerificationContainer: styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+`,
+ VerifyButton: styled.button`
+  padding: 8px 16px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: #357abD;
+  }
+
+  &:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  `,
+
   Row: styled.div`
     display: flex;
     justify-content: space-between;
