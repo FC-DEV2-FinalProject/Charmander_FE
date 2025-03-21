@@ -95,3 +95,33 @@ export const getGoogleUserProfile = async (
     throw new Error('구글 프로필 정보를 가져오는 중 오류가 발생했습니다.');
   }
 };
+
+export const getYoutubeChannelInfo = async (
+  token: OAuthToken
+): Promise<UserProfile> => {
+  try {
+    const response = await axios.get(
+      'https://www.googleapis.com/youtube/v3/channels',
+      {
+        params: {
+          part: 'snippet',
+          mine: true,
+        },
+        headers: {
+          Authorization: `Bearer ${token.access_token}`,
+        },
+      }
+    );
+
+    const channel = response.data.items[0];
+    return {
+      id: channel.id,
+      name: channel.snippet.title,
+      picture: channel.snippet.thumbnails.default.url,
+      provider: 'youtube',
+    };
+  } catch (error) {
+    console.error('유튜브 채널 정보 요청 오류:', error);
+    throw new Error('유튜브 채널 정보를 가져오는 중 오류가 발생했습니다.');
+  }
+};

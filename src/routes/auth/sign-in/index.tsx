@@ -40,6 +40,7 @@ function RouteComponent() {
     privacy: false,
     terms: false,
     marketing: false,
+    youtube: false,
   });
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -48,6 +49,7 @@ function RouteComponent() {
     privacy: boolean;
     terms: boolean;
     marketing: boolean;
+    youtube: boolean;
   }) {
     setAgreements(newAgreements);
   }
