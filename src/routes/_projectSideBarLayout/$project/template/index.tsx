@@ -71,24 +71,21 @@ function RouteComponent() {
 const S = {
   TemplateContainer: styled.div`
     width: 100%;
-    height: calc(100vh - 180px);
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: ${theme.colors.primary};
-    padding: ${theme.spacing.xl};
-    gap: ${theme.spacing.lg};
     border-radius: ${theme.radius.large};
   `,
   TemplateMain: styled.div`
     background-color: ${theme.colors.white};
     width: 70%;
-    height: 100%;
+    height: calc(100vh - 180px);
     display: flex;
     justify-content: center;
     align-items: center;
     padding: ${theme.spacing.sm};
-    border-radius: ${theme.radius.large};
+    border: 1px solid ${theme.colors.border1};
+    border-radius: ${theme.radius.xxlarge} 0 0 ${theme.radius.xxlarge};
   `,
   SelectedTemplateImage: styled.img`
     width: 100%;
@@ -100,13 +97,18 @@ const S = {
   TemplateToolbar: styled.div`
     background-color: ${theme.colors.white};
     width: 30%;
-    height: 100%;
+    height: calc(100vh - 180px);
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: ${theme.spacing.lg};
     gap: ${theme.spacing.xl};
-    border-radius: ${theme.radius.large};
+    border: 1px solid ${theme.colors.border1};
+    border-radius: 0 ${theme.radius.xxlarge} ${theme.radius.xxlarge} 0;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   `,
   TemplateList: styled.div`
     width: 90%;
