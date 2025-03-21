@@ -1,0 +1,53 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "title": "기본 프로젝트",
+      "updatedAt": "2024-03-01T12:00:00Z",
+      "isLoaded": true,
+      "progress": 100
+    },
+    {
+      "id": 2,
+      "title": "기본 프로젝트",
+      "updatedAt": "2024-03-05T15:30:00Z",
+      "isLoaded": false,
+      "progress": 45
+    },
+    {
+      "id": 3,
+      "title": "기본 프로젝트",
+      "updatedAt": "2024-03-05T15:30:00Z",
+      "isLoaded": false,
+      "progress": 45
+    },
+    {
+      "id": 4,
+      "title": "기본 프로젝트",
+      "updatedAt": "2024-03-05T15:30:00Z",
+      "isLoaded": false,
+      "progress": 45
+    },
+    {
+      "id": 5,
+      "title": "기본 프로젝트",
+      "updatedAt": "2024-03-05T15:30:00Z",
+      "isLoaded": false,
+      "progress": 45
+    },
+    {
+      "id": 6,
+      "title": "기본 프로젝트",
+      "updatedAt": "2024-03-05T15:30:00Z",
+      "isLoaded": false,
+      "progress": 45
+    },
+    {
+      "id": 7,
+      "title": "기본 프로젝트",
+      "updatedAt": "2024-03-05T15:30:00Z",
+      "isLoaded": false,
+      "progress": 45
+    }
+  ]
+}
