@@ -23,6 +23,7 @@ const theme = {
     border1: '#E8E8E8',
     border2: '#EAF0FD',
     border3: '#BCBCBC',
+    loginTitle: '#484554',
   },
 
   // font-size

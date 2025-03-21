@@ -6,41 +6,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import type { BannerSliderType } from '@/types/types';
 
-type ArrowProps = {
-  className?: string;
-  style?: React.CSSProperties;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  currentSlide?: number;
-  slideCount?: number;
-};
-
 function BannerSlider({ images }: BannerSliderType) {
-  const PrevArrow = (props: ArrowProps) => {
-    const { className, onClick } = props;
-    return (
-      <button
-        className={className}
-        onClick={onClick}
-        type="button"
-        aria-label="Previous">
-        Previous
-      </button>
-    );
-  };
-
-  const NextArrow = (props: ArrowProps) => {
-    const { className, onClick } = props;
-    return (
-      <button
-        className={className}
-        onClick={onClick}
-        type="button"
-        aria-label="Next">
-        Next
-      </button>
-    );
-  };
-
   const settings = {
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -52,8 +18,7 @@ function BannerSlider({ images }: BannerSliderType) {
     autoplaySpeed: 5000,
     pauseOnHover: true,
     draggable: true,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
+    arrows: false,
     customPaging: function () {
       return <div className="custom-dot"></div>;
     },
@@ -86,7 +51,6 @@ const S = {
   SliderContainer: styled.div`
     width: 100%;
     height: 100%;
-    background-color: ${theme.colors.primary};
     overflow: visible;
     position: relative;
 
@@ -105,45 +69,34 @@ const S = {
       position: absolute;
       display: flex !important;
       justify-content: flex-start;
-      width: 100%;
+      width: 5vw;
       padding: 0;
       list-style: none;
       text-align: left;
+      gap: 5%;
     }
 
     .custom-dots li {
-      position: relative;
-      display: inline-block;
-      width: 2vw;
+      flex-grow: 0.5;
       height: 0.8vh;
       cursor: pointer;
-      margin-right: 1.5vw;
+      transition: flex-grow 0.3s ease;
     }
 
     .custom-dots li .custom-dot {
       width: 100%;
       height: 100%;
       background-color: ${theme.colors.lightGray3};
-      border-radius: 2px;
+      border-radius: ${theme.radius.large};
       transition: all 0.3s ease;
     }
 
+    .custom-dots li.slick-active {
+      flex-grow: 2;
+    }
+
     .custom-dots li.slick-active .custom-dot {
-      width: 3vw;
       background-color: ${theme.colors.lightGray2};
-    }
-
-    .slick-prev,
-    .slick-next {
-      z-index: 10;
-    }
-
-    .slick-prev {
-      left: 10px;
-    }
-
-    .slick-next {
-      right: 10px;
     }
 
     img {
