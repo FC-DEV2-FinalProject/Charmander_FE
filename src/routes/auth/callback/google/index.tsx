@@ -31,7 +31,7 @@ function RouteComponent() {
         localStorage.setItem('userProfile', JSON.stringify(response.data.user));
         localStorage.setItem('token', response.data.token);
 
-        navigate({ to: '/auth/sign-in' });
+        navigate({ to: '/auth/sign-up/sns' });
       } catch {
         setError('로그인 처리 중 오류가 발생했습니다.');
         setLoading(false);
