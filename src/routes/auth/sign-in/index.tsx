@@ -12,6 +12,8 @@ import { VscTriangleLeft } from 'react-icons/vsc';
 import AgreeComponent from '@/components/auth/sign-in/agreement';
 import PhoneComponent from '@/components/auth/sign-in/phone';
 import InfoComponent from '@/components/auth/sign-in/info';
+import { SignUpSchemaType } from '@/schema/SignUpSchema';
+import { registerUser } from '@/api/sign-up/api';
 
 export const Route = createFileRoute('/auth/sign-in/')({
   component: RouteComponent,
@@ -26,20 +28,30 @@ type StyledProps = {
 
 function RouteComponent() {
   const navigate = useNavigate();
+
   const [isChecked, setIsChecked] = useState(false);
   const [isPhoned, setIsPhoned] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [isCheckPhone, setIsCheckPhone] = useState(false);
   const [isCheckInfo, setIsCheckInfo] = useState(false);
+  const [formData, setFormData] = useState<SignUpSchemaType>({
+    nickname: '',
+    email: '',
+    password: '',
+    code: '',
+    name: '',
+    phone: '',
+});
+
   // eslint-disable-next-line no-console
   console.log(isChecked, isPhoned, isLocked);
-  const [requiredAgreementsChecked, setRequiredAgreementsChecked] =
-    useState(false);
-
+  
+  const [requiredAgreementsChecked, setRequiredAgreementsChecked] = useState(false);
   const [agreements, setAgreements] = useState({
     privacy: false,
     terms: false,
     marketing: false,
+    youtube: false,
   });
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -48,11 +60,20 @@ function RouteComponent() {
     privacy: boolean;
     terms: boolean;
     marketing: boolean;
+    youtube: boolean;
   }) {
     setAgreements(newAgreements);
   }
 
-  const goToNext = () => {
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }
+
+  const goToNext = async () => {
     if (currentStep === 0 && requiredAgreementsChecked) {
       setCurrentStep(1);
       setIsPhoned(true);
@@ -60,7 +81,18 @@ function RouteComponent() {
       setCurrentStep(2);
       setIsLocked(true);
     } else if (currentStep === 2 && isCheckInfo) {
-      navigate({ to: '/auth/sign-up/finish' });
+      console.log("Submitting form data:", formData);
+      try {
+        const result = await registerUser(formData);
+        if (result.success) {
+          navigate({ to: '/auth/sign-up/finish' });
+        } else {
+          console.error(result.error)
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+
+      }
     }
   };
 
@@ -97,10 +129,24 @@ function RouteComponent() {
         />
       );
     } else if (currentStep === 1) {
-      return <PhoneComponent setIsCheckPhone={handlePhoneVerification} />;
+      return (
+        <PhoneComponent
+          formData={formData}
+          onInputChange={handleInputChange}
+          setIsCheckPhone={handlePhoneVerification}
+        />
+      );
     } else if (currentStep === 2) {
-      return <InfoComponent setIsCheckInfo={handleInfoVerification} />;
+      return (
+        <InfoComponent
+          formData={formData}
+          onInputChange={handleInputChange}
+          setIsCheckInfo={handleInfoVerification}
+          setFormData={setFormData} // Pass setFormData to InfoComponent
+        />
+      );
     }
+    return null;
   };
 
   const renderButtons = () => {
@@ -110,7 +156,8 @@ function RouteComponent() {
           $inGroup={false}
           onClick={goToNext}
           disabled={!requiredAgreementsChecked}
-          $isActive={requiredAgreementsChecked}>
+          $isActive={requiredAgreementsChecked}
+        >
           <p>다음</p>
         </S.NextButtonContainer>
       );
@@ -127,7 +174,8 @@ function RouteComponent() {
             disabled={
               (currentStep === 1 && !isCheckPhone) ||
               (currentStep === 2 && !isCheckInfo)
-            }>
+            }
+          >
             <p>{currentStep === 2 ? '완료' : '다음'}</p>
           </S.NextButtonContainer>
         </S.ButtonGroup>

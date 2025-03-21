@@ -309,11 +309,17 @@ const S = {
   `,
 
   Content: styled.main`
+    position: relative;
     background-color: #f7f8fa;
     overflow: auto;
   `,
 
   ContentTitle: styled.h2`
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    width: 100%;
     padding: 25px;
     background-color: ${({ theme }) => theme.colors.white};
     font-size: ${({ theme }) => theme.fontSizes.fz18};

@@ -1,5 +1,6 @@
 import { OAuthProvider } from '@/types/types';
 
+
 // 로그인 URL 생성
 export const getAuthorizationUrl = (provider: OAuthProvider): string => {
   const params = new URLSearchParams({
