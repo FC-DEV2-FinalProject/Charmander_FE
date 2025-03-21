@@ -1,21 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
 import { z } from 'zod';
+import {checkEmailEffect } from '@/api/sign-up/api';
 
-async function checkNicknameDuplicate(nickname: string): Promise<boolean> {
-  // 닉네임 중복 API 호출 구현 예정
-  return false;
-}
-
-async function checkEmailDuplicate(email: string): Promise<boolean> {
-  // 이메일 중복 API 호출 구현 예정
-  return false;
-}
 
 export type SignUpSchemaType = {
+  code: string;
   nickname: string;
   email: string;
   password: string;
-  checkPassword: string;
+  name?: string | undefined;
+  phone?: string | undefined;
 };
 
 export const BaseSchema = z.object({
@@ -41,33 +35,6 @@ export const SignUpSchema = BaseSchema.refine(
   }
 );
 
-export const validateNickname = async (nickname: string) => {
-  try {
-    const result = BaseSchema.pick({ nickname: true }).safeParse({ nickname });
-    if (!result.success) {
-      const formattedError = result.error.format();
-      return {
-        success: false,
-        error:
-          formattedError.nickname?._errors[0] ||
-          '닉네임 형식이 올바르지 않습니다',
-      };
-    }
-
-    const isDuplicate = await checkNicknameDuplicate(nickname);
-    if (isDuplicate) {
-      return {
-        success: false,
-        error: '이미 사용 중인 닉네임입니다',
-      };
-    }
-
-    return { success: true, error: null };
-  } catch (error) {
-    return { success: false, error: '알 수 없는 오류가 발생했습니다' };
-  }
-};
-
 export const validateEmail = async (email: string) => {
   try {
     const result = BaseSchema.pick({ email: true }).safeParse({ email });
@@ -80,15 +47,8 @@ export const validateEmail = async (email: string) => {
       };
     }
 
-    const isDuplicate = await checkEmailDuplicate(email);
-    if (isDuplicate) {
-      return {
-        success: false,
-        error: '이미 가입된 이메일입니다',
-      };
-    }
-
-    return { success: true, error: null };
+    const code = await checkEmailEffect(email);
+    return { success: true, error: null, code: code };
   } catch (error) {
     return { success: false, error: '알 수 없는 오류가 발생했습니다' };
   }
@@ -124,6 +84,7 @@ export const validateSignUpSchema = async (data: SignUpSchemaType) => {
       return { success: false, error: formResult.error.format() };
     }
 
+    /*
     const nicknameResult = await checkNicknameDuplicate(data.nickname);
     if (nicknameResult) {
       return {
@@ -143,6 +104,7 @@ export const validateSignUpSchema = async (data: SignUpSchemaType) => {
         },
       };
     }
+    */
 
     return { success: true, error: null };
   } catch (error) {
@@ -152,6 +114,52 @@ export const validateSignUpSchema = async (data: SignUpSchemaType) => {
     return { success: false, error: '알 수 없는 오류가 발생했습니다' };
   }
 };
+
+export const validateField = (
+  name: string,
+  value: string,
+  formData: { password: string; [key: string]: string }
+) => {
+  switch (name) {
+    case 'nickname':
+      try {
+        BaseSchema.pick({ nickname: true }).parse({ nickname: value });
+        return { error: undefined };
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return { error: error.errors[0]?.message || '닉네임 형식이 올바르지 않습니다' };
+        }
+        return { error: '알 수 없는 오류가 발생했습니다' };
+      }
+    case 'email':
+      try {
+        BaseSchema.pick({ email: true }).parse({ email: value });
+        return { error: undefined };
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return { error: error.errors[0]?.message || '이메일 형식이 올바르지 않습니다' };
+        }
+        return { error: '알 수 없는 오류가 발생했습니다' };
+      }
+    case 'password':
+      try {
+        BaseSchema.pick({ password: true }).parse({ password: value });
+        return { error: undefined };
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return { error: error.errors[0]?.message || '비밀번호 형식이 올바르지 않습니다' };
+        }
+        return { error: '알 수 없는 오류가 발생했습니다' };
+      }
+    case 'checkPassword':
+      return value === formData.password
+        ? { error: undefined }
+        : { error: '비밀번호가 일치하지 않습니다' };
+    default:
+      return { error: undefined };
+  }
+};
+
 
 export const validateLoginSchema = async (data: SignUpSchemaType) => {
   return validateSignUpSchema(data);
