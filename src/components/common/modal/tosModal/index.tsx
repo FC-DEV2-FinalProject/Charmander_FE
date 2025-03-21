@@ -295,7 +295,7 @@ const S = {
 
   YoutubeEmbed: styled.div`
     width: 100%;
-    height: 40vh;
+    height: 35vh;
     background-color: ${theme.colors.background};
     display: flex;
     justify-content: center;
@@ -315,7 +315,7 @@ const S = {
   `,
 
   YoutubeImg: styled.div`
-    width: 30%;
+    width: 20%;
     height: auto;
     border-radius: ${theme.radius.circle};
 
