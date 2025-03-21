@@ -13,6 +13,7 @@ import LinkButton from '@/components/common/button/linkButton';
 import { useForm, Controller } from 'react-hook-form';
 import { LoginSchema, type LoginSchemaType } from '@/schema/LoginSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { login } from '@/api/login/api';
 export const Route = createFileRoute('/auth/login/')({
   component: RouteComponent,
 });
@@ -41,11 +42,19 @@ function RouteComponent() {
     setIsChecked(!isChecked);
   }
 
-  // 로그인 API 호출
-  const onSubmit = (data: LoginSchemaType) => {
-    // eslint-disable-next-line no-console
-    console.log(data);
-  };
+// 로그인 API 호출
+const onSubmit = async (data: LoginSchemaType) => {
+  // eslint-disable-next-line no-console
+  console.log(data);
+
+  try {
+      const { accessToken, refreshToken } = await login(data.email, data.password);
+      console.log(accessToken, refreshToken);
+  } catch (error) {
+      console.error('로그인 실패:', error);
+  }
+  
+};
 
   return (
     <S.LoginWrapper>

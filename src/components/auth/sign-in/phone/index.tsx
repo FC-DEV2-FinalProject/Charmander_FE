@@ -3,21 +3,27 @@ import styled from 'styled-components';
 import { useState, ChangeEvent } from 'react';
 
 type PhoneComponentProps = {
-  // eslint-disable-next-line no-unused-vars
+  formData: {
+    name?: string | undefined;
+    phone?: string | undefined;
+  };
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setIsCheckPhone: (verified: boolean) => void;
 };
 
-export const PhoneComponent = ({ setIsCheckPhone }: PhoneComponentProps) => {
+export const PhoneComponent = ({ onInputChange, setIsCheckPhone }: PhoneComponentProps) => {
   const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phone, setPhone] = useState('');
   const [isVerified, setIsVerified] = useState(false);
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
+    onInputChange(e);
   };
 
   const handlePhoneChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPhoneNumber(e.target.value);
+    setPhone(e.target.value);
+    onInputChange(e);
   };
 
   const handleVerification = () => {
@@ -36,6 +42,7 @@ export const PhoneComponent = ({ setIsCheckPhone }: PhoneComponentProps) => {
             </S.Row>
             <S.Input
               type="text"
+              name="name"
               value={name}
               onChange={handleNameChange}
               placeholder="이름을 입력해주세요"
@@ -48,7 +55,8 @@ export const PhoneComponent = ({ setIsCheckPhone }: PhoneComponentProps) => {
             </S.Row>
             <S.Input
               type="text"
-              value={phoneNumber}
+              name="phone"
+              value={phone}
               onChange={handlePhoneChange}
               placeholder="휴대폰 번호를 입력해주세요"
               maxLength={11}
