@@ -1,11 +1,10 @@
-import { kakaoOAuth } from '@/api/login/oAuth-config';
-import { getKakaoUserProfile, getToken } from '@/api/login/oauth-service';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   createFileRoute,
   useLocation,
   useNavigate,
 } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
 
 export const Route = createFileRoute('/auth/callback/kakao/')({
   component: RouteComponent,
@@ -30,17 +29,13 @@ function RouteComponent() {
           return;
         }
 
-        // 인증 코드로 토큰 요청
-        const token = await getToken(code, kakaoOAuth);
+        const response = await axios.post('/api/auth/kakao', { code });
 
-        // 토큰으로 사용자 정보 요청
-        const userProfile = await getKakaoUserProfile(token);
+        localStorage.setItem('userProfile', JSON.stringify(response.data.user));
+        localStorage.setItem('token', response.data.token);
 
-        // 사용자 정보 저장 (실제로는 상태 관리 라이브러리 또는 컨텍스트 사용 권장)
-        localStorage.setItem('userProfile', JSON.stringify(userProfile));
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('카카오 로그인 처리 중 오류:', error);
+        navigate({ to: '/auth/sign-in' });
+      } catch {
         setError('로그인 처리 중 오류가 발생했습니다.');
         setLoading(false);
       }
@@ -74,7 +69,9 @@ function RouteComponent() {
           height: '100vh',
         }}>
         <p style={{ color: 'red' }}>{error}</p>
-        <button>로그인 페이지로 돌아가기</button>
+        <button onClick={() => navigate({ to: '/auth/login' })}>
+          로그인 페이지로 돌아가기
+        </button>
       </div>
     );
   }
