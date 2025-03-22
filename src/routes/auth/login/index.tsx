@@ -130,7 +130,7 @@ function RouteComponent() {
               <GoogleLoginButton />
             </S.LoginColumn>
             <S.LoginRow>
-              계정이 없나요?
+              <span>계정이 없나요?</span>
               <Link to="/auth/sign-in">
                 <p>회원가입</p>
               </Link>
@@ -148,29 +148,31 @@ const S = {
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 100vh;
+    height: auto;
   `,
   LoginContainer: styled.div`
     display: flex;
     flex-direction: row;
-    width: 90%;
-    height: 80vh;
+    width: 100%;
+    height: 100vh;
   `,
   LoginLeftContainer: styled.div`
-    width: 45%;
-    height: 88%;
+    width: 48%;
+    height: 91%;
     background-color: ${theme.colors.background1};
     border-radius: ${theme.radius.large};
+    position: relative;
+    margin-left: 2%;
+    margin-top: 2%;
+
     padding-top: 5%;
     padding-left: 5%;
-    position: relative;
   `,
   LoginForm: styled.div`
-    margin-top: 30%;
+    margin-top: 20%;
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 1vh;
   `,
   LoginTitleContainer: styled.div`
     margin-top: 7vh;
@@ -179,12 +181,14 @@ const S = {
     overflow-wrap: break-word;
     h2 {
       font-size: ${theme.fontSizes.fz24};
+      color: ${theme.colors.loginTitle};
       font-weight: ${theme.fontWeights.bold};
       margin-bottom: 2vh;
     }
 
     p {
-      font-size: ${theme.fontSizes.fz18};
+      font-size: ${theme.fontSizes.fz14};
+      color: ${theme.colors.loginTitle};
     }
   `,
   LoginRightContainer: styled.div`
@@ -195,6 +199,7 @@ const S = {
     height: 100%;
     background-color: ${theme.colors.white};
     font-size: ${theme.fontSizes.fz16};
+    padding-top: 10vh;
   `,
   LoginRightFormContainer: styled.div`
     display: flex;
@@ -213,7 +218,7 @@ const S = {
     top: 0;
 
     img {
-      width: 80%;
+      width: 60%;
     }
   `,
   ErrorContainer: styled.div`
@@ -229,11 +234,13 @@ const S = {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    color: ${theme.colors.darkGray3};
+    font-size: ${theme.fontSizes.fz16};
 
     p {
       cursor: pointer;
-      color: blue;
-      font-weight: ${theme.fontWeights.medium};
+      color: ${theme.colors.secondary2};
+      font-weight: ${theme.fontWeights.bold};
     }
   `,
 
@@ -246,9 +253,15 @@ const S = {
     width: 100%;
     margin-top: auto;
 
+    span {
+      color: ${theme.colors.darkGray2};
+
+      font-weight: ${theme.fontWeights.regular};
+    }
+
     p {
       cursor: pointer;
-      color: blue;
+      color: ${theme.colors.secondary2};
       font-weight: ${theme.fontWeights.medium};
     }
   `,
@@ -259,14 +272,33 @@ const S = {
     flex-direction: column;
     min-width: 100%;
     gap: 1vh;
+    position: relative;
+
     span {
-      margin-bottom: 2vh;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      text-align: center;
+      font-weight: ${theme.fontWeights.regular};
+      font-size: ${theme.fontSizes.fz16};
+      color: ${theme.colors.darkGray2};
+      margin-bottom: 2.5vh;
+      position: relative;
+    }
+
+    span::before,
+    span::after {
+      content: '';
+      flex-grow: 1;
+      height: 1px;
+      background-color: ${theme.colors.lightGray1};
+      margin: 0 10px;
     }
   `,
 
   LoginMaxWidth: styled.div`
     min-width: 100%;
-    margin-top: 1vh;
+    margin-top: 3vh;
   `,
   LoginTempContainer: styled.div`
     width: 100%;

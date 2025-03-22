@@ -339,8 +339,8 @@ const S = {
   AllAgreeContainer: styled.div`
     display: flex;
     align-items: center;
-    width: 75%;
-    padding: 1.39vh 1vw;
+    width: 80%;
+    padding: 1.3vh 2vw;
     background-color: ${theme.colors.background};
     cursor: pointer;
 
@@ -362,7 +362,7 @@ const S = {
   SelectionItem: styled.div<StyledProps>`
     display: flex;
     align-items: center;
-    padding: 1.39vh 1vw;
+    padding: 1.39vh 2.2vw;
     cursor: pointer;
 
     img {
