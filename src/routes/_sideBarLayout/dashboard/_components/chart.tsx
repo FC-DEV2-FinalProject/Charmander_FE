@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import media from '@/styles/media';
-import YoutubeIcon from '@/assets/icons/icon-youtube.png';
+import YoutubeIcon from '@/assets/icons/icon-youtube1.png';
 
 export const Route = createFileRoute(
   '/_sideBarLayout/dashboard/_components/chart'
@@ -136,11 +136,20 @@ function Chart() {
       ) : (
         <>
           <S.NoneChart>
+            <S.Backdrop />
             <S.NoneChartContent>
-              <p>
+              {/* <p>
                 유튜브 계정을 연동하시면, <br />
                 <span>AIVATAR</span>에서 만든 영상을 유튜브에 바로 업로드하고
                 조회수를 확인할 수 있습니다.
+              </p> */}
+              <p>
+                <span>
+                  유뷰트 계정을 연동하고 자신이 만든 영상을 유튜브에 바로 업로드
+                  할 수 있어요!
+                </span>
+                <br />
+                유튜브에 업로드하고 조회수를 한눈에 확인해보세요!
               </p>
             </S.NoneChartContent>
 
@@ -152,7 +161,7 @@ function Chart() {
                 />
               </div>
               <p>
-                <span>Youtube 연동하기</span>
+                <span>Youtube 계정 연결</span>
               </p>
             </S.SyncBtnWrap>
           </S.NoneChart>
@@ -205,6 +214,7 @@ const S = {
   `,
 
   NoneChart: styled.div`
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -212,24 +222,39 @@ const S = {
     width: 100%;
     height: calc(100% - 70px);
     padding: 30px 0 20px;
-    background-color: ${({ theme }) => theme.colors.background1};
-    border-radius: ${({ theme }) => theme.radius.xsmall};
+    background-image: url('/src/assets/images/dashboard-sample-image.png');
+    background-size: cover;
+    background-position: center;
+    border: 1px solid ${({ theme }) => theme.colors.lightGray2};
+    border-radius: ${({ theme }) => theme.radius.small};
     margin-top: 20px;
     text-align: center;
+    overflow: hidden;
+  `,
+
+  Backdrop: styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
   `,
 
   NoneChartContent: styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-
+    z-index: 1;
     p {
       font-size: ${({ theme }) => theme.fontSizes.fz18};
       color: ${({ theme }) => theme.colors.textSecond};
 
       span {
+        display: inline-block;
+        margin-bottom: 10px;
         font-size: ${({ theme }) => theme.fontSizes.fz20};
-        font-weight: ${({ theme }) => theme.fontWeights.bold};
+        font-weight: ${({ theme }) => theme.fontWeights.medium};
         color: ${({ theme }) => theme.colors.primary};
       }
     }
@@ -238,26 +263,30 @@ const S = {
   SyncBtnWrap: styled.div`
     display: flex;
     align-items: center;
-    width: 70%;
     max-width: 700px;
-    padding: 5px;
+    padding-right: 20px;
+    // padding: 5px 30px;
     margin-top: 50px;
     background-color: #ff0f33;
-    border-radius: ${({ theme }) => theme.radius.small};
+    border-radius: 50px;
     cursor: pointer;
+    z-index: 1;
 
     > div {
-      width: 50px;
-      height: 50px;
+      width: 65px;
+      height: 65px;
+      padding-top: 7px;
+      margin-right: 10px;
       overflow: hidden;
+      background-color: #ff0f33;
+      border-radius: ${({ theme }) => theme.radius.circle};
 
       img {
-        width: 100%;
-        height: auto;
+        width: 51px;
+        height: 51px;
       }
     }
     p {
-      width: 100%;
       font-size: ${({ theme }) => theme.fontSizes.fz18};
       font-weight: ${({ theme }) => theme.fontWeights.medium};
       color: ${({ theme }) => theme.colors.white};
