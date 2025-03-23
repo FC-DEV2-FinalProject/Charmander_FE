@@ -19,9 +19,9 @@ interface ProjectProps {
 function MyProjectCard({ title, updatedAt, isLoaded, progress }: ProjectProps) {
   return (
     <S.CardWrap>
-      <S.CardImage>
+      <S.CardImage className="card-image">
         <img
-          src="https://img.freepik.com/free-vector/travelling-vlogger-youtube-thumbnail_23-2148569009.jpg?t=st=1742305833~exp=1742309433~hmac=5b39ca884dabf487b4c8452fa8cdcc0c787b80a25da38b7fc3e1aa1352deb182&w=2000"
+          src="https://img.freepik.com/free-vector/staff-creating-film_1262-20681.jpg?t=st=1742560845~exp=1742564445~hmac=c96983f5ebf8d7db96d12092ed3ffe4ffe7eefbfec031d8de5d8eaaa804e80ca&w=1800"
           alt="test-img"
         />
         {isLoaded && (
@@ -57,16 +57,29 @@ const S = {
   CardWrap: styled.div`
     width: 380px;
     margin-right: 30px;
+    cursor: pointer;
+
+    &:hover {
+      > div.card-image {
+        box-shadow: ${({ theme }) => theme.boxShadow.subtle};
+      }
+      img {
+        transform: scale(1.05);
+      }
+    }
   `,
   CardImage: styled.div`
     position: relative;
     height: 225px;
     border-radius: ${({ theme }) => theme.radius.small};
+    border: 1px solid ${({ theme }) => theme.colors.background2};
+    transition: all 0.3s ease-in-out;
     overflow: hidden;
 
     > img {
       width: 100%;
       height: 100%;
+      transition: all 0.3s ease-in-out;
     }
   `,
 

@@ -22,7 +22,7 @@ const GoogleLoginButton = () => {
         gap: '10px',
         backgroundColor: '#ffffff',
         color: 'black',
-        border: '1px solid #dadce0',
+        border: '0.5px solid #dadce0',
         borderRadius: '4px',
         padding: '10px 16px',
         fontSize: '14px',
@@ -30,7 +30,7 @@ const GoogleLoginButton = () => {
         cursor: 'pointer',
         width: '100%',
         height: '5vh',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+
         transition: 'all 0.2s ease',
       }}
       onMouseOver={(e) => (e.currentTarget.style.opacity = '0.9')}
