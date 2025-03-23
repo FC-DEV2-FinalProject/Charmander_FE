@@ -40,13 +40,13 @@ export const login = async (
   username: string,
   password: string
 ): Promise<string> => {
-  const response = await axios.post('/api/v1/auth/login', {
+  const response = await api.post('/api/v1/auth/login', {
     username,
     password,
   });
   const { accessToken, refreshToken } = response.data;
 
-  axios.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
+  api.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
   Cookies.set('refreshToken', refreshToken, {
     expires: 7,
