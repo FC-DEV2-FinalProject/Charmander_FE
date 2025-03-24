@@ -5,6 +5,9 @@ import svgr from 'vite-plugin-svgr';
 
 // https://vite.dev/config/
 export default defineConfig({
+
+  //const env = loadEnv(mode, process.cwd());
+  //const apiUrl = env.VITE_API_URL;
   plugins: [
     react(),
     TanStackRouterVite(),
@@ -18,4 +21,15 @@ export default defineConfig({
       { find: 'node_modules', replacement: '/node_modules' },
     ],
   },
+  /*
+  server: {
+    proxy: {
+      '/api': {
+        target: apiUrl,
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
+    */
 });
