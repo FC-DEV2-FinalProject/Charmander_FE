@@ -7,6 +7,8 @@ import { Link, useLocation } from '@tanstack/react-router';
 import useArticlePDFStore from '@/store/useArticlePDFStore';
 import { pdfjs } from 'react-pdf';
 import { TextItem } from 'pdfjs-dist/types/src/display/api';
+import Modal from '@/components/common/modal';
+import EditModal from '../modal/editModal';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
@@ -120,7 +122,9 @@ const ProjectHeader = () => {
               </Link>
             </>
           ) : (
-            <S.ExportButton>제작하기</S.ExportButton>
+            <Modal openText="제작하기">
+              {(setModalOpen) => <EditModal setModalOpen={setModalOpen} />}
+            </Modal>
           )}
         </S.ButtonBox>
       </S.HeaderContainer>
@@ -142,6 +146,10 @@ const S = {
     svg {
       cursor: pointer;
       margin-left: ${theme.spacing.sm};
+    }
+    svg:last-of-type {
+      cursor: default;
+      margin-left: 0;
     }
   `,
   HeaderLeftContents: styled.div`
