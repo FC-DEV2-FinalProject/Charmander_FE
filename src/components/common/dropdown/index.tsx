@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { DropDownProps } from '@/types/commonUi';
 import ArrowDown from '@/assets/arrow_drop_down.svg?react';
 import ArrowUp from '@/assets/arrow_drop_up.svg?react';
@@ -15,17 +15,36 @@ const DropDown = ({
   const [currentValue, setCurrentValue] = useState(
     placeholder || dropDownData[0]
   );
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setView(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleValue = (data: string) => {
     setCurrentValue(data);
-    setView(!view);
+    setView(false);
     if (onSelect) {
       onSelect(data);
     }
   };
 
   return (
-    <S.DropDownContainer width={width}>
+    <S.DropDownContainer
+      ref={dropdownRef}
+      width={width}>
       <S.DropDownBox
         onClick={() => {
           setView(!view);
@@ -35,19 +54,16 @@ const DropDown = ({
       </S.DropDownBox>
       {view && (
         <S.DropDownList>
-          {dropDownData.map((data, index) => {
-            return (
-              <S.DropDownItem
-                key={index}
-                value={data}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleValue(data);
-                }}>
-                {data}
-              </S.DropDownItem>
-            );
-          })}
+          {dropDownData.map((data, index) => (
+            <S.DropDownItem
+              key={index}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleValue(data);
+              }}>
+              {data}
+            </S.DropDownItem>
+          ))}
         </S.DropDownList>
       )}
     </S.DropDownContainer>
@@ -75,7 +91,8 @@ const S = {
     padding: ${theme.spacing.md};
     border: ${theme.borderWidth.thin} solid ${theme.colors.black};
     border-radius: ${theme.radius.small};
-    box-sizing: borderBox;
+    cursor: pointer;
+    background-color: ${theme.colors.white};
   `,
   DropDownList: styled.ul`
     position: absolute;
@@ -89,6 +106,9 @@ const S = {
     background-color: ${theme.colors.white};
     box-shadow: ${theme.boxShadow.regular};
     box-sizing: border-box;
+    z-index: 1;
+    overflow: auto;
+    max-height: 200px;
   `,
   DropDownItem: styled.li`
     display: flex;
@@ -96,5 +116,8 @@ const S = {
     cursor: pointer;
     list-style: none;
     padding: ${theme.spacing.xs};
+    &:hover {
+      background-color: ${theme.colors.background2};
+    }
   `,
 };

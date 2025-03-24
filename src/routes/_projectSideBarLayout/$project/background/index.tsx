@@ -207,7 +207,6 @@ const S = {
   `,
   SidebarLabel: styled.label`
     margin-left: ${theme.spacing.sm};
-    color: ${theme.colors.darkGray2};
     font-size: ${theme.fontSizes.fz20};
     font-weight: ${theme.fontWeights.medium};
   `,
