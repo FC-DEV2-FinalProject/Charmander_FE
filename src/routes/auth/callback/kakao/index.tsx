@@ -29,10 +29,7 @@ function RouteComponent() {
           return;
         }
 
-        const response = await axios.post(
-          import.meta.env.VITE_OAUTH_API_URL + '/kakao',
-          { code }
-        );
+        const response = await axios.post('/api/auth/kakao', { code });
 
         localStorage.setItem('userProfile', JSON.stringify(response.data.user));
         localStorage.setItem('token', response.data.token);

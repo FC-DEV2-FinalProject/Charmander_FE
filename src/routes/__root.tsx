@@ -51,9 +51,10 @@ function RootComponent() {
     const { accessToken } = useAuthStore.getState();
     const publicRoutes = [
       '/auth/login',
-      '/sign-up-finish',
+      '/auth/sign-up/finish',
       '/auth/sign-in',
       '/auth/sign-up/sns',
+      
     ];
 
     if (!accessToken && !publicRoutes.includes(location.pathname)) {

@@ -53,6 +53,7 @@ function RouteComponent() {
     _getProjects();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   function SampleNextArrow(props: { onClick?: () => void }) {
     const { onClick } = props;
     return (
@@ -87,19 +88,7 @@ function RouteComponent() {
     <S.DashboardWrap>
       <S.MyProjectContainer>
         <h2>
-          <Link to="/my-project">
-            내 프로젝트
-            <span
-              style={{
-                marginLeft: '10px',
-                paddingTop: '5px',
-              }}>
-              <RightArrowIcon
-                color="#555"
-                width={10}
-              />
-            </span>
-          </Link>
+          <Link to="/my-project">내 프로젝트</Link>
         </h2>
         {projects.length > 0 ? (
           <Slider {...settings}>
@@ -151,16 +140,6 @@ const S = {
       margin-bottom: 30px;
       font-size: ${({ theme }) => theme.fontSizes.fz20};
       font-weight: ${({ theme }) => theme.fontWeights.medium};
-      transition: all 0.3s ease-in-out;
-
-      a {
-        display: flex;
-        align-items: center;
-      }
-
-      &:hover {
-        opacity: 0.7;
-      }
     }
   `,
   DashboardContent: styled.div`
