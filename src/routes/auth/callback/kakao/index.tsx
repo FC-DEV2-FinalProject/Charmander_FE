@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import {
   createFileRoute,
   useLocation,
   useNavigate,
 } from '@tanstack/react-router';
+import axios from 'node_modules/axios';
+import { setTokens } from '@/utils/Tokens';
 
 export const Route = createFileRoute('/auth/callback/kakao/')({
   component: RouteComponent,
@@ -29,13 +30,16 @@ function RouteComponent() {
           return;
         }
 
-        const response = await axios.post(
-          import.meta.env.VITE_OAUTH_API_URL + '/kakao',
-          { code }
-        );
+        const response = await axios.post(import.meta.env.VITE_OAUTH_API_URL, {
+          provider: 'kakao',
+          code: code,
+        });
 
-        localStorage.setItem('userProfile', JSON.stringify(response.data.user));
-        localStorage.setItem('token', response.data.token);
+        if (response.data) {
+          const { accessToken } = response.data;
+          setTokens(accessToken);
+          //console.log(accessToken);
+        }
 
         navigate({ to: '/auth/sign-up/sns' });
       } catch {
