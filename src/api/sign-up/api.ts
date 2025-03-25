@@ -1,5 +1,5 @@
 import { BaseSchema, SignUpSchemaType } from "@/schema/SignUpSchema";
-import axios from "axios";
+import api from "@/api/login/api";
 
 
 
@@ -12,7 +12,7 @@ export type RegistrationResult = {
 // 이메일 인증 코드 요청을 위한 API 호출 함수
 export async function checkEmailEffect(email: string): Promise<{ code?: string }> {
     try {
-        const response = await axios.post('/api/v1/account/register/check-email', {
+        const response = await api.post('/api/v1/account/register/check-email', {
             email: email
         });
 
@@ -34,7 +34,7 @@ export async function VerifyEmailEffect(email: string, number: string): Promise<
             code: number
         };
 
-        const response = await axios.post('/api/v1/account/register/verify-email', requestData);
+        const response = await api.post('/api/v1/account/register/verify-email', requestData);
         
         return {
             success: true,
@@ -42,11 +42,7 @@ export async function VerifyEmailEffect(email: string, number: string): Promise<
         };
     } catch (error: unknown) {
         let message: string;
-        if (axios.isAxiosError(error) && error.response) {
-            message = error.response.data.message || '이메일 인증 처리 중 오류가 발생했습니다.';
-        } else {
             message = '이메일 인증 처리 중 알 수 없는 오류가 발생했습니다.';
-        }
 
         return {
             success: false,
@@ -95,14 +91,12 @@ export const validateEmail = async (email: string) => {
 
 export const registerUser = async (userData: SignUpSchemaType): Promise<RegistrationResult> => {
     try {
-      const response = await axios.post('/api/v1/account/register', userData);
+      const response = await api.post('/api/v1/account/register', userData);
       return {
         success: true,
         data: response.data
       };
     } catch (error: any) {
-      console.error('회원가입 실패:', error.response?.data);
-      console.error('오류 상태 코드:', error.response?.status);
       return {
         success: false,
         error: error.response?.data?.message

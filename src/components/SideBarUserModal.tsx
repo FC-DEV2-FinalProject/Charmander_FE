@@ -30,7 +30,7 @@ function SideBarUserModal({ setIsVisible, modalRef }: IUserModalProps) {
   return (
     <S.UserModal ref={modalRef}>
       {/* todo 경민: 링크 수정 */}
-      <S.UserInfo onClick={() => _handleLink('/my-page')}>
+      <S.UserInfo onClick={() => _handleLink('/dashboard')}>
         <div>
           <p>
             <FaUser
@@ -74,7 +74,6 @@ const S = {
     border-radius: ${({ theme }) => theme.radius.large};
     border: 1px solid;
     border-color: ${({ theme }) => theme.colors.lightGray1};
-    z-index: 2;
   `,
   UserInfo: styled.div`
     display: flex;

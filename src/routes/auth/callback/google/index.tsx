@@ -26,10 +26,7 @@ function RouteComponent() {
           return;
         }
 
-        const response = await axios.post(
-          import.meta.env.VITE_OAUTH_API_URL + '/google',
-          { code }
-        );
+        const response = await axios.post('/api/auth/google', { code });
 
         localStorage.setItem('userProfile', JSON.stringify(response.data.user));
         localStorage.setItem('token', response.data.token);

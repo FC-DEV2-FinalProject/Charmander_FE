@@ -29,8 +29,6 @@ import { Route as ProjectSideBarLayoutProjectScriptIndexImport } from './routes/
 import { Route as ProjectSideBarLayoutProjectBackgroundIndexImport } from './routes/_projectSideBarLayout/$project/background/index'
 import { Route as ProjectSideBarLayoutProjectAvatarIndexImport } from './routes/_projectSideBarLayout/$project/avatar/index'
 import { Route as ProjectSideBarLayoutProjectArticleIndexImport } from './routes/_projectSideBarLayout/$project/article/index'
-import { Route as SideBarLayoutMyProjectComponentsProjectCardImport } from './routes/_sideBarLayout/my-project/_components/projectCard'
-import { Route as SideBarLayoutMyProjectComponentsDropdownSelectImport } from './routes/_sideBarLayout/my-project/_components/dropdownSelect'
 import { Route as SideBarLayoutDashboardComponentsMyProjectCardImport } from './routes/_sideBarLayout/dashboard/_components/myProjectCard'
 import { Route as SideBarLayoutDashboardComponentsGuideImport } from './routes/_sideBarLayout/dashboard/_components/guide'
 import { Route as SideBarLayoutDashboardComponentsChartImport } from './routes/_sideBarLayout/dashboard/_components/chart'
@@ -151,20 +149,6 @@ const ProjectSideBarLayoutProjectArticleIndexRoute =
     getParentRoute: () => ProjectSideBarLayoutRoute,
   } as any)
 
-const SideBarLayoutMyProjectComponentsProjectCardRoute =
-  SideBarLayoutMyProjectComponentsProjectCardImport.update({
-    id: '/my-project/_components/projectCard',
-    path: '/my-project/projectCard',
-    getParentRoute: () => SideBarLayoutRoute,
-  } as any)
-
-const SideBarLayoutMyProjectComponentsDropdownSelectRoute =
-  SideBarLayoutMyProjectComponentsDropdownSelectImport.update({
-    id: '/my-project/_components/dropdownSelect',
-    path: '/my-project/dropdownSelect',
-    getParentRoute: () => SideBarLayoutRoute,
-  } as any)
-
 const SideBarLayoutDashboardComponentsMyProjectCardRoute =
   SideBarLayoutDashboardComponentsMyProjectCardImport.update({
     id: '/dashboard/_components/myProjectCard',
@@ -274,20 +258,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SideBarLayoutDashboardComponentsMyProjectCardImport
       parentRoute: typeof SideBarLayoutImport
     }
-    '/_sideBarLayout/my-project/_components/dropdownSelect': {
-      id: '/_sideBarLayout/my-project/_components/dropdownSelect'
-      path: '/my-project/dropdownSelect'
-      fullPath: '/my-project/dropdownSelect'
-      preLoaderRoute: typeof SideBarLayoutMyProjectComponentsDropdownSelectImport
-      parentRoute: typeof SideBarLayoutImport
-    }
-    '/_sideBarLayout/my-project/_components/projectCard': {
-      id: '/_sideBarLayout/my-project/_components/projectCard'
-      path: '/my-project/projectCard'
-      fullPath: '/my-project/projectCard'
-      preLoaderRoute: typeof SideBarLayoutMyProjectComponentsProjectCardImport
-      parentRoute: typeof SideBarLayoutImport
-    }
     '/_projectSideBarLayout/$project/article/': {
       id: '/_projectSideBarLayout/$project/article/'
       path: '/$project/article'
@@ -388,8 +358,6 @@ interface SideBarLayoutRouteChildren {
   SideBarLayoutDashboardComponentsChartRoute: typeof SideBarLayoutDashboardComponentsChartRoute
   SideBarLayoutDashboardComponentsGuideRoute: typeof SideBarLayoutDashboardComponentsGuideRoute
   SideBarLayoutDashboardComponentsMyProjectCardRoute: typeof SideBarLayoutDashboardComponentsMyProjectCardRoute
-  SideBarLayoutMyProjectComponentsDropdownSelectRoute: typeof SideBarLayoutMyProjectComponentsDropdownSelectRoute
-  SideBarLayoutMyProjectComponentsProjectCardRoute: typeof SideBarLayoutMyProjectComponentsProjectCardRoute
 }
 
 const SideBarLayoutRouteChildren: SideBarLayoutRouteChildren = {
@@ -403,10 +371,6 @@ const SideBarLayoutRouteChildren: SideBarLayoutRouteChildren = {
     SideBarLayoutDashboardComponentsGuideRoute,
   SideBarLayoutDashboardComponentsMyProjectCardRoute:
     SideBarLayoutDashboardComponentsMyProjectCardRoute,
-  SideBarLayoutMyProjectComponentsDropdownSelectRoute:
-    SideBarLayoutMyProjectComponentsDropdownSelectRoute,
-  SideBarLayoutMyProjectComponentsProjectCardRoute:
-    SideBarLayoutMyProjectComponentsProjectCardRoute,
 }
 
 const SideBarLayoutRouteWithChildren = SideBarLayoutRoute._addFileChildren(
@@ -425,8 +389,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/chart': typeof SideBarLayoutDashboardComponentsChartRoute
   '/dashboard/guide': typeof SideBarLayoutDashboardComponentsGuideRoute
   '/dashboard/myProjectCard': typeof SideBarLayoutDashboardComponentsMyProjectCardRoute
-  '/my-project/dropdownSelect': typeof SideBarLayoutMyProjectComponentsDropdownSelectRoute
-  '/my-project/projectCard': typeof SideBarLayoutMyProjectComponentsProjectCardRoute
   '/$project/article': typeof ProjectSideBarLayoutProjectArticleIndexRoute
   '/$project/avatar': typeof ProjectSideBarLayoutProjectAvatarIndexRoute
   '/$project/background': typeof ProjectSideBarLayoutProjectBackgroundIndexRoute
@@ -450,8 +412,6 @@ export interface FileRoutesByTo {
   '/dashboard/chart': typeof SideBarLayoutDashboardComponentsChartRoute
   '/dashboard/guide': typeof SideBarLayoutDashboardComponentsGuideRoute
   '/dashboard/myProjectCard': typeof SideBarLayoutDashboardComponentsMyProjectCardRoute
-  '/my-project/dropdownSelect': typeof SideBarLayoutMyProjectComponentsDropdownSelectRoute
-  '/my-project/projectCard': typeof SideBarLayoutMyProjectComponentsProjectCardRoute
   '/$project/article': typeof ProjectSideBarLayoutProjectArticleIndexRoute
   '/$project/avatar': typeof ProjectSideBarLayoutProjectAvatarIndexRoute
   '/$project/background': typeof ProjectSideBarLayoutProjectBackgroundIndexRoute
@@ -477,8 +437,6 @@ export interface FileRoutesById {
   '/_sideBarLayout/dashboard/_components/chart': typeof SideBarLayoutDashboardComponentsChartRoute
   '/_sideBarLayout/dashboard/_components/guide': typeof SideBarLayoutDashboardComponentsGuideRoute
   '/_sideBarLayout/dashboard/_components/myProjectCard': typeof SideBarLayoutDashboardComponentsMyProjectCardRoute
-  '/_sideBarLayout/my-project/_components/dropdownSelect': typeof SideBarLayoutMyProjectComponentsDropdownSelectRoute
-  '/_sideBarLayout/my-project/_components/projectCard': typeof SideBarLayoutMyProjectComponentsProjectCardRoute
   '/_projectSideBarLayout/$project/article/': typeof ProjectSideBarLayoutProjectArticleIndexRoute
   '/_projectSideBarLayout/$project/avatar/': typeof ProjectSideBarLayoutProjectAvatarIndexRoute
   '/_projectSideBarLayout/$project/background/': typeof ProjectSideBarLayoutProjectBackgroundIndexRoute
@@ -504,8 +462,6 @@ export interface FileRouteTypes {
     | '/dashboard/chart'
     | '/dashboard/guide'
     | '/dashboard/myProjectCard'
-    | '/my-project/dropdownSelect'
-    | '/my-project/projectCard'
     | '/$project/article'
     | '/$project/avatar'
     | '/$project/background'
@@ -528,8 +484,6 @@ export interface FileRouteTypes {
     | '/dashboard/chart'
     | '/dashboard/guide'
     | '/dashboard/myProjectCard'
-    | '/my-project/dropdownSelect'
-    | '/my-project/projectCard'
     | '/$project/article'
     | '/$project/avatar'
     | '/$project/background'
@@ -553,8 +507,6 @@ export interface FileRouteTypes {
     | '/_sideBarLayout/dashboard/_components/chart'
     | '/_sideBarLayout/dashboard/_components/guide'
     | '/_sideBarLayout/dashboard/_components/myProjectCard'
-    | '/_sideBarLayout/my-project/_components/dropdownSelect'
-    | '/_sideBarLayout/my-project/_components/projectCard'
     | '/_projectSideBarLayout/$project/article/'
     | '/_projectSideBarLayout/$project/avatar/'
     | '/_projectSideBarLayout/$project/background/'
@@ -631,9 +583,7 @@ export const routeTree = rootRoute
         "/_sideBarLayout/video-archive/",
         "/_sideBarLayout/dashboard/_components/chart",
         "/_sideBarLayout/dashboard/_components/guide",
-        "/_sideBarLayout/dashboard/_components/myProjectCard",
-        "/_sideBarLayout/my-project/_components/dropdownSelect",
-        "/_sideBarLayout/my-project/_components/projectCard"
+        "/_sideBarLayout/dashboard/_components/myProjectCard"
       ]
     },
     "/_sideBarLayout/dashboard/": {
@@ -671,14 +621,6 @@ export const routeTree = rootRoute
     },
     "/_sideBarLayout/dashboard/_components/myProjectCard": {
       "filePath": "_sideBarLayout/dashboard/_components/myProjectCard.tsx",
-      "parent": "/_sideBarLayout"
-    },
-    "/_sideBarLayout/my-project/_components/dropdownSelect": {
-      "filePath": "_sideBarLayout/my-project/_components/dropdownSelect.tsx",
-      "parent": "/_sideBarLayout"
-    },
-    "/_sideBarLayout/my-project/_components/projectCard": {
-      "filePath": "_sideBarLayout/my-project/_components/projectCard.tsx",
       "parent": "/_sideBarLayout"
     },
     "/_projectSideBarLayout/$project/article/": {

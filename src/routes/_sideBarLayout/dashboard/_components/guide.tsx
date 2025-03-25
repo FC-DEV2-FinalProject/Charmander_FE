@@ -32,7 +32,7 @@ function Guide() {
             </p>
           </div>
         </li>
-        <li onClick={_handleClick}>
+        <li>
           <img
             src="https://img.freepik.com/free-vector/user-guide-isometric-landing-page-manual-book_107791-8279.jpg?t=st=1742483299~exp=1742486899~hmac=bf1ad2dd0828150b2f75a600266a54e3a4e6da432c587c6d5b693ae17a8ada55&w=2000"
             alt="guide-image"

@@ -71,8 +71,6 @@ function RouteComponent() {
       setTitle('내 프로젝트');
     } else if (location.pathname === '/video-archive') {
       setTitle('영상 보관함');
-    } else {
-      setTitle('마이페이지');
     }
   }, [location.pathname]);
 
