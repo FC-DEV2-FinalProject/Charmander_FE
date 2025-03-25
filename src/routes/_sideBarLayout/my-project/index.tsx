@@ -66,7 +66,7 @@ function RouteComponent() {
               {tabMenus.map((menu) => (
                 <S.TapItem
                   key={menu.value}
-                  isActive={activeTab === menu.value}
+                  $isActive={activeTab === menu.value}
                   onClick={() => setActiveTab(menu.value as TabKey)}>
                   {menu.label}
                 </S.TapItem>
@@ -112,7 +112,7 @@ const S = {
     border-radius: ${({ theme }) => theme.radius.xsmall};
     overflow: hidden;
   `,
-  TapItem: styled.li<{ isActive: boolean }>`
+  TapItem: styled.li<{ $isActive: boolean }>`
     text-align: center;
     width: 100px;
     height: 45px;
@@ -121,10 +121,10 @@ const S = {
     font-weight: ${({ theme }) => theme.fontWeights.medium};
     line-height: 45px;
     cursor: pointer;
-    background: ${({ isActive, theme }) =>
-      isActive ? theme.colors.primary : theme.colors.white};
-    color: ${({ isActive, theme }) =>
-      isActive ? theme.colors.white : theme.colors.text};
+    background: ${({ $isActive, theme }) =>
+      $isActive ? theme.colors.primary : theme.colors.white};
+    color: ${({ $isActive, theme }) =>
+      $isActive ? theme.colors.white : theme.colors.text};
 
     &:last-child {
       border-right: none;
