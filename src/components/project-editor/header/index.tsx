@@ -18,7 +18,6 @@ const ProjectHeader = () => {
   const { project } = Route.useParams();
 
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [isEdit, setIsEdit] = useState(false);
   const [projectTitle, setProjectTitle] = useState('새 프로젝트');
   const { setArticlePDFText, clearArticlePDFText } = useArticlePDFStore();
@@ -31,21 +30,17 @@ const ProjectHeader = () => {
 
   useEffect(() => {
     const loadProjects = async () => {
-      if (loading === false) {
-        setLoading(true);
-      }
       try {
         const data = await fetchProjects(project);
         setProjects(data);
       } catch (err) {
         alert(err);
-      } finally {
-        setLoading(false);
       }
     };
     loadProjects();
-  }, [loading, project]);
-  alert(projects);
+  }, [project]);
+  // eslint-disable-next-line no-console
+  console.log(projects);
 
   const onChangeProjectTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProjectTitle(e.target.value);
