@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import theme from '@/styles/theme';
 import BackIcon from '@/assets/projectIcon/back.svg?react';
 import EditIcon from '@/assets/projectIcon/edit-2.svg?react';
@@ -9,20 +9,43 @@ import { pdfjs } from 'react-pdf';
 import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import Modal from '@/components/common/modal';
 import EditModal from '../modal/editModal';
+import { Route } from '@/routes/__root';
+import { fetchProjects } from '@/api/project/api';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 const ProjectHeader = () => {
+  const { project } = Route.useParams();
+
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isEdit, setIsEdit] = useState(false);
   const [projectTitle, setProjectTitle] = useState('새 프로젝트');
   const { setArticlePDFText, clearArticlePDFText } = useArticlePDFStore();
   const inputRef = useRef<HTMLInputElement>(null);
-
   const handleInput = () => {
     if (inputRef.current) {
       inputRef.current.click();
     }
   };
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      if (loading === false) {
+        setLoading(true);
+      }
+      try {
+        const data = await fetchProjects(project);
+        setProjects(data);
+      } catch (err) {
+        alert(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProjects();
+  }, [loading, project]);
+  alert(projects);
 
   const onChangeProjectTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProjectTitle(e.target.value);
