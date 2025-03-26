@@ -1,0 +1,45 @@
+{
+  "items": [
+    {
+      "id": 9007199254740991,
+      "priority": 1073741824,
+      "data": {
+        "name": "string",
+        "category": "Social",
+        "size": {
+          "width": 1073741824,
+          "height": 1073741824
+        },
+        "background": {
+          "id": 9007199254740991,
+          "name": "string",
+          "priority": 1073741824,
+          "type": "Image",
+          "fileUrl": "string",
+          "size": {
+            "width": 1073741824,
+            "height": 1073741824
+          },
+          "createdAt": "2025-03-25T12:24:11.464Z",
+          "updatedAt": "2025-03-25T12:24:11.464Z"
+        },
+        "avatar": {
+          "id": 9007199254740991,
+          "name": "string",
+          "priority": 1073741824,
+          "fileUrl": "string",
+          "createdAt": "2025-03-25T12:24:11.464Z",
+          "updatedAt": "2025-03-25T12:24:11.464Z"
+        }
+      },
+      "createdAt": "2025-03-25T12:24:11.464Z",
+      "updatedAt": "2025-03-25T12:24:11.464Z"
+    }
+  ],
+  "_info": {
+    "category": {
+      "id": 1073741824,
+      "name": "string"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "_schema_version": "1.0",
+  "id": "1",
+  "name": "테스트 프로젝트",
+  "scenes": [
+    {
+      "id": "<scene-id-1>",
+      "transcript": [
+        {
+          "id": "<transcript-id-1>",
+          "text": "설 연휴를 지나며 자영업자들이 겪고있는 위기.",
+          "postDelay": 300
+        },
+        {
+          "id": "<transcript-id-2>",
+          "text": "설 연휴, 자영업자들은 역대급 '냉동고 한파'와 폭설에 시달렸습니다.",
+          "postDelay": 300
+        }
+      ],
+      "subtitle": {
+        "text": "설 연휴 한파로 인한 자영업자 영업 위기",
+        "fontFamily": "NanumGothic",
+        "fontSize": 24,
+        "fontColor": "#ffffff",
+        "backgroundColor": "#000000",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "bold": true
+      },
+      "media": {
+        "type": "image",
+        "width": 1920,
+        "height": 1080,
+        "url": "https://example.com/image1.jpg",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "scale": 1.0,
+        "viewport": [0, 0, 1920, 1080]
+      },
+      "avatar": {
+        "type": "image",
+        "width": 1920,
+        "height": 1080,
+        "url": "https://example.com/image1.jpg",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "scale": 1.0,
+        "viewport": [0, 0, 1920, 1080]
+      }
+    }
+  ],
+  "props": {
+    "width": 1920,
+    "height": 1080,
+    "background": "#000000"
+  }
+}

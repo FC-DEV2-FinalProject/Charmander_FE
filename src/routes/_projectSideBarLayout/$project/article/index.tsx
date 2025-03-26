@@ -1,3 +1,4 @@
+import { updateArticle } from '@/api/project/api';
 import { useDebounce } from '@/hook/useDebounce';
 import useArticlePDFStore from '@/store/useArticlePDFStore';
 import theme from '@/styles/theme';
@@ -13,20 +14,21 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const [article, setArticle] = useState('');
-  const { articlePDFText } = useArticlePDFStore();
+  const { articlePDFText, setArticlePDFText } = useArticlePDFStore();
+  const { project } = Route.useParams();
 
   const debouncedArticle = useDebounce(article, 1000);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setArticlePDFText(e.target.value);
     setArticle(e.target.value);
   };
 
   useEffect(() => {
     if (debouncedArticle) {
-      // console.log(debouncedArticle);
-      //추후 저장 로직으로 변경 예정
+      updateArticle(project, article);
     }
-  }, [debouncedArticle]);
+  }, [debouncedArticle, article, project]);
 
   useEffect(() => {
     if (articlePDFText != '') {

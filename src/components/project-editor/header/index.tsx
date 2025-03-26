@@ -3,24 +3,48 @@ import React, { useEffect, useRef, useState } from 'react';
 import theme from '@/styles/theme';
 import BackIcon from '@/assets/projectIcon/back.svg?react';
 import EditIcon from '@/assets/projectIcon/edit-2.svg?react';
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link, useLocation, useRouter } from '@tanstack/react-router';
 import useArticlePDFStore from '@/store/useArticlePDFStore';
 import { pdfjs } from 'react-pdf';
 import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import Modal from '@/components/common/modal';
 import EditModal from '../modal/editModal';
 import { Route } from '@/routes/__root';
-import { fetchProjects } from '@/api/project/api';
+import {
+  fetchProjects,
+  postProjectTitle,
+  suggestArticle,
+} from '@/api/project/api';
+import useProjectEditorStore from '@/store/useProjectEditorStore';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
-const ProjectHeader = () => {
-  const { project } = Route.useParams();
+interface MediaAndAvatarData {
+  items: {
+    data: {
+      background?: {
+        type?: string;
+        fileUrl?: string;
+      };
+      avatar?: {
+        fileUrl?: string;
+      };
+    };
+  }[];
+}
 
-  const [projects, setProjects] = useState([]);
+const ProjectHeader = () => {
+  const location = useLocation();
+  const { project } = Route.useParams();
+  const router = useRouter();
+  const { projectData, setProjectData } = useProjectEditorStore();
+  const { articlePDFText, setArticlePDFText, clearArticlePDFText } =
+    useArticlePDFStore();
+
+  const [projectTitle, setProjectTitle] = useState(
+    projectData?.name || '새 프로젝트'
+  );
   const [isEdit, setIsEdit] = useState(false);
-  const [projectTitle, setProjectTitle] = useState('새 프로젝트');
-  const { setArticlePDFText, clearArticlePDFText } = useArticlePDFStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const handleInput = () => {
     if (inputRef.current) {
@@ -32,18 +56,46 @@ const ProjectHeader = () => {
     const loadProjects = async () => {
       try {
         const data = await fetchProjects(project);
-        setProjects(data);
+        setProjectData(data);
       } catch (err) {
         alert(err);
       }
     };
     loadProjects();
-  }, [project]);
-  // eslint-disable-next-line no-console
-  console.log(projects);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (projectData?.name) {
+      setProjectTitle(projectData.name);
+    }
+  }, [projectData?.name]);
 
   const onChangeProjectTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProjectTitle(e.target.value);
+  };
+
+  const handleSaveProjectTitle = async () => {
+    if (isEdit) {
+      try {
+        if (projectData?.name) {
+          await postProjectTitle(project, projectData.name);
+          setProjectData({
+            id: projectData.id || '',
+            name: projectTitle,
+            scenes: projectData.scenes || [],
+          });
+          setIsEdit(false);
+        }
+      } catch (err) {
+        alert('제목 저장에 실패했습니다.');
+        // eslint-disable-next-line no-console
+        console.log(err);
+        setProjectTitle(projectData?.name || '새 프로젝트');
+      }
+    } else {
+      setIsEdit(true);
+    }
   };
 
   const handleFileUpload = async (
@@ -95,7 +147,42 @@ const ProjectHeader = () => {
       }
     };
   };
-  const location = useLocation();
+
+  const updateMediaAndAvatar = (data: MediaAndAvatarData) => {
+    useProjectEditorStore.setState((state) => {
+      if (!state.projectData) return state;
+
+      return {
+        projectData: {
+          ...state.projectData,
+          scenes: state.projectData.scenes.map((scene, index) => ({
+            ...scene,
+            media: {
+              type: data.items[index]?.data.background?.type || 'image',
+              url: data.items[index]?.data.background?.fileUrl || '',
+              position: { x: 0, y: 0 },
+            },
+            avatar: {
+              type: 'image',
+              url: data.items[index]?.data.avatar?.fileUrl || '',
+              position: { x: 0, y: 0 },
+            },
+          })),
+        },
+      };
+    });
+  };
+
+  const submitArticle = async (article: string) => {
+    try {
+      const templateData = await suggestArticle(article);
+      updateMediaAndAvatar(templateData);
+
+      router.navigate({ to: '/$project/template', params: { project } });
+    } catch (error) {
+      alert(error);
+    }
+  };
   return (
     <>
       <S.HeaderContainer>
@@ -114,10 +201,7 @@ const ProjectHeader = () => {
                 {projectTitle}
               </S.ViewText>
             )}
-            <EditIcon
-              color="black"
-              onClick={() => setIsEdit(!isEdit)}
-            />
+            <EditIcon onClick={handleSaveProjectTitle} />
           </S.TitleBox>
         </S.HeaderLeftContents>
         <S.ButtonBox>
@@ -132,9 +216,11 @@ const ProjectHeader = () => {
                   ref={inputRef}
                 />
               </S.ArticleUploadButton>
-              <S.HeaderButton>템플릿 추천</S.HeaderButton>
+              <S.HeaderButton onClick={() => submitArticle(articlePDFText)}>
+                템플릿 추천
+              </S.HeaderButton>
               <Link
-                to="/$project/avatar"
+                to="/$project/background"
                 params={{ project: '1' }}>
                 <S.HeaderButton>템플릿 없이 진행하기</S.HeaderButton>
               </Link>
