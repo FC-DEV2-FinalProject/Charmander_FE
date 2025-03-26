@@ -2,7 +2,8 @@ import ImageUpload from '@/components/common/imageUpload';
 import theme from '@/styles/theme';
 import { createFileRoute } from '@tanstack/react-router';
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getInfo } from '@/api/myPage/api';
 
 export const Route = createFileRoute('/_sideBarLayout/my-page/')({
   component: RouteComponent,
@@ -16,9 +17,17 @@ function RouteComponent() {
   const [newPassword, setNewPassword] = useState('');
   const [newCheckPassword, setNewCheckPassword] = useState('');
 
-  function handleSubmit() {
-    // API 호출 코드
-  }
+  useEffect(() => {
+    getInfo().then((userData) => {
+      if (userData) {
+        setEmail(userData.email || '');
+        setName(userData.name || '');
+        setPhoneNumber(userData.phoneNumber || '');
+      }
+    });
+  }, []);
+
+  function handleSubmit() {}
 
   function handleReset() {
     setEmail('');
