@@ -34,7 +34,7 @@ export const suggestArticle = async (article: string) => {
     return response.data;
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Error suggesting article:', error);
+    console.error('기사 등록 에러:', error);
     throw error;
   }
 };
@@ -48,5 +48,24 @@ export const updateArticle = async (projectId: string, article: string) => {
     // eslint-disable-next-line no-console
     console.error('Error updating article:', error);
     throw error;
+  }
+};
+
+export const fetchTemplateCategories = async () => {
+  try {
+    const response = await api.get('/api/v1/templates/categories');
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log('카테고리 목록 에러', error);
+  }
+};
+export const fetchTemplate = async () => {
+  try {
+    const response = await api.get('/api/v1/templates');
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log('템플릿 페칭 에러', error);
   }
 };

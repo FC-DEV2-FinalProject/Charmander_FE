@@ -1,14 +1,15 @@
 import { http, HttpResponse } from 'msw';
 import projectDummy from './projectDummy.json';
 import suggestArticleDummyData from './suggestArticleDummyData.json';
+import categoryData from './categoryData.json';
+import templateImageData from './templateImage.json';
+
 export const handlers = [
   http.get(
     `${import.meta.env.VITE_API_URL}/api/v1/projects/:id`,
     async ({ params }) => {
       const { id } = params;
-
       const project = projectDummy;
-
       //임의로 오류 코드 404 반환하도록 설정했음
       if (project.id !== id) {
         return HttpResponse.json(
@@ -16,11 +17,9 @@ export const handlers = [
           { status: 404 }
         );
       }
-
       return HttpResponse.json(project, { status: 200 });
     }
   ),
-
   http.post(
     `${import.meta.env.VITE_API_URL}/api/v1/projects/:id/updateTitle`,
     async ({ params, request }) => {
@@ -75,4 +74,13 @@ export const handlers = [
       );
     }
   ),
+  http.get(
+    `${import.meta.env.VITE_API_URL}/api/v1/templates/categories`,
+    async () => {
+      return HttpResponse.json(categoryData, { status: 200 });
+    }
+  ),
+  http.get(`${import.meta.env.VITE_API_URL}/api/v1/templates`, async () => {
+    return HttpResponse.json(templateImageData, { status: 200 });
+  }),
 ];

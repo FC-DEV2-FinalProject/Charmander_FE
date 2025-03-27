@@ -13,8 +13,12 @@ const DropDown = ({
 }: DropDownProps) => {
   const [view, setView] = useState<boolean>(false);
   const [currentValue, setCurrentValue] = useState(
-    placeholder || dropDownData[0]
+    placeholder ||
+      (typeof dropDownData[0] === 'object' && 'name' in dropDownData[0]
+        ? dropDownData[0].name
+        : dropDownData[0])
   );
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,7 +44,6 @@ const DropDown = ({
       onSelect(data);
     }
   };
-
   return (
     <S.DropDownContainer
       ref={dropdownRef}
@@ -54,16 +57,30 @@ const DropDown = ({
       </S.DropDownBox>
       {view && (
         <S.DropDownList>
-          {dropDownData.map((data, index) => (
-            <S.DropDownItem
-              key={index}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleValue(data);
-              }}>
-              {data}
-            </S.DropDownItem>
-          ))}
+          {
+            dropDownData.length > 0 &&
+              dropDownData.map((data, index) => (
+                <S.DropDownItem
+                  key={
+                    typeof data === 'object' && 'id' in data ? data.id : index
+                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleValue(
+                      typeof data === 'object' && 'name' in data
+                        ? data.name
+                        : data
+                    );
+                  }}>
+                  {typeof data === 'object' && 'name' in data
+                    ? data.name
+                    : data}
+                </S.DropDownItem>
+              ))
+            // : (
+            //   <p>🚨 데이터가 없습니다</p>
+            // )
+          }
         </S.DropDownList>
       )}
     </S.DropDownContainer>

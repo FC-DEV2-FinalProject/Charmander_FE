@@ -1,8 +1,10 @@
+import { fetchTemplate, fetchTemplateCategories } from '@/api/project/api';
 import DropDown from '@/components/common/dropdown';
-import { mockTemplateImage, Template } from '@/mock/mockTemplateImage';
+import { mockTemplateImage } from '@/mock/mockTemplateImage';
+import useProjectEditorStore from '@/store/useProjectEditorStore';
 import theme from '@/styles/theme';
 import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 export const Route = createFileRoute(
@@ -12,53 +14,114 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
+  const { projectData } = useProjectEditorStore();
+  const backgroundTemplate = projectData?.scenes[0].media;
+  const avatarTemplate = projectData?.scenes[0].avatar;
+  // const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedTemplate, setSelectTemplate] = useState<Template | null>(null);
-
+  const [selectedTemplate, setSelectTemplate] = useState({
+    backgroundTemplate: backgroundTemplate || null,
+    avatarTemplate: avatarTemplate || null,
+  });
+  const [template, setTemplate] = useState();
+  const [category, setCategory] = useState<
+    {
+      id: number;
+      name: string;
+    }[]
+  >();
   const templates = mockTemplateImage();
 
-  const filteredTemplates = templates.filter(
-    (template) => template.name === selectedCategory
+  const filteredTemplates = templates.templates.filter(
+    (template) => template.type === selectedCategory
   );
 
+  useEffect(() => {
+    const loadCategory = async () => {
+      try {
+        // setLoading(true);
+        const data = await fetchTemplateCategories();
+        setCategory(data.data);
+      } catch (err) {
+        alert(err);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    loadCategory();
+  }, []);
+  useEffect(() => {
+    const loadingData = async () => {
+      try {
+        // setLoading(true);
+        const data = await fetchTemplate();
+        setTemplate(data.data);
+      } catch (err) {
+        alert(err);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    loadingData();
+  }, []);
+  // eslint-disable-next-line no-console
+  console.log(template);
   return (
     <S.TemplateContainer>
       <S.TemplateMain>
         {selectedTemplate && (
-          <S.SelectedTemplateImage
-            src={selectedTemplate.imageUrl}
-            alt={selectedTemplate.name}
-          />
+          <S.SelectedImageContainer>
+            <S.SelectedTemplateImage
+              src={selectedTemplate.backgroundTemplate?.url}
+              alt={selectedTemplate.backgroundTemplate?.id}
+            />
+          </S.SelectedImageContainer>
         )}
       </S.TemplateMain>
       <S.TemplateToolbar>
-        <DropDown
-          placeholder="템플릿 선택"
-          dropDownData={['템플릿 1', '템플릿 2', '템플릿 3']}
-          width="90%"
-          onSelect={(value) => setSelectedCategory(value)}
-        />
+        {category && (
+          <DropDown
+            placeholder="템플릿 선택"
+            dropDownData={category}
+            width="90%"
+            onSelect={(value) => setSelectedCategory(value)}
+          />
+        )}
         <S.TemplateList>
           {filteredTemplates.length > 0
             ? filteredTemplates.map((template) => (
                 <S.TemplateCard
-                  onClick={() => setSelectTemplate(template)}
+                  onClick={() =>
+                    setSelectTemplate({
+                      ...selectedTemplate,
+                      backgroundTemplate: template,
+                    })
+                  }
                   key={template.id}>
                   <S.TemplateImg
-                    isSelected={selectedTemplate?.id === template.id}
-                    src={template.imageUrl}
-                    alt={template.name}
+                    isSelected={
+                      selectedTemplate.backgroundTemplate?.id === template.id
+                    }
+                    src={template.url}
+                    alt={template.url}
                   />
                 </S.TemplateCard>
               ))
-            : templates.map((template) => (
+            : templates.templates.map((template) => (
                 <S.TemplateCard
-                  onClick={() => setSelectTemplate(template)}
+                  onClick={() =>
+                    setSelectTemplate({
+                      ...selectedTemplate,
+                      backgroundTemplate: template,
+                    })
+                  }
                   key={template.id}>
                   <S.TemplateImg
-                    isSelected={selectedTemplate?.id === template.id}
-                    src={template.imageUrl}
-                    alt={template.name}
+                    isSelected={
+                      selectedTemplate.backgroundTemplate?.id === template.id
+                    }
+                    src={template.url}
+                    alt={template.url}
                   />
                 </S.TemplateCard>
               ))}
@@ -87,10 +150,17 @@ const S = {
     border: 1px solid ${theme.colors.border1};
     border-radius: ${theme.radius.xxlarge} 0 0 ${theme.radius.xxlarge};
   `,
-  SelectedTemplateImage: styled.img`
+  SelectedImageContainer: styled.div`
+    position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
+  `,
+  SelectedTemplateImage: styled.img`
+    position: absolute;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    aspect-ratio: 16 / 9;
     border-radius: ${theme.radius.medium};
     border: ${`2px solid ${theme.colors.secondary1}`};
   `,
@@ -122,11 +192,12 @@ const S = {
   `,
   TemplateCard: styled.div`
     width: 100%;
+    height: 100%;
   `,
   TemplateImg: styled.img<{ isSelected: boolean }>`
     width: 100%;
+    height: 100%;
     aspect-ratio: 16 / 9;
-    object-fit: cover;
     border-radius: ${theme.radius.medium};
     border: ${(props) =>
       props.isSelected ? `2px solid ${theme.colors.secondary1}` : 'none'};

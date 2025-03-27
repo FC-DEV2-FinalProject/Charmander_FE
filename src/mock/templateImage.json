@@ -1,0 +1,144 @@
+{
+  "data": [
+    {
+      "id": 9007199254740991,
+      "priority": 1073741824,
+      "data": {
+        "name": "string",
+        "category": "사회",
+        "size": {
+          "width": 1073741824,
+          "height": 1073741824
+        },
+        "background": {
+          "id": 9007199254740991,
+          "name": "string",
+          "priority": 1073741824,
+          "type": "Image",
+          "url": "/src/mock/mockImage/news/CK_psxtg0828506.jpg",
+          "size": {
+            "width": 1073741824,
+            "height": 1073741824
+          },
+          "createdAt": "2025-03-27T08:49:08.211Z",
+          "updatedAt": "2025-03-27T08:49:08.211Z"
+        },
+        "avatar": {
+          "id": 9007199254740991,
+          "name": "string",
+          "priority": 1073741824,
+          "url": "/src/mock/mockImage/AVATAR/Jihun_01A.png",
+          "createdAt": "2025-03-27T08:49:08.211Z",
+          "updatedAt": "2025-03-27T08:49:08.211Z"
+        }
+      },
+      "createdAt": "2025-03-27T08:49:08.211Z",
+      "updatedAt": "2025-03-27T08:49:08.211Z"
+    },
+    {
+      "id": 9007199254740991,
+      "priority": 1073741824,
+      "data": {
+        "name": "string",
+        "category": "경제",
+        "size": {
+          "width": 1073741824,
+          "height": 1073741824
+        },
+        "background": {
+          "id": 9007199254740991,
+          "name": "string",
+          "priority": 1073741824,
+          "type": "Image",
+          "url": "/src/mock/mockImage/news/CK_ti436a26701.jpg",
+          "size": {
+            "width": 1073741824,
+            "height": 1073741824
+          },
+          "createdAt": "2025-03-27T08:49:08.211Z",
+          "updatedAt": "2025-03-27T08:49:08.211Z"
+        },
+        "avatar": {
+          "id": 9007199254740991,
+          "name": "string",
+          "priority": 1073741824,
+          "url": "/src/mock/mockImage/AVATAR/Jihun_02A.png",
+          "createdAt": "2025-03-27T08:49:08.211Z",
+          "updatedAt": "2025-03-27T08:49:08.211Z"
+        }
+      },
+      "createdAt": "2025-03-27T08:49:08.211Z",
+      "updatedAt": "2025-03-27T08:49:08.211Z"
+    },
+    {
+      "id": 9007199254740991,
+      "priority": 1073741824,
+      "data": {
+        "name": "string",
+        "category": "스포츠",
+        "size": {
+          "width": 1073741824,
+          "height": 1073741824
+        },
+        "background": {
+          "id": 9007199254740991,
+          "name": "string",
+          "priority": 1073741824,
+          "type": "Image",
+          "url": "/src/mock/mockImage/news/CK_tii219a0206.jpg",
+          "size": {
+            "width": 1073741824,
+            "height": 1073741824
+          },
+          "createdAt": "2025-03-27T08:49:08.211Z",
+          "updatedAt": "2025-03-27T08:49:08.211Z"
+        },
+        "avatar": {
+          "id": 9007199254740991,
+          "name": "string",
+          "priority": 1073741824,
+          "url": "/src/mock/mockImage/AVATAR/Jihun_04A.png",
+          "createdAt": "2025-03-27T08:49:08.211Z",
+          "updatedAt": "2025-03-27T08:49:08.211Z"
+        }
+      },
+      "createdAt": "2025-03-27T08:49:08.211Z",
+      "updatedAt": "2025-03-27T08:49:08.211Z"
+    },
+    {
+      "id": 9007199254740991,
+      "priority": 1073741824,
+      "data": {
+        "name": "string",
+        "category": "문화",
+        "size": {
+          "width": 1073741824,
+          "height": 1073741824
+        },
+        "background": {
+          "id": 9007199254740991,
+          "name": "string",
+          "priority": 1073741824,
+          "type": "Image",
+          "url": "/src/mock/mockImage/news/CK_tii219a0206.jpg",
+          "size": {
+            "width": 1073741824,
+            "height": 1073741824
+          },
+          "createdAt": "2025-03-27T08:49:08.211Z",
+          "updatedAt": "2025-03-27T08:49:08.211Z"
+        },
+        "avatar": {
+          "id": 9007199254740991,
+          "name": "string",
+          "priority": 1073741824,
+          "url": "/src/mock/mockImage/AVATAR/Jihun_02A.png",
+          "createdAt": "2025-03-27T08:49:08.211Z",
+          "updatedAt": "2025-03-27T08:49:08.211Z"
+        }
+      },
+      "createdAt": "2025-03-27T08:49:08.211Z",
+      "updatedAt": "2025-03-27T08:49:08.211Z"
+    }
+  ]
+}

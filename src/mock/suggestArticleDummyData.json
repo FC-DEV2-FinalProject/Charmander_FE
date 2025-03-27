@@ -5,7 +5,7 @@
       "priority": 1073741824,
       "data": {
         "name": "string",
-        "category": "Social",
+        "category": "사회",
         "size": {
           "width": 1073741824,
           "height": 1073741824
@@ -15,7 +15,7 @@
           "name": "string",
           "priority": 1073741824,
           "type": "Image",
-          "fileUrl": "string",
+          "url": "/src/mock/mockImage/news/CK_psxtg0828506.jpg",
           "size": {
             "width": 1073741824,
             "height": 1073741824
@@ -27,7 +27,7 @@
           "id": 9007199254740991,
           "name": "string",
           "priority": 1073741824,
-          "fileUrl": "string",
+          "url": "/src/mock/mockImage/AVATAR/Jihun_01A.png",
           "createdAt": "2025-03-25T12:24:11.464Z",
           "updatedAt": "2025-03-25T12:24:11.464Z"
         }

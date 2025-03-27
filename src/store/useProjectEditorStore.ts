@@ -11,6 +11,7 @@ interface Scene {
     backgroundColor: string;
   };
   media: {
+    id: string;
     type: string;
     url: string;
     position: {
@@ -19,6 +20,7 @@ interface Scene {
     };
   };
   avatar: {
+    id: string;
     type: string;
     url: string;
     position: {
