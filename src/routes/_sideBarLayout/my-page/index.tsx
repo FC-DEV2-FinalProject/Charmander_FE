@@ -30,9 +30,9 @@ function RouteComponent() {
   function handleSubmit() {}
 
   function handleReset() {
-    setEmail('');
-    setName('');
-    setPhoneNumber('');
+    setEmail(email);
+    setName(name);
+    setPhoneNumber(phoneNumber);
     setCurrentPassword('');
     setNewPassword('');
     setNewCheckPassword('');
