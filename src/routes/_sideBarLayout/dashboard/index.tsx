@@ -1,17 +1,18 @@
 import styled from 'styled-components';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import MyProjectCard from './_components/myProjectCard';
+import { getProjects, postProject } from '@/api/dashboard/api';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useDialog } from '@/hook/useDialog';
 import LeftArrowIcon from '@/assets/icons/icon-slide-left-arrow.svg?react';
 import RightArrowIcon from '@/assets/icons/icon-slide-right-arrow.svg?react';
 import { FaPlus } from 'react-icons/fa6';
 import Chart from './_components/chart';
 import Guide from './_components/guide';
+import { useNavigate } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_sideBarLayout/dashboard/')({
   component: RouteComponent,
@@ -19,10 +20,12 @@ export const Route = createFileRoute('/_sideBarLayout/dashboard/')({
 
 interface IProject {
   id: number;
-  title: string;
+  name: string;
+  active: boolean;
+  version: number;
+  lastAccessedAt: string;
+  createdAt: string;
   updatedAt: string;
-  isLoaded: boolean;
-  progress: number;
 }
 
 /**
@@ -38,21 +41,33 @@ interface IProject {
 function RouteComponent() {
   const [projects, setProjects] = useState<IProject[]>([]);
   const { alert } = useDialog();
-  const PROJECT_DUMMY = '/src/mock/dummy.json';
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const _getProjects = async () => {
+    const fetchProjects = async () => {
       try {
-        const res = await axios.get(PROJECT_DUMMY);
-        setProjects(res.data.projects);
+        const data = await getProjects();
+        setProjects(data.projects);
       } catch (err) {
         alert(`${err}`);
       }
     };
 
-    _getProjects();
+    fetchProjects();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const _handlecreateProject = async () => {
+    try {
+      const projectData = await postProject();
+
+      if (projectData) {
+        navigate({ to: `/${projectData.id}/article` });
+      }
+    } catch (err) {
+      alert(`${err}`);
+    }
+  };
   function SampleNextArrow(props: { onClick?: () => void }) {
     const { onClick } = props;
     return (
@@ -101,7 +116,7 @@ function RouteComponent() {
             </span>
           </Link>
         </h2>
-        {projects.length > 0 ? (
+        {projects && projects.length > 0 ? (
           <Slider {...settings}>
             {projects.map((project) => (
               <MyProjectCard
@@ -111,7 +126,7 @@ function RouteComponent() {
             ))}
           </Slider>
         ) : (
-          <S.EmptyProjectCard>
+          <S.EmptyProjectCard onClick={_handlecreateProject}>
             <div>
               <FaPlus
                 size={40}
@@ -211,6 +226,8 @@ const S = {
     border-radius: ${({ theme }) => theme.radius.small};
     box-shadow: ${({ theme }) => theme.boxShadow.subtle};
     text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
 
     div {
       display: flex;
@@ -233,6 +250,14 @@ const S = {
       font-size: ${({ theme }) => theme.fontSizes.fz14};
       line-height: ${({ theme }) => theme.lineHeights.small};
       color: ${({ theme }) => theme.colors.textSecond};
+    }
+
+    &:hover {
+      background-color: ${({ theme }) => theme.colors.primary};
+      h3,
+      p {
+        color: ${({ theme }) => theme.colors.white};
+      }
     }
   `,
 
