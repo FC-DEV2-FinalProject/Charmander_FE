@@ -22,7 +22,7 @@ function RouteComponent() {
       if (userData) {
         setEmail(userData.email || '');
         setName(userData.name || '');
-        setPhoneNumber(userData.phoneNumber || '');
+        setPhoneNumber(userData.phone || '');
       }
     });
   }, []);
