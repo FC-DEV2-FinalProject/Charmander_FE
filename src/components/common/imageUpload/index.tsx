@@ -1,8 +1,7 @@
 import theme from '@/styles/theme';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { CgProfile } from 'react-icons/cg';
-
+import { FaUser } from 'react-icons/fa';
 const ImageUpload = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [base64Image, setBase64Image] = useState<string | null>(null);
@@ -55,7 +54,7 @@ const ImageUpload = () => {
           />
         ) : (
           <S.ProfileIcon>
-            <CgProfile size="100%" />
+            <FaUser size="45%" />
           </S.ProfileIcon>
         )}
       </S.ImageContainer>
@@ -89,9 +88,15 @@ const S = {
     }
   `,
   ProfileIcon: styled.div`
-    width: 100%;
-    height: 100%;
-    color: ${theme.colors.black};
+    width: 50px;
+    height: 50px;
+    border-radius: ${({ theme }) => theme.radius.xsmall};
+    background-color: ${({ theme }) => theme.colors.primary};
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: ${({ theme }) => theme.colors.white};
   `,
   ImageUploadButton: styled.div`
     display: flex;
