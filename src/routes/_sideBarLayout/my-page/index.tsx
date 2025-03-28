@@ -43,7 +43,7 @@ function RouteComponent() {
       <S.MyPageContainer>
         <S.MyPageHeader>
           <div>
-            <p>아이디</p>
+            <p>{name}</p>
           </div>
           <ImageUpload />
         </S.MyPageHeader>
@@ -62,7 +62,7 @@ function RouteComponent() {
               </S.Row>
             </S.InputLabel>
             <S.InputLabel>
-              닉네임
+              이름
               <S.Row>
                 <S.Input
                   value={name}
