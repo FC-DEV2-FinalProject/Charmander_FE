@@ -19,6 +19,8 @@ import { useDialog } from '@/hook/useDialog';
 import SideBarUserModal from '@/components/SideBarUserModal';
 import media from '@/styles/media';
 import { getInfo } from '@/api/myPage/api';
+import { postProject } from '@/api/dashboard/api';
+import type { ProjectResponseType } from '@/api/dashboard/api';
 export const Route = createFileRoute('/_sideBarLayout')({
   component: RouteComponent,
 });
@@ -124,9 +126,12 @@ function RouteComponent() {
           {/* todo 경민: 링크 수정 */}
           {/* 링크 수정 필요 */}
           <S.CreateBtn
-            onClick={() =>
-              navigate({ to: `/_projectSideBarLayout/$project/article/` })
-            }>
+            onClick={async () => {
+              const projectResponse: ProjectResponseType = await postProject();
+              navigate({
+                to: `/${projectResponse.id}/article/`,
+              });
+            }}>
             <span>
               <PlusIcon />
             </span>
