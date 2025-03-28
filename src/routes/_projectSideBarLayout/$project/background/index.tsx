@@ -22,8 +22,9 @@ function RouteComponent() {
   const { aspectRatio, setAspectRatio } = useAspectRatioStore();
   const [SelectedBackgroundTemplate, setSelectedBackgroundTemplate] =
     useState<Template | null>(null);
-  const [templateImages, setTemplateImages] =
-    useState<Template[]>(mockTemplateImage());
+  const [templateImages, setTemplateImages] = useState<Template[]>(
+    mockTemplateImage().templates
+  );
 
   const inputRef = useRef<HTMLInputElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
@@ -42,7 +43,7 @@ function RouteComponent() {
       const imageUrl = reader.result as string;
 
       const isDuplicate = templateImages.some(
-        (template) => template.imageUrl === imageUrl
+        (template) => template.url === imageUrl
       );
       if (isDuplicate) {
         alert('이미 추가된 이미지입니다.');
@@ -51,8 +52,12 @@ function RouteComponent() {
 
       const newTemplate: Template = {
         id: String(Date.now()),
-        name: file.name,
-        imageUrl: imageUrl,
+        type: '',
+        url: imageUrl,
+        position: {
+          x: 0,
+          y: 0,
+        },
       };
 
       setTemplateImages((prev) => [...prev, newTemplate]);
@@ -66,8 +71,8 @@ function RouteComponent() {
         {SelectedBackgroundTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
-            src={SelectedBackgroundTemplate.imageUrl}
-            alt={SelectedBackgroundTemplate.name}
+            src={SelectedBackgroundTemplate.url}
+            alt={SelectedBackgroundTemplate.url}
             containerRef={backgroundRef}
           />
         )}
@@ -79,6 +84,7 @@ function RouteComponent() {
           width="90%"
           onSelect={(value) => setAspectRatio(value)}
         />
+        <hr />
         <S.ImageUploadSection>
           <S.LabelSection>
             <BackgroundFileUploadIcon />
@@ -97,6 +103,7 @@ function RouteComponent() {
             </S.ImageUploadButton>
           </S.UploadButtonSection>
         </S.ImageUploadSection>
+        <hr />
         <S.TemplateSection>
           <S.LabelSection>
             <SidebarBackgroundStyleIcon />
@@ -110,8 +117,8 @@ function RouteComponent() {
                 key={template.id}>
                 <S.BackgroundTemplateImg
                   isSelected={SelectedBackgroundTemplate?.id === template.id}
-                  src={template.imageUrl}
-                  alt={template.name}
+                  src={template.url}
+                  alt={template.url}
                 />
               </S.BackgroundTemplateCard>
             ))}
@@ -167,6 +174,10 @@ const S = {
     overflow: auto;
     &::-webkit-scrollbar {
       display: none;
+    }
+    hr {
+      width: 90%;
+      border: 1px solid ${theme.colors.border1};
     }
   `,
   ImageUploadSection: styled.div`

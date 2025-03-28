@@ -60,26 +60,6 @@ function DragImage({
     localStorage.setItem(`${alt}_size`, JSON.stringify(dimensions));
   }, [dimensions, alt]);
 
-  // useEffect(() => {
-  //   const saveData = async () => {
-  //     const data = {
-  //       alt,
-  //       size: debouncedSize,
-  //       position: debouncedPosition,
-  //     };
-  //     try {
-  //       await fetch('api URL 넣어주기', {
-  //         method: 'POST',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         body: JSON.stringify(data),
-  //       });
-  //     } catch (error) {
-  //       alert(`저장 실패:${error}`);
-  //     }
-  //   };
-  //   if (debouncedSize && debouncedPosition) saveData();
-  // }, [debouncedSize, debouncedPosition, alt]);
-
   const handleFocus = () => setIsFocused(true);
   const handleBlur = () => {
     if (!resizing) {
@@ -216,9 +196,6 @@ const S = {
       props.aspectRatio === '16:9(pc)' ? 'width:100%;' : 'height:100%;'}
     aspect-ratio: ${(props) =>
       props.aspectRatio === '16:9(pc)' ? '16 / 9' : '9 / 16'};
-    display: flex;
-    align-items: center;
-    justify-content: center;
     user-select: none;
     position: relative;
     border: 2px solid ${theme.colors.secondary1};

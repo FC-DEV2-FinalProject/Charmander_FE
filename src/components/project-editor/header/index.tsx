@@ -23,11 +23,13 @@ interface MediaAndAvatarData {
   items: {
     data: {
       background?: {
+        id?: string;
         type?: string;
-        fileUrl?: string;
+        url?: string;
       };
       avatar?: {
-        fileUrl?: string;
+        id?: string;
+        url?: string;
       };
     };
   }[];
@@ -158,13 +160,15 @@ const ProjectHeader = () => {
           scenes: state.projectData.scenes.map((scene, index) => ({
             ...scene,
             media: {
+              id: data.items[index]?.data.background?.id || '',
               type: data.items[index]?.data.background?.type || 'image',
-              url: data.items[index]?.data.background?.fileUrl || '',
+              url: data.items[index]?.data.background?.url || '',
               position: { x: 0, y: 0 },
             },
             avatar: {
+              id: data.items[index]?.data.avatar?.id || '',
               type: 'image',
-              url: data.items[index]?.data.avatar?.fileUrl || '',
+              url: data.items[index]?.data.avatar?.url || '',
               position: { x: 0, y: 0 },
             },
           })),

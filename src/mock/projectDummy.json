@@ -30,28 +30,40 @@
         "bold": true
       },
       "media": {
+        "id": "1",
         "type": "image",
         "width": 1920,
         "height": 1080,
-        "url": "https://example.com/image1.jpg",
+        "url": "/src/mock/mockImage/news/CK_tii219a0208.jpg",
         "position": {
           "x": 0,
           "y": 0
         },
         "scale": 1.0,
-        "viewport": [0, 0, 1920, 1080]
+        "viewport": [
+          0,
+          0,
+          1920,
+          1080
+        ]
       },
       "avatar": {
+        "id": "1",
         "type": "image",
         "width": 1920,
         "height": 1080,
-        "url": "https://example.com/image1.jpg",
+        "url": "/src/mock/mockImage/AVATAR/Yura_02A.png",
         "position": {
           "x": 0,
           "y": 0
         },
         "scale": 1.0,
-        "viewport": [0, 0, 1920, 1080]
+        "viewport": [
+          0,
+          0,
+          1920,
+          1080
+        ]
       }
     }
   ],

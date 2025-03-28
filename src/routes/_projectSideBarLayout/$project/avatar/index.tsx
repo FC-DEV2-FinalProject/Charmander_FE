@@ -26,8 +26,8 @@ function RouteComponent() {
         {SelectedAvatarTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
-            src={SelectedAvatarTemplate.imageUrl}
-            alt={SelectedAvatarTemplate.name}
+            src={SelectedAvatarTemplate.url}
+            alt={SelectedAvatarTemplate.url}
             containerRef={backgroundRef}
             isAvatar={true}
           />
@@ -41,14 +41,14 @@ function RouteComponent() {
           </S.LabelSection>
 
           <S.AvatarTemplateList>
-            {templateImages.map((template) => (
+            {templateImages.avatarTemplates.map((template) => (
               <S.AvatarTemplateCard
                 onClick={() => setSelectedAvatarTemplate(template)}
                 key={template.id}>
                 <S.AvatarTemplateImg
                   isSelected={SelectedAvatarTemplate?.id === template.id}
-                  src={template.imageUrl}
-                  alt={template.name}
+                  src={template.url}
+                  alt={template.url}
                 />
               </S.AvatarTemplateCard>
             ))}
@@ -111,13 +111,10 @@ const S = {
     font-weight: ${theme.fontWeights.medium};
   `,
   AvatarTemplateList: styled.div`
-    background-color: ${theme.colors.background2};
-    border-radius: ${theme.radius.medium};
     width: 100%;
     max-height: 100%;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 120px;
     padding: ${theme.spacing.sm};
     gap: ${theme.spacing.sm};
     overflow-x: hidden;
@@ -128,6 +125,8 @@ const S = {
   AvatarTemplateCard: styled.div`
     width: 100%;
     height: 100%;
+    background-color: ${theme.colors.background2};
+    border-radius: ${theme.radius.medium};
   `,
   AvatarTemplateImg: styled.img<{ isSelected: boolean }>`
     width: 100%;

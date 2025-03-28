@@ -1,50 +1,56 @@
+import { ProjectState } from '@/types/projectData';
 import { create } from 'zustand';
-
-interface Scene {
-  id: string;
-  transcript: { id: string; text: string; postDelay: string }[];
-  subtitle: {
-    text: string;
-    fontFamily: string;
-    fontSize: number;
-    fontColor: string;
-    backgroundColor: string;
-  };
-  media: {
-    type: string;
-    url: string;
-    position: {
-      x: number;
-      y: number;
-    };
-  };
-  avatar: {
-    type: string;
-    url: string;
-    position: {
-      x: number;
-      y: number;
-    };
-  };
-}
-
-interface Project {
-  id: string;
-  name: string;
-  scenes: Scene[];
-}
-
-interface ProjectState {
-  projectData: Project | null;
-  // eslint-disable-next-line no-unused-vars
-  setProjectData: (project: Project) => void;
-  resetProjectData: () => void;
-}
 
 const useProjectEditorStore = create<ProjectState>((set) => ({
   projectData: null,
+
   setProjectData: (projectData) => set({ projectData }),
+
   resetProjectData: () => set({ projectData: null }),
+
+  updateMediaPosition: (newPosition) => {
+    set((state) => {
+      if (!state.projectData || state.projectData.scenes.length === 0)
+        return state;
+
+      return {
+        projectData: {
+          ...state.projectData,
+          scenes: [
+            {
+              ...state.projectData.scenes[0], // 항상 첫 번째 scene만 업데이트
+              media: {
+                ...state.projectData.scenes[0].media,
+                position: newPosition,
+              },
+            },
+          ],
+        },
+      };
+    });
+  },
+
+  updateAvatarPosition: (newPosition) => {
+    set((state) => {
+      if (!state.projectData || state.projectData.scenes.length === 0)
+        return state;
+
+      return {
+        projectData: {
+          ...state.projectData,
+          scenes: [
+            {
+              ...state.projectData.scenes[0], // 항상 첫 번째 scene만 업데이트
+              media: {
+                ...state.projectData.scenes[0].media,
+                position: newPosition,
+              },
+            },
+          ],
+        },
+      };
+    });
+  },
 }));
 
 export default useProjectEditorStore;

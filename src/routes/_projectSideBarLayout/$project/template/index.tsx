@@ -1,8 +1,11 @@
+import { fetchTemplate, fetchTemplateCategories } from '@/api/project/api';
 import DropDown from '@/components/common/dropdown';
-import { mockTemplateImage, Template } from '@/mock/mockTemplateImage';
+import { useDebounce } from '@/hook/useDebounce';
+import useProjectEditorStore from '@/store/useProjectEditorStore';
 import theme from '@/styles/theme';
+import { FetchTemplateResponse } from '@/types/template';
 import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 export const Route = createFileRoute(
@@ -12,56 +15,153 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedTemplate, setSelectTemplate] = useState<Template | null>(null);
+  const { projectData, setProjectData } = useProjectEditorStore();
+  const [selectedCategory, setSelectedCategory] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<
+    FetchTemplateResponse['data'][number] | null
+  >(null);
+  const [template, setTemplate] = useState<FetchTemplateResponse | undefined>();
+  const [category, setCategory] = useState<
+    {
+      id: number;
+      name: string;
+    }[]
+  >();
+  const debouncedTemplate = useDebounce(selectedTemplate, 1000);
+  const filteredTemplates =
+    template?.data.filter(
+      (template) =>
+        selectedCategory && template.data.categoryId === selectedCategory.id
+    ) || [];
 
-  const templates = mockTemplateImage();
+  useEffect(() => {
+    const loadCategory = async () => {
+      try {
+        const data = await fetchTemplateCategories();
+        setCategory(data.data);
+      } catch (err) {
+        alert(err);
+      }
+    };
+    loadCategory();
+  }, []);
+  useEffect(() => {
+    const loadTemplateData = async () => {
+      try {
+        const data = await fetchTemplate();
+        setTemplate(data);
+      } catch (err) {
+        alert(err);
+      }
+    };
+    loadTemplateData();
+  }, []);
 
-  const filteredTemplates = templates.filter(
-    (template) => template.name === selectedCategory
-  );
+  useEffect(() => {
+    if (!debouncedTemplate) return;
+
+    if (projectData) {
+      setProjectData({
+        ...projectData,
+        scenes: [
+          {
+            ...projectData.scenes[0],
+            media: {
+              ...projectData.scenes[0].media,
+              id: debouncedTemplate.data.background.id ?? 0,
+              type: debouncedTemplate.data.background.type ?? '',
+              width: debouncedTemplate.data.background.size.width ?? 0,
+              height: debouncedTemplate.data.background.size.height ?? 0,
+              url: debouncedTemplate.data.background.fileUrl || '',
+            },
+            avatar: {
+              ...projectData.scenes[0].avatar,
+              id: debouncedTemplate.data.avatar.id ?? 0,
+              width: debouncedTemplate.data.avatar.size.width ?? 0,
+              height: debouncedTemplate.data.avatar.size.height ?? 0,
+              url: debouncedTemplate.data.avatar.fileUrl || '',
+            },
+          },
+        ],
+      });
+    }
+
+    //  서버 업로드 로직 api 추가시 수정
+    // const updateServer = async () => {
+    //   try {
+    //     await updateTemplateData({
+    //       projectId: projectData?.id,
+    //       templateId: debouncedTemplate.id,
+    //     });
+    //   } catch (error) {
+    //     // eslint-disable-next-line no-console
+    //     console.error('템플릿 업데이트 실패:', error);
+    //   }
+    // };
+
+    // updateServer();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTemplate]);
 
   return (
     <S.TemplateContainer>
       <S.TemplateMain>
         {selectedTemplate && (
-          <S.SelectedTemplateImage
-            src={selectedTemplate.imageUrl}
-            alt={selectedTemplate.name}
-          />
+          <S.SelectedImageContainer>
+            <S.SelectedTemplateImage
+              src={selectedTemplate.thumbnailUrl}
+              alt={String(selectedTemplate.id)}
+            />
+          </S.SelectedImageContainer>
         )}
       </S.TemplateMain>
       <S.TemplateToolbar>
-        <DropDown
-          placeholder="템플릿 선택"
-          dropDownData={['템플릿 1', '템플릿 2', '템플릿 3']}
-          width="90%"
-          onSelect={(value) => setSelectedCategory(value)}
-        />
+        {category && (
+          <DropDown
+            placeholder="템플릿 선택"
+            dropDownData={category}
+            width="90%"
+            onSelect={(value) =>
+              setSelectedCategory(
+                category?.find((cat) => cat.id === Number(value)) || null
+              )
+            }
+          />
+        )}
         <S.TemplateList>
-          {filteredTemplates.length > 0
-            ? filteredTemplates.map((template) => (
+          {template ? (
+            filteredTemplates.length > 0 ? (
+              filteredTemplates.map((template) => (
                 <S.TemplateCard
-                  onClick={() => setSelectTemplate(template)}
+                  onClick={() => setSelectedTemplate(template)}
                   key={template.id}>
                   <S.TemplateImg
                     isSelected={selectedTemplate?.id === template.id}
-                    src={template.imageUrl}
-                    alt={template.name}
+                    src={template.thumbnailUrl}
+                    alt={String(template.id)}
                   />
                 </S.TemplateCard>
               ))
-            : templates.map((template) => (
+            ) : (
+              template.data.map((template) => (
                 <S.TemplateCard
-                  onClick={() => setSelectTemplate(template)}
+                  onClick={() => setSelectedTemplate(template)}
                   key={template.id}>
                   <S.TemplateImg
                     isSelected={selectedTemplate?.id === template.id}
-                    src={template.imageUrl}
-                    alt={template.name}
+                    src={template.thumbnailUrl}
+                    alt={String(template.id)}
                   />
                 </S.TemplateCard>
-              ))}
+              ))
+            )
+          ) : (
+            <S.EmptyMessage>템플릿이 없습니다.</S.EmptyMessage>
+          )}
         </S.TemplateList>
       </S.TemplateToolbar>
     </S.TemplateContainer>
@@ -80,17 +180,24 @@ const S = {
     background-color: ${theme.colors.white};
     width: 70%;
     height: calc(100vh - 180px);
+    padding: 75px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: ${theme.spacing.sm};
     border: 1px solid ${theme.colors.border1};
     border-radius: ${theme.radius.xxlarge} 0 0 ${theme.radius.xxlarge};
   `,
-  SelectedTemplateImage: styled.img`
+  SelectedImageContainer: styled.div`
+    position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
+  `,
+  SelectedTemplateImage: styled.img`
+    position: absolute;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    aspect-ratio: 16 / 9;
     border-radius: ${theme.radius.medium};
     border: ${`2px solid ${theme.colors.secondary1}`};
   `,
@@ -122,11 +229,12 @@ const S = {
   `,
   TemplateCard: styled.div`
     width: 100%;
+    height: 100%;
   `,
   TemplateImg: styled.img<{ isSelected: boolean }>`
     width: 100%;
+    height: 100%;
     aspect-ratio: 16 / 9;
-    object-fit: cover;
     border-radius: ${theme.radius.medium};
     border: ${(props) =>
       props.isSelected ? `2px solid ${theme.colors.secondary1}` : 'none'};
