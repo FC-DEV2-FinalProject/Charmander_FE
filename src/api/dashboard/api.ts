@@ -1,6 +1,9 @@
 import api from '@/api/login/api';
 import { getTokens } from '@/utils/Tokens';
 
+export type ProjectResponseType = {
+  id: string;
+};
 export const getProjects = async () => {
   const { accessToken } = getTokens();
 

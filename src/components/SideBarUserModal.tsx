@@ -3,7 +3,9 @@ import RightArrowIcon from '@/assets/icons/icon-right-arrow.svg?react';
 import { FaUser } from 'react-icons/fa';
 import { useDialog } from '@/hook/useDialog';
 import { useNavigate } from '@tanstack/react-router';
-import React, { RefObject } from 'react';
+import React, { RefObject, useEffect, useState } from 'react';
+import { getInfo } from '@/api/myPage/api';
+import { resetTokens } from '@/utils/Tokens';
 
 interface IUserModalProps {
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -14,11 +16,24 @@ function SideBarUserModal({ setIsVisible, modalRef }: IUserModalProps) {
   const { alert, confirm } = useDialog();
   const navigate = useNavigate();
 
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+
+  useEffect(() => {
+    getInfo().then((userData) => {
+      if (userData) {
+        setEmail(userData.email || '');
+        setName(userData.name || '');
+      }
+    });
+  }, []);
+
   // todo 경민: 로그아웃 로직 추가
   const _handleLogout = async () => {
     const isConfirmed = await confirm('로그아웃 하시겠습니까?');
     if (isConfirmed) {
-      alert('로그아웃 되었습니다.');
+      resetTokens();
+      navigate({ to: 'auth/login' });
     }
   };
 
@@ -39,8 +54,8 @@ function SideBarUserModal({ setIsVisible, modalRef }: IUserModalProps) {
             />
           </p>
           <div>
-            <h4>Avatar</h4>
-            <p>Fast Campus</p>
+            <h4>{name}</h4>
+            <p>{email}</p>
           </div>
         </div>
         <p>
