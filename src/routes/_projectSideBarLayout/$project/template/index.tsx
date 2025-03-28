@@ -103,7 +103,9 @@ function RouteComponent() {
     // };
 
     // updateServer();
-  }, [debouncedTemplate, projectData, setProjectData]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedTemplate]);
 
   return (
     <S.TemplateContainer>
