@@ -2,6 +2,7 @@ import { createFileRoute, useLocation } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from '@tanstack/react-router';
+import { setTokens } from '@/utils/Tokens';
 
 export const Route = createFileRoute('/auth/callback/google/')({
   component: RouteComponent,
@@ -26,13 +27,16 @@ function RouteComponent() {
           return;
         }
 
-        const response = await axios.post(
-          import.meta.env.VITE_OAUTH_API_URL + '/google',
-          { code }
-        );
+        const response = await axios.post(import.meta.env.VITE_OAUTH_API_URL, {
+          provider: 'google',
+          code: code,
+        });
 
-        localStorage.setItem('userProfile', JSON.stringify(response.data.user));
-        localStorage.setItem('token', response.data.token);
+        if (response.data) {
+          const { accessToken } = response.data;
+          setTokens(accessToken);
+          //console.log(accessToken);
+        }
 
         navigate({ to: '/auth/sign-up/sns' });
       } catch {
