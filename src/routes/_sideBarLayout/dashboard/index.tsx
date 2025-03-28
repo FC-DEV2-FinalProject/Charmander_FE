@@ -47,7 +47,7 @@ function RouteComponent() {
     const fetchProjects = async () => {
       try {
         const data = await getProjects();
-        setProjects(data.projects);
+        setProjects(data.data);
       } catch (err) {
         alert(`${err}`);
       }
@@ -118,12 +118,14 @@ function RouteComponent() {
         </h2>
         {projects && projects.length > 0 ? (
           <Slider {...settings}>
-            {projects.map((project) => (
-              <MyProjectCard
-                key={project.id}
-                {...project}
-              />
-            ))}
+            {projects.map((project) => {
+              return (
+                <MyProjectCard
+                  key={project.id}
+                  {...project}
+                />
+              );
+            })}
           </Slider>
         ) : (
           <S.EmptyProjectCard onClick={_handlecreateProject}>
