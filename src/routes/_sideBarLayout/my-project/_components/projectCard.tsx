@@ -1,10 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import styled from 'styled-components';
 import MoreIcon from '@/assets/icons/icon-more.svg?react';
 import AvatarIcon from '@/assets/icons/icon-default-avatar.svg?react';
 import ScreenRatioIcon from '@/assets/icons/icon-screen-ratio.svg?react';
 import { useState, useRef, useEffect } from 'react';
 import { useDialog } from '@/hook/useDialog';
+import { deleteProject } from '@/api/dashboard/api';
 
 export const Route = createFileRoute(
   '/_sideBarLayout/my-project/_components/projectCard'
@@ -13,28 +14,37 @@ export const Route = createFileRoute(
 });
 
 interface ProjectProps {
-  title: string;
+  // title: string;
+  // updatedAt: string;
+  // isLoaded: boolean;
+  // progress: number;
+  id: number;
+  name: string;
+  active: boolean;
+  version: number;
+  lastAccessedAt: string;
+  createdAt: string;
   updatedAt: string;
-  isLoaded: boolean;
-  progress: number;
 }
 
-function ProjectCard({ title }: ProjectProps) {
+function ProjectCard(project: ProjectProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { alert, confirm } = useDialog();
   const ref = useRef<HTMLUListElement>(null);
 
   const _handleCopyBtn = () => {
     alert('복사본이 생성되었습니다.');
+
     setIsOpen(false);
   };
-  const _handleDeleteBtn = async () => {
+  const _handleDeleteBtn = async (projectId: number) => {
     const isConfirmed = await confirm(
       '프로젝트를 삭제하시겠습니까?',
       '삭제된 영상은 복구할 수 없습니다.'
     );
     if (isConfirmed) {
-      alert('프로젝트가 삭제되었습니다.');
+      const result = await deleteProject(projectId);
+      if (result) alert(result.message);
     }
 
     setIsOpen(false);
@@ -67,30 +77,35 @@ function ProjectCard({ title }: ProjectProps) {
             <MoreIcon color="#92929D" />
           </p>
         </S.CardTopInfo>
-        <S.ProjectTitle>
-          <h3 className="title">{title}</h3>
-          <div>
-            <p className="description">
-              이것은 대본 요약본입니다. 최대 두줄까지 작성이 가능하고....이것은
-              대본 요약본입니다. 최대 두줄까지 작성이 가능하고....이것은 대본
-              요약본입니다. 최대 두줄까지 작성이 가능하고....이것은 대본
-              요약본입니다. 최대 두줄까지 작성이 가능하고....
+        <Link to={`/project/${project.id}/article`}>
+          <S.ProjectTitle>
+            <h3 className="title">{project.name}</h3>
+            <div>
+              <p className="description">
+                이것은 대본 요약본입니다. 최대 두줄까지 작성이
+                가능하고....이것은 대본 요약본입니다. 최대 두줄까지 작성이
+                가능하고....이것은 대본 요약본입니다. 최대 두줄까지 작성이
+                가능하고....이것은 대본 요약본입니다. 최대 두줄까지 작성이
+                가능하고....
+              </p>
+            </div>
+          </S.ProjectTitle>
+          <S.ProjectInfo>
+            <p className="icon">
+              <ScreenRatioIcon />
             </p>
-          </div>
-        </S.ProjectTitle>
-        <S.ProjectInfo>
-          <p className="icon">
-            <ScreenRatioIcon />
-          </p>
-          <div className="editdate-wrap">
-            <h4 className="editdate">2025-02-27(18분전 수정)</h4>
-          </div>
-        </S.ProjectInfo>
+            <div className="editdate-wrap">
+              <h4 className="editdate">{project.lastAccessedAt}</h4>
+            </div>
+          </S.ProjectInfo>
+        </Link>
       </S.CardWrap>
       {isOpen && (
         <S.ModalMenu ref={ref}>
           <S.ModalItem onClick={_handleCopyBtn}>복제하기</S.ModalItem>
-          <S.ModalItem onClick={_handleDeleteBtn}>삭제하기</S.ModalItem>
+          <S.ModalItem onClick={() => _handleDeleteBtn(project.id)}>
+            삭제하기
+          </S.ModalItem>
         </S.ModalMenu>
       )}
     </div>
