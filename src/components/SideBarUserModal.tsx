@@ -5,6 +5,7 @@ import { useDialog } from '@/hook/useDialog';
 import { useNavigate } from '@tanstack/react-router';
 import React, { RefObject, useEffect, useState } from 'react';
 import { getInfo } from '@/api/myPage/api';
+import { resetTokens } from '@/utils/Tokens';
 
 interface IUserModalProps {
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,7 +32,8 @@ function SideBarUserModal({ setIsVisible, modalRef }: IUserModalProps) {
   const _handleLogout = async () => {
     const isConfirmed = await confirm('로그아웃 하시겠습니까?');
     if (isConfirmed) {
-      alert('로그아웃 되었습니다.');
+      resetTokens();
+      navigate({ to: 'auth/login' });
     }
   };
 
