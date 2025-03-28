@@ -10,13 +10,23 @@ export const Route = createFileRoute(
 });
 
 interface ProjectProps {
-  title: string;
+  id: number;
+  name: string;
+  active: boolean;
+  version: number;
+  lastAccessedAt: string;
+  createdAt: string;
   updatedAt: string;
-  isLoaded: boolean;
-  progress: number;
 }
 
-function MyProjectCard({ title, updatedAt, isLoaded, progress }: ProjectProps) {
+function MyProjectCard({
+  name,
+  active,
+  // version,
+  // lastAccessedAt,
+  // createdAt,
+  updatedAt,
+}: ProjectProps) {
   return (
     <S.CardWrap>
       <S.CardImage className="card-image">
@@ -24,13 +34,13 @@ function MyProjectCard({ title, updatedAt, isLoaded, progress }: ProjectProps) {
           src="https://img.freepik.com/free-vector/staff-creating-film_1262-20681.jpg?t=st=1742560845~exp=1742564445~hmac=c96983f5ebf8d7db96d12092ed3ffe4ffe7eefbfec031d8de5d8eaaa804e80ca&w=1800"
           alt="test-img"
         />
-        {isLoaded && (
+        {active && (
           <S.CardBackDrop>
             <S.LoadingIcon>
               <Loading />
             </S.LoadingIcon>
             <S.ProgressState>
-              <p>{progress}%</p>
+              <p>{`75`}%</p>
               <S.ProgressBarWrap>
                 <S.ProgressBar></S.ProgressBar>
               </S.ProgressBarWrap>
@@ -43,7 +53,7 @@ function MyProjectCard({ title, updatedAt, isLoaded, progress }: ProjectProps) {
           <FileEditIcon />
         </p>
         <div>
-          <h4>{title}</h4>
+          <h4>{name}</h4>
           <p>{updatedAt}</p>
         </div>
       </S.CardContent>
