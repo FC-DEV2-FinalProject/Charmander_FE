@@ -1,3 +1,4 @@
+import { FetchTemplateResponse } from '@/types/template';
 import api from '../login/api';
 
 export const fetchProjects = async (projectId: string) => {
@@ -62,7 +63,7 @@ export const fetchTemplateCategories = async () => {
 };
 export const fetchTemplate = async () => {
   try {
-    const response = await api.get('/api/v1/templates');
+    const response = await api.get<FetchTemplateResponse>('/api/v1/templates');
     return response.data;
   } catch (error) {
     // eslint-disable-next-line no-console

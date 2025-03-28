@@ -37,12 +37,15 @@ const DropDown = ({
     };
   }, []);
 
-  const handleValue = (data: string) => {
-    setCurrentValue(data);
-    setView(false);
-    if (onSelect) {
-      onSelect(data);
+  const handleValue = (data: { id: number; name: string } | string) => {
+    if (typeof data === 'object' && 'id' in data) {
+      setCurrentValue(data.name);
+      onSelect?.(data.id.toString());
+    } else {
+      setCurrentValue(data);
+      onSelect?.(data);
     }
+    setView(false);
   };
   return (
     <S.DropDownContainer
@@ -57,30 +60,17 @@ const DropDown = ({
       </S.DropDownBox>
       {view && (
         <S.DropDownList>
-          {
-            dropDownData.length > 0 &&
-              dropDownData.map((data, index) => (
-                <S.DropDownItem
-                  key={
-                    typeof data === 'object' && 'id' in data ? data.id : index
-                  }
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleValue(
-                      typeof data === 'object' && 'name' in data
-                        ? data.name
-                        : data
-                    );
-                  }}>
-                  {typeof data === 'object' && 'name' in data
-                    ? data.name
-                    : data}
-                </S.DropDownItem>
-              ))
-            // : (
-            //   <p>🚨 데이터가 없습니다</p>
-            // )
-          }
+          {dropDownData.length > 0 &&
+            dropDownData.map((data, index) => (
+              <S.DropDownItem
+                key={typeof data === 'object' && 'id' in data ? data.id : index}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleValue(data);
+                }}>
+                {typeof data === 'object' && 'name' in data ? data.name : data}
+              </S.DropDownItem>
+            ))}
         </S.DropDownList>
       )}
     </S.DropDownContainer>

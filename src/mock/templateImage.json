@@ -1,144 +1,218 @@
 {
   "data": [
     {
-      "id": 9007199254740991,
-      "priority": 1073741824,
+      "id": 1,
+      "priority": 1,
       "data": {
-        "name": "string",
+        "name": "Template 1",
         "category": "사회",
         "size": {
-          "width": 1073741824,
-          "height": 1073741824
+          "width": 1920,
+          "height": 1080
         },
         "background": {
-          "id": 9007199254740991,
-          "name": "string",
-          "priority": 1073741824,
+          "id": 1,
+          "name": "Background 1",
+          "priority": 1,
           "type": "Image",
-          "url": "/src/mock/mockImage/news/CK_psxtg0828506.jpg",
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_1.png",
           "size": {
-            "width": 1073741824,
-            "height": 1073741824
+            "width": 1920,
+            "height": 1080
           },
-          "createdAt": "2025-03-27T08:49:08.211Z",
-          "updatedAt": "2025-03-27T08:49:08.211Z"
+          "createdAt": "2025-03-27T10:00:00",
+          "updatedAt": "2025-03-27T10:00:00"
         },
         "avatar": {
-          "id": 9007199254740991,
-          "name": "string",
-          "priority": 1073741824,
-          "url": "/src/mock/mockImage/AVATAR/Jihun_01A.png",
-          "createdAt": "2025-03-27T08:49:08.211Z",
-          "updatedAt": "2025-03-27T08:49:08.211Z"
+          "id": 1,
+          "name": "Hope avatar 1",
+          "priority": 1,
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "createdAt": "2025-03-27T11:00:00",
+          "updatedAt": "2025-03-27T11:00:00"
         }
       },
-      "createdAt": "2025-03-27T08:49:08.211Z",
-      "updatedAt": "2025-03-27T08:49:08.211Z"
+      "createdAt": "2025-03-27T12:00:00",
+      "updatedAt": "2025-03-27T12:00:00"
     },
     {
-      "id": 9007199254740991,
-      "priority": 1073741824,
+      "id": 2,
+      "priority": 2,
       "data": {
-        "name": "string",
+        "name": "Template 2",
+        "category": "정치",
+        "size": {
+          "width": 1920,
+          "height": 1080
+        },
+        "background": {
+          "id": 2,
+          "name": "Background 2",
+          "priority": 2,
+          "type": "Image",
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_2.png",
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "createdAt": "2025-03-27T10:05:00",
+          "updatedAt": "2025-03-27T10:05:00"
+        },
+        "avatar": {
+          "id": 1,
+          "name": "Hope avatar 1",
+          "priority": 1,
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "createdAt": "2025-03-27T11:00:00",
+          "updatedAt": "2025-03-27T11:00:00"
+        }
+      },
+      "createdAt": "2025-03-27T12:05:00",
+      "updatedAt": "2025-03-27T12:05:00"
+    },
+    {
+      "id": 3,
+      "priority": 3,
+      "data": {
+        "name": "Template 3",
         "category": "경제",
         "size": {
-          "width": 1073741824,
-          "height": 1073741824
+          "width": 1920,
+          "height": 1080
         },
         "background": {
-          "id": 9007199254740991,
-          "name": "string",
-          "priority": 1073741824,
+          "id": 3,
+          "name": "Background 3",
+          "priority": 3,
           "type": "Image",
-          "url": "/src/mock/mockImage/news/CK_ti436a26701.jpg",
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_3.png",
           "size": {
-            "width": 1073741824,
-            "height": 1073741824
+            "width": 1920,
+            "height": 1080
           },
-          "createdAt": "2025-03-27T08:49:08.211Z",
-          "updatedAt": "2025-03-27T08:49:08.211Z"
+          "createdAt": "2025-03-27T10:10:00",
+          "updatedAt": "2025-03-27T10:10:00"
         },
         "avatar": {
-          "id": 9007199254740991,
-          "name": "string",
-          "priority": 1073741824,
-          "url": "/src/mock/mockImage/AVATAR/Jihun_02A.png",
-          "createdAt": "2025-03-27T08:49:08.211Z",
-          "updatedAt": "2025-03-27T08:49:08.211Z"
+          "id": 1,
+          "name": "Hope avatar 1",
+          "priority": 1,
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "createdAt": "2025-03-27T11:00:00",
+          "updatedAt": "2025-03-27T11:00:00"
         }
       },
-      "createdAt": "2025-03-27T08:49:08.211Z",
-      "updatedAt": "2025-03-27T08:49:08.211Z"
+      "createdAt": "2025-03-27T12:10:00",
+      "updatedAt": "2025-03-27T12:10:00"
     },
     {
-      "id": 9007199254740991,
-      "priority": 1073741824,
+      "id": 4,
+      "priority": 4,
       "data": {
-        "name": "string",
-        "category": "스포츠",
-        "size": {
-          "width": 1073741824,
-          "height": 1073741824
-        },
-        "background": {
-          "id": 9007199254740991,
-          "name": "string",
-          "priority": 1073741824,
-          "type": "Image",
-          "url": "/src/mock/mockImage/news/CK_tii219a0206.jpg",
-          "size": {
-            "width": 1073741824,
-            "height": 1073741824
-          },
-          "createdAt": "2025-03-27T08:49:08.211Z",
-          "updatedAt": "2025-03-27T08:49:08.211Z"
-        },
-        "avatar": {
-          "id": 9007199254740991,
-          "name": "string",
-          "priority": 1073741824,
-          "url": "/src/mock/mockImage/AVATAR/Jihun_04A.png",
-          "createdAt": "2025-03-27T08:49:08.211Z",
-          "updatedAt": "2025-03-27T08:49:08.211Z"
-        }
-      },
-      "createdAt": "2025-03-27T08:49:08.211Z",
-      "updatedAt": "2025-03-27T08:49:08.211Z"
-    },
-    {
-      "id": 9007199254740991,
-      "priority": 1073741824,
-      "data": {
-        "name": "string",
+        "name": "Template 4",
         "category": "문화",
         "size": {
-          "width": 1073741824,
-          "height": 1073741824
+          "width": 1920,
+          "height": 1080
         },
         "background": {
-          "id": 9007199254740991,
-          "name": "string",
-          "priority": 1073741824,
+          "id": 4,
+          "name": "Background 4",
+          "priority": 4,
           "type": "Image",
-          "url": "/src/mock/mockImage/news/CK_tii219a0206.jpg",
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_4.png",
           "size": {
-            "width": 1073741824,
-            "height": 1073741824
+            "width": 1920,
+            "height": 1080
           },
-          "createdAt": "2025-03-27T08:49:08.211Z",
-          "updatedAt": "2025-03-27T08:49:08.211Z"
+          "createdAt": "2025-03-27T10:15:00",
+          "updatedAt": "2025-03-27T10:15:00"
         },
         "avatar": {
-          "id": 9007199254740991,
-          "name": "string",
-          "priority": 1073741824,
-          "url": "/src/mock/mockImage/AVATAR/Jihun_02A.png",
-          "createdAt": "2025-03-27T08:49:08.211Z",
-          "updatedAt": "2025-03-27T08:49:08.211Z"
+          "id": 1,
+          "name": "Hope avatar 1",
+          "priority": 1,
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "createdAt": "2025-03-27T11:00:00",
+          "updatedAt": "2025-03-27T11:00:00"
         }
       },
-      "createdAt": "2025-03-27T08:49:08.211Z",
-      "updatedAt": "2025-03-27T08:49:08.211Z"
+      "createdAt": "2025-03-27T12:15:00",
+      "updatedAt": "2025-03-27T12:15:00"
+    },
+    {
+      "id": 5,
+      "priority": 5,
+      "data": {
+        "name": "Template 5",
+        "category": "연예",
+        "size": {
+          "width": 1920,
+          "height": 1080
+        },
+        "background": {
+          "id": 5,
+          "name": "Background 5",
+          "priority": 5,
+          "type": "Image",
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_5.png",
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "createdAt": "2025-03-27T10:20:00",
+          "updatedAt": "2025-03-27T10:20:00"
+        },
+        "avatar": {
+          "id": 1,
+          "name": "Hope avatar 1",
+          "priority": 1,
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "size": {
+            "width": 600,
+            "height": 1080
+          },
+          "createdAt": "2025-03-27T11:00:00",
+          "updatedAt": "2025-03-27T11:00:00"
+        }
+      },
+      "createdAt": "2025-03-27T12:20:00",
+      "updatedAt": "2025-03-27T12:20:00"
+    },
+    {
+      "id": 6,
+      "priority": 6,
+      "data": {
+        "name": "Template 6",
+        "category": "스포츠",
+        "size": {
+          "width": 1920,
+          "height": 1080
+        },
+        "background": {
+          "id": 6,
+          "name": "Background 6",
+          "priority": 6,
+          "type": "Image",
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_6.png",
+          "size": {
+            "width": 1920,
+            "height": 1080
+          },
+          "createdAt": "2025-03-27T10:25:00",
+          "updatedAt": "2025-03-27T10:25:00"
+        },
+        "avatar": {
+          "id": 1,
+          "name": "Hope avatar 1",
+          "priority": 1,
+          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "createdAt": "2025-03-27T11:00:00",
+          "updatedAt": "2025-03-27T11:00:00"
+        }
+      },
+      "createdAt": "2025-03-27T12:25:00",
+      "updatedAt": "2025-03-27T12:25:00"
     }
   ]
 }
