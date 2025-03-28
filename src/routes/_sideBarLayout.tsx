@@ -18,7 +18,9 @@ import { FaUser } from 'react-icons/fa';
 import { useDialog } from '@/hook/useDialog';
 import SideBarUserModal from '@/components/SideBarUserModal';
 import media from '@/styles/media';
-
+import { getInfo } from '@/api/myPage/api';
+import { postProject } from '@/api/dashboard/api';
+import type { ProjectResponseType } from '@/api/dashboard/api';
 export const Route = createFileRoute('/_sideBarLayout')({
   component: RouteComponent,
 });
@@ -37,6 +39,17 @@ function RouteComponent() {
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [title, setTitle] = useState<string>('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+
+  useEffect(() => {
+    getInfo().then((userData) => {
+      if (userData) {
+        setEmail(userData.email || '');
+        setName(userData.name || '');
+      }
+    });
+  }, []);
 
   const _handleHelpBtn = () => {
     alert('서비스 준비중입니다.');
@@ -71,7 +84,7 @@ function RouteComponent() {
       setTitle('내 프로젝트');
     } else if (location.pathname === '/video-archive') {
       setTitle('영상 보관함');
-    } else {
+    } else if (location.pathname === '/my-page') {
       setTitle('마이페이지');
     }
   }, [location.pathname]);
@@ -95,8 +108,8 @@ function RouteComponent() {
                   />
                 </S.UserImage>
                 <S.UserNameBox>
-                  <S.UserNickname>Avatar</S.UserNickname>
-                  <S.UserName>Fast Campus</S.UserName>
+                  <S.UserNickname>{name}</S.UserNickname>
+                  <S.UserName>{email}</S.UserName>
                 </S.UserNameBox>
               </S.UserInfo>
               <S.ToggleIcon>
@@ -111,7 +124,14 @@ function RouteComponent() {
             )}
           </S.UserInfoWrap>
           {/* todo 경민: 링크 수정 */}
-          <S.CreateBtn onClick={() => navigate({ to: `/dashboard` })}>
+          {/* 링크 수정 필요 */}
+          <S.CreateBtn
+            onClick={async () => {
+              const projectResponse: ProjectResponseType = await postProject();
+              navigate({
+                to: `/${projectResponse.id}/article/`,
+              });
+            }}>
             <span>
               <PlusIcon />
             </span>
