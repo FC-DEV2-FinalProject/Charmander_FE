@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+import { TemplateBackground, TemplateSize } from './template';
+
 export interface Position {
   x: number;
   y: number;
@@ -23,8 +26,8 @@ export interface Scene {
     backgroundColor: string;
     position: Position;
   };
-  media: ImageType;
-  avatar: ImageType;
+  media: ImageType | null;
+  avatar: ImageType | null;
 }
 
 export interface Project {
@@ -35,11 +38,10 @@ export interface Project {
 
 export interface ProjectState {
   projectData: Project | null;
-  // eslint-disable-next-line no-unused-vars
   setProjectData: (project: Project) => void;
-  // eslint-disable-next-line no-unused-vars
-  updateMediaPosition: (newPosition: Position) => void;
-  // eslint-disable-next-line no-unused-vars
-  updateAvatarPosition: (newPosition: Position) => void;
   resetProjectData: () => void;
+  updateMedia: (template: TemplateBackground) => void;
+  updateElementPosition: (isAvatar: boolean, newPosition: Position) => void;
+  updateElementSize: (isAvatar: boolean, newSize: TemplateSize) => void;
+  resetMedia: () => void;
 }
