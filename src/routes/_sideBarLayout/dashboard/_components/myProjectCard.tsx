@@ -29,7 +29,7 @@ function MyProjectCard({
   updatedAt,
 }: ProjectProps) {
   return (
-    <Link to={`/project/${id}/article`}>
+    <Link to={`/${id}/article`}>
       <S.CardWrap>
         <S.CardImage className="card-image">
           {/* 추후 받은 이미지로 변경 해야합니다 */}
