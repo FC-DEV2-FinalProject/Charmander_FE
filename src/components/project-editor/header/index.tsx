@@ -22,14 +22,14 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pd
 interface MediaAndAvatarData {
   items: {
     data: {
-      background?: {
-        id?: string;
-        type?: string;
-        url?: string;
+      background: {
+        id: string;
+        type: string;
+        url: string;
       };
-      avatar?: {
-        id?: string;
-        url?: string;
+      avatar: {
+        id: string;
+        url: string;
       };
     };
   }[];
@@ -83,7 +83,7 @@ const ProjectHeader = () => {
         if (projectData?.name) {
           await postProjectTitle(project, projectData.name);
           setProjectData({
-            id: projectData.id || '',
+            id: projectData.id,
             name: projectTitle,
             scenes: projectData.scenes || [],
           });
@@ -160,16 +160,24 @@ const ProjectHeader = () => {
           scenes: state.projectData.scenes.map((scene, index) => ({
             ...scene,
             media: {
-              id: data.items[index]?.data.background?.id || '',
-              type: data.items[index]?.data.background?.type || 'image',
-              url: data.items[index]?.data.background?.url || '',
+              id: Number(data.items[index].data.background.id),
+              type: data.items[index].data.background.type || 'image',
+              url: data.items[index].data.background.url,
               position: { x: 0, y: 0 },
+              width: 1920,
+              height: 1080,
+              scale: 1,
+              viewport: [0, 0],
             },
             avatar: {
-              id: data.items[index]?.data.avatar?.id || '',
+              id: Number(data.items[index].data.avatar.id),
               type: 'image',
-              url: data.items[index]?.data.avatar?.url || '',
+              url: data.items[index].data.avatar.url,
               position: { x: 0, y: 0 },
+              width: 0,
+              height: 0,
+              scale: 1,
+              viewport: [0, 0],
             },
           })),
         },

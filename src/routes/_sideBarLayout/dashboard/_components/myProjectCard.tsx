@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import FileEditIcon from '@/assets/icons/icon-file-edit.svg?react';
 import styled from 'styled-components';
 import Loading from '@/components/common/spinner';
@@ -20,6 +20,7 @@ interface ProjectProps {
 }
 
 function MyProjectCard({
+  id,
   name,
   active,
   // version,
@@ -28,36 +29,39 @@ function MyProjectCard({
   updatedAt,
 }: ProjectProps) {
   return (
-    <S.CardWrap>
-      <S.CardImage className="card-image">
-        <img
-          src="https://img.freepik.com/free-vector/staff-creating-film_1262-20681.jpg?t=st=1742560845~exp=1742564445~hmac=c96983f5ebf8d7db96d12092ed3ffe4ffe7eefbfec031d8de5d8eaaa804e80ca&w=1800"
-          alt="test-img"
-        />
-        {active && (
-          <S.CardBackDrop>
-            <S.LoadingIcon>
-              <Loading />
-            </S.LoadingIcon>
-            <S.ProgressState>
-              <p>{`75`}%</p>
-              <S.ProgressBarWrap>
-                <S.ProgressBar></S.ProgressBar>
-              </S.ProgressBarWrap>
-            </S.ProgressState>
-          </S.CardBackDrop>
-        )}
-      </S.CardImage>
-      <S.CardContent>
-        <p>
-          <FileEditIcon />
-        </p>
-        <div>
-          <h4>{name}</h4>
-          <p>{updatedAt}</p>
-        </div>
-      </S.CardContent>
-    </S.CardWrap>
+    <Link to={`/project/${id}/article`}>
+      <S.CardWrap>
+        <S.CardImage className="card-image">
+          {/* 추후 받은 이미지로 변경 해야합니다 */}
+          <img
+            src="https://img.freepik.com/free-vector/staff-creating-film_1262-20681.jpg?t=st=1742560845~exp=1742564445~hmac=c96983f5ebf8d7db96d12092ed3ffe4ffe7eefbfec031d8de5d8eaaa804e80ca&w=1800"
+            alt="test-img"
+          />
+          {active && (
+            <S.CardBackDrop>
+              <S.LoadingIcon>
+                <Loading />
+              </S.LoadingIcon>
+              <S.ProgressState>
+                <p>{`75`}%</p>
+                <S.ProgressBarWrap>
+                  <S.ProgressBar></S.ProgressBar>
+                </S.ProgressBarWrap>
+              </S.ProgressState>
+            </S.CardBackDrop>
+          )}
+        </S.CardImage>
+        <S.CardContent>
+          <p>
+            <FileEditIcon />
+          </p>
+          <div>
+            <h4>{name}</h4>
+            <p>{updatedAt}</p>
+          </div>
+        </S.CardContent>
+      </S.CardWrap>
+    </Link>
   );
 }
 

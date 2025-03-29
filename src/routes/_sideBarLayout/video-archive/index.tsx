@@ -7,32 +7,35 @@ import {
   flexRender,
 } from '@tanstack/react-table';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import styled from 'styled-components';
 import DownloadIcon from '@/assets/icons/icon-download.svg?react';
 import CheckIcon from '@/assets/icons/icon-check.svg?react';
 import LeftArrow from '@/assets/icons/icon-table-left-arrow.svg?react';
 import RightArrow from '@/assets/icons/icon-table-right-arrow.svg?react';
+import { getVideoArchive, videoArchiveType } from '@/api/video-archive/api';
 
 export const Route = createFileRoute('/_sideBarLayout/video-archive/')({
   component: RouteComponent,
 });
 
-type TableProps = {
-  id: number;
-  title: string;
-  updatedAt: string;
-  progress: boolean;
-  playTime: number;
-  isPlaying: boolean;
-};
-
 function RouteComponent() {
-  const [data, setData] = useState<TableProps[]>([]);
+  const [data, setData] = useState<videoArchiveType[]>([]);
   const [selectedRows, setSelectedRows] = useState<Record<number, boolean>>({});
   const [pageSize, setPageSize] = useState<number>(10);
   const [pageIndex, setPageIndex] = useState(0);
-  const PROJECT_DUMMY = '/src/mock/dummy.json';
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await getVideoArchive();
+        setData(response.data);
+      } catch (err) {
+        alert(`${err}`);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const selectAllRow = (isChecked: boolean) => {
     if (isChecked) {
@@ -64,7 +67,7 @@ function RouteComponent() {
   const isAllSelected =
     data.length > 0 && Object.keys(selectedRows).length === data.length;
 
-  const columns: ColumnDef<TableProps>[] = [
+  const columns: ColumnDef<videoArchiveType>[] = [
     {
       accessorKey: 'task',
       header: () => (
@@ -188,18 +191,6 @@ function RouteComponent() {
     setPageIndex(0);
   };
 
-  useEffect(() => {
-    const _getVideoData = async () => {
-      try {
-        const res = await axios.get(PROJECT_DUMMY);
-        setData(res.data.videoHistory);
-      } catch (err) {
-        alert(`${err}`);
-      }
-    };
-
-    _getVideoData();
-  }, []);
   return (
     <S.VideoArchiveWrap>
       <S.VideoTableContent>

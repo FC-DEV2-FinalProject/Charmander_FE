@@ -1,10 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import ProjectCard from './_components/projectCard';
 import DropdownSelect from './_components/dropdownSelect';
-import axios from 'axios';
 import EmptyVideoIcon from '@/assets/icons/icon-empty-video.svg?react';
+import { getProjects } from '@/api/dashboard/api';
+import { sortProjects } from '@/utils/sort';
 
 export const Route = createFileRoute('/_sideBarLayout/my-project/')({
   component: RouteComponent,
@@ -12,19 +13,25 @@ export const Route = createFileRoute('/_sideBarLayout/my-project/')({
 
 type TabKey = 'all' | 'editing' | 'cmpltRendering';
 
-interface IProject {
+export interface IProject {
+  // id: number;
+  // title: string;
+  // updatedAt: string;
+  // isLoaded: boolean;
+  // progress: number;
   id: number;
-  title: string;
+  name: string;
+  active: boolean;
+  version: number;
+  lastAccessedAt: string;
+  createdAt: string;
   updatedAt: string;
-  isLoaded: boolean;
-  progress: number;
 }
 
 function RouteComponent() {
   const [projects, setProjects] = useState<IProject[]>([]);
   const [selectItems, setSelectItems] = useState<string>('생성일자');
   const [activeTab, setActiveTab] = useState<TabKey>('all');
-  const PROJECT_DUMMY = '/src/mock/dummy.json';
 
   const tabMenus = [
     { label: '전체', value: 'all' },
@@ -33,21 +40,34 @@ function RouteComponent() {
   ];
 
   useEffect(() => {
-    const _getProjects = async () => {
+    const fetchProjects = async () => {
       try {
-        const res = await axios.get(PROJECT_DUMMY);
-        setProjects(res.data.projects);
+        const data = await getProjects();
+        setProjects(data.data);
       } catch (err) {
         alert(`${err}`);
       }
     };
 
-    _getProjects();
+    fetchProjects();
   }, []);
+
+  const sortedProjects = useMemo(() => {
+    let filteredProjects = projects;
+
+    // 탭에 따른 필터링 추가
+    if (activeTab === 'editing') {
+      filteredProjects = projects.filter((project) => project.active);
+    } else if (activeTab === 'cmpltRendering') {
+      filteredProjects = projects.filter((project) => !project.active);
+    }
+
+    return sortProjects(filteredProjects, selectItems);
+  }, [projects, selectItems, activeTab]);
 
   return (
     <S.MyProjectWrap>
-      {projects.length > 0 ? (
+      {sortedProjects && sortedProjects.length > 0 ? (
         <>
           <S.TopSortSect>
             <S.DropDownWrap>
