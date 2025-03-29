@@ -42,7 +42,7 @@ export const deleteProject = async (projectId: number) => {
   const { accessToken } = getTokens();
 
   try {
-    const response = await api.delete(`/api/projects/${projectId}`, {
+    const response = await api.delete(`/api/v1/projects/${projectId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
