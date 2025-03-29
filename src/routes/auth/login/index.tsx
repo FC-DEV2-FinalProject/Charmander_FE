@@ -8,7 +8,7 @@ import GoogleLoginButton from '@/components/googleLoginButton';
 import BannerSlider from '@/components/common/bannerSlider';
 import Input from '@/components/common/input';
 import Checkbox from '@/components/common/selectBox/checkbox';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import LinkButton from '@/components/common/button/linkButton';
 import { useForm, Controller } from 'react-hook-form';
 import { LoginSchema, type LoginSchemaType } from '@/schema/LoginSchema';
@@ -35,6 +35,9 @@ function RouteComponent() {
     },
   });
 
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+
   function handleCheckChange() {
     setIsChecked(!isChecked);
   }
@@ -43,13 +46,35 @@ function RouteComponent() {
     setIsChecked(!isChecked);
   }
 
-  const onSubmit = async (data: LoginSchemaType) => {
-    const accessToken = await login(data.email, data.password);
-    if (accessToken) {
-      setTokens(accessToken);
-      navigate({ to: '/dashboard' });
-    }
-  };
+  const onSubmit = useCallback(
+    async (data: LoginSchemaType) => {
+      const accessToken = await login(data.email, data.password);
+      if (accessToken) {
+        setTokens(accessToken);
+        navigate({ to: '/dashboard' });
+      }
+    },
+    [navigate]
+  );
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        const activeElement = document.activeElement;
+        if (
+          activeElement === emailInputRef.current ||
+          activeElement === passwordInputRef.current
+        ) {
+          handleSubmit(onSubmit)();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleSubmit, onSubmit]);
 
   return (
     <S.LoginWrapper>
@@ -75,10 +100,18 @@ function RouteComponent() {
                   name="email"
                   control={control}
                   render={({ field }) => (
-                    <Input
-                      type="email"
-                      {...field}
-                    />
+                    <div
+                      ref={(el) => {
+                        if (el) {
+                          const inputEl = el.querySelector('input');
+                          emailInputRef.current = inputEl;
+                        }
+                      }}>
+                      <Input
+                        type="email"
+                        {...field}
+                      />
+                    </div>
                   )}
                 />
                 <S.ErrorContainer>
@@ -93,10 +126,18 @@ function RouteComponent() {
                   name="password"
                   control={control}
                   render={({ field }) => (
-                    <Input
-                      type="password"
-                      {...field}
-                    />
+                    <div
+                      ref={(el) => {
+                        if (el) {
+                          const inputEl = el.querySelector('input');
+                          passwordInputRef.current = inputEl;
+                        }
+                      }}>
+                      <Input
+                        type="password"
+                        {...field}
+                      />
+                    </div>
                   )}
                 />
                 <S.ErrorContainer>
@@ -141,7 +182,6 @@ function RouteComponent() {
     </S.LoginWrapper>
   );
 }
-
 const S = {
   LoginWrapper: styled.div`
     display: flex;
