@@ -23,7 +23,7 @@ export const Route = createFileRoute('/_projectSideBarLayout')({
 });
 
 function RouteComponent() {
-  const id = '1';
+  const { project } = Route.useParams();
   const matchRoute = useMatchRoute();
   return (
     <>
@@ -33,7 +33,7 @@ function RouteComponent() {
           <S.IconBox $active={!!matchRoute({ to: '/$project/article' })}>
             <Link
               to="/$project/article"
-              params={{ project: id }}>
+              params={{ project: project }}>
               {matchRoute({ to: '/$project/article' }) ? (
                 <Article
                   width={80}
@@ -52,7 +52,7 @@ function RouteComponent() {
           <S.IconBox $active={!!matchRoute({ to: '/$project/template' })}>
             <Link
               to="/$project/template"
-              params={{ project: id }}>
+              params={{ project: project }}>
               {matchRoute({ to: '/$project/template' }) ? (
                 <Template
                   width={80}
@@ -71,7 +71,7 @@ function RouteComponent() {
           <S.IconBox $active={!!matchRoute({ to: '/$project/background' })}>
             <Link
               to="/$project/background"
-              params={{ project: id }}>
+              params={{ project: project }}>
               {matchRoute({ to: '/$project/background' }) ? (
                 <Gallery
                   width={80}
@@ -90,7 +90,7 @@ function RouteComponent() {
           <S.IconBox $active={!!matchRoute({ to: '/$project/avatar' })}>
             <Link
               to="/$project/avatar"
-              params={{ project: id }}>
+              params={{ project: project }}>
               {matchRoute({ to: '/$project/avatar' }) ? (
                 <Avatar
                   width={80}
@@ -108,7 +108,7 @@ function RouteComponent() {
           <S.IconBox $active={!!matchRoute({ to: '/$project/script' })}>
             <Link
               to="/$project/script"
-              params={{ project: id }}>
+              params={{ project: project }}>
               {matchRoute({ to: '/$project/script' }) ? (
                 <Script
                   width={80}

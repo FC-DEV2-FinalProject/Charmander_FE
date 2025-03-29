@@ -1,8 +1,7 @@
 import styled from 'styled-components';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DropDown from '@/components/common/dropdown';
 import theme from '@/styles/theme';
-import { mockTemplateImage, Template } from '@/mock/mockTemplateImage';
 import { createFileRoute } from '@tanstack/react-router';
 import SidebarBackgroundStyleIcon from '@/assets/projectIcon/background-sidebarIcon.svg?react';
 import BackgroundFileUploadIcon from '@/assets/projectIcon/backgroundFileUploadIcon.svg?react';
@@ -11,6 +10,9 @@ import DeleteBackgroundIcon from '@/assets/projectIcon/deleteBackground.svg?reac
 import GenerateBackgroundIcon from '@/assets/projectIcon/generateBackground.svg?react';
 import DragImage from '@/components/project-editor/dragImage';
 import useAspectRatioStore from '@/store/useAspectRatioStore';
+import { nanoid } from 'nanoid';
+import { useTemplates } from '@/hook/useTemplateList';
+import { TemplateBackground } from '@/types/template';
 
 export const Route = createFileRoute(
   '/_projectSideBarLayout/$project/background/'
@@ -19,12 +21,27 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
+  const { templatesQuery } = useTemplates();
+  const { data: templateList, isLoading } = templatesQuery;
   const { aspectRatio, setAspectRatio } = useAspectRatioStore();
   const [SelectedBackgroundTemplate, setSelectedBackgroundTemplate] =
-    useState<Template | null>(null);
-  const [templateImages, setTemplateImages] = useState<Template[]>(
-    mockTemplateImage().templates
+    useState<TemplateBackground | null>(null);
+  const [templateImages, setTemplateImages] = useState<TemplateBackground[]>(
+    []
   );
+  useEffect(() => {
+    if (templateList) {
+      setTemplateImages((prevBackgrounds) => {
+        const newBackgrounds = templateList.data
+          .map((template) => template.data.background)
+          .filter((bg) => bg && !prevBackgrounds.includes(bg));
+
+        return [...prevBackgrounds, ...newBackgrounds];
+      });
+    }
+  }, [templateList]);
+
+  const generateId = nanoid(10);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
@@ -43,36 +60,39 @@ function RouteComponent() {
       const imageUrl = reader.result as string;
 
       const isDuplicate = templateImages.some(
-        (template) => template.url === imageUrl
+        (template) => template.fileUrl === imageUrl
       );
       if (isDuplicate) {
         alert('이미 추가된 이미지입니다.');
         return;
       }
 
-      const newTemplate: Template = {
-        id: String(Date.now()),
+      const newTemplate: TemplateBackground = {
+        id: Number(generateId),
+        name: 'New Background',
+        priority: 0,
+        fileUrl: imageUrl,
+        size: { width: 0, height: 0 },
         type: '',
-        url: imageUrl,
-        position: {
-          x: 0,
-          y: 0,
-        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       setTemplateImages((prev) => [...prev, newTemplate]);
     };
     reader.readAsDataURL(file);
   };
-
+  if (isLoading) {
+    return <div>로딩중</div>;
+  }
   return (
     <S.BackgroundContainer>
       <S.BackgroundMain>
         {SelectedBackgroundTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
-            src={SelectedBackgroundTemplate.url}
-            alt={SelectedBackgroundTemplate.url}
+            src={SelectedBackgroundTemplate.fileUrl}
+            alt={SelectedBackgroundTemplate.name}
             containerRef={backgroundRef}
           />
         )}
@@ -117,8 +137,8 @@ function RouteComponent() {
                 key={template.id}>
                 <S.BackgroundTemplateImg
                   isSelected={SelectedBackgroundTemplate?.id === template.id}
-                  src={template.url}
-                  alt={template.url}
+                  src={template.fileUrl}
+                  alt={template.name}
                 />
               </S.BackgroundTemplateCard>
             ))}

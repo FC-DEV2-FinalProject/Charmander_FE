@@ -5,7 +5,7 @@
       "priority": 1,
       "data": {
         "name": "Template 1",
-        "category": "사회",
+        "categoryId": 10,
         "size": {
           "width": 1920,
           "height": 1080
@@ -27,11 +27,17 @@
           "id": 1,
           "name": "Hope avatar 1",
           "priority": 1,
+          "type": "Image",
           "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "size": {
+            "width": 0,
+            "height": 0
+          },
           "createdAt": "2025-03-27T11:00:00",
           "updatedAt": "2025-03-27T11:00:00"
         }
       },
+      "thumbnailUrl": "https://cdn.charmander.xyz/template-thumbnail/CK_tii219a0206_1920.png",
       "createdAt": "2025-03-27T12:00:00",
       "updatedAt": "2025-03-27T12:00:00"
     },
@@ -40,7 +46,7 @@
       "priority": 2,
       "data": {
         "name": "Template 2",
-        "category": "정치",
+        "categoryId": 11,
         "size": {
           "width": 1920,
           "height": 1080
@@ -62,11 +68,17 @@
           "id": 1,
           "name": "Hope avatar 1",
           "priority": 1,
+          "type": "Image",
           "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "size": {
+            "width": 0,
+            "height": 0
+          },
           "createdAt": "2025-03-27T11:00:00",
           "updatedAt": "2025-03-27T11:00:00"
         }
       },
+      "thumbnailUrl": "https://cdn.charmander.xyz/template-thumbnail/CK_tii219a0206_1920.png",
       "createdAt": "2025-03-27T12:05:00",
       "updatedAt": "2025-03-27T12:05:00"
     },
@@ -75,7 +87,7 @@
       "priority": 3,
       "data": {
         "name": "Template 3",
-        "category": "경제",
+        "categoryId": 12,
         "size": {
           "width": 1920,
           "height": 1080
@@ -97,11 +109,17 @@
           "id": 1,
           "name": "Hope avatar 1",
           "priority": 1,
+          "type": "Image",
           "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "size": {
+            "width": 0,
+            "height": 0
+          },
           "createdAt": "2025-03-27T11:00:00",
           "updatedAt": "2025-03-27T11:00:00"
         }
       },
+      "thumbnailUrl": "https://cdn.charmander.xyz/template-thumbnail/CK_tii219a0206_1920.png",
       "createdAt": "2025-03-27T12:10:00",
       "updatedAt": "2025-03-27T12:10:00"
     },
@@ -110,7 +128,7 @@
       "priority": 4,
       "data": {
         "name": "Template 4",
-        "category": "문화",
+        "categoryId": 20,
         "size": {
           "width": 1920,
           "height": 1080
@@ -132,11 +150,17 @@
           "id": 1,
           "name": "Hope avatar 1",
           "priority": 1,
+          "type": "Image",
           "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "size": {
+            "width": 0,
+            "height": 0
+          },
           "createdAt": "2025-03-27T11:00:00",
           "updatedAt": "2025-03-27T11:00:00"
         }
       },
+      "thumbnailUrl": "https://cdn.charmander.xyz/template-thumbnail/CK_tii219a0206_1920.png",
       "createdAt": "2025-03-27T12:15:00",
       "updatedAt": "2025-03-27T12:15:00"
     },
@@ -145,7 +169,7 @@
       "priority": 5,
       "data": {
         "name": "Template 5",
-        "category": "연예",
+        "categoryId": 21,
         "size": {
           "width": 1920,
           "height": 1080
@@ -167,15 +191,17 @@
           "id": 1,
           "name": "Hope avatar 1",
           "priority": 1,
+          "type": "Image",
           "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
           "size": {
-            "width": 600,
-            "height": 1080
+            "width": 0,
+            "height": 0
           },
           "createdAt": "2025-03-27T11:00:00",
           "updatedAt": "2025-03-27T11:00:00"
         }
       },
+      "thumbnailUrl": "https://cdn.charmander.xyz/template-thumbnail/CK_tii219a0206_1920.png",
       "createdAt": "2025-03-27T12:20:00",
       "updatedAt": "2025-03-27T12:20:00"
     },
@@ -184,7 +210,7 @@
       "priority": 6,
       "data": {
         "name": "Template 6",
-        "category": "스포츠",
+        "categoryId": 22,
         "size": {
           "width": 1920,
           "height": 1080
@@ -206,11 +232,17 @@
           "id": 1,
           "name": "Hope avatar 1",
           "priority": 1,
+          "type": "Image",
           "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "size": {
+            "width": 0,
+            "height": 0
+          },
           "createdAt": "2025-03-27T11:00:00",
           "updatedAt": "2025-03-27T11:00:00"
         }
       },
+      "thumbnailUrl": "https://cdn.charmander.xyz/template-thumbnail/CK_tii219a0206_1920.png",
       "createdAt": "2025-03-27T12:25:00",
       "updatedAt": "2025-03-27T12:25:00"
     }
