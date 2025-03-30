@@ -20,6 +20,7 @@ function RouteComponent() {
         // URL에서 인증 코드 추출
         const params = new URLSearchParams(location.search);
         const code = params.get('code');
+        const state = params.get('state');
 
         if (!code) {
           setError('인증 코드가 없습니다.');
@@ -30,6 +31,7 @@ function RouteComponent() {
         const response = await axios.post(import.meta.env.VITE_OAUTH_API_URL, {
           provider: 'google',
           code: code,
+          state: state,
         });
 
         if (response.data) {

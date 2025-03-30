@@ -20,9 +20,10 @@ function RouteComponent() {
   useEffect(() => {
     const processKakaoLogin = async () => {
       try {
-        // URL에서 인증 코드 추출
+        // URL에서 인증 코드와 state 추출
         const params = new URLSearchParams(location.search);
         const code = params.get('code');
+        const state = params.get('state');
 
         if (!code) {
           setError('인증 코드가 없습니다.');
@@ -33,12 +34,12 @@ function RouteComponent() {
         const response = await axios.post(import.meta.env.VITE_OAUTH_API_URL, {
           provider: 'kakao',
           code: code,
+          state: state,
         });
 
         if (response.data) {
           const { accessToken } = response.data;
           setTokens(accessToken);
-          //console.log(accessToken);
         }
 
         navigate({ to: '/auth/sign-up/sns' });
