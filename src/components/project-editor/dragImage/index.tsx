@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 // import { useDebounce } from '@/hook/useDebounce';
 import theme from '@/styles/theme';
+import { useDebounce } from '@/hook/useDebounce';
+import useProjectEditorStore from '@/store/useProjectEditorStore';
 
 interface ImageProps {
   aspectRatio: string;
@@ -23,6 +25,7 @@ function DragImage({
   containerRef,
   isAvatar,
 }: ImageProps) {
+  const { updateElementPosition, updateElementSize } = useProjectEditorStore();
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [dragging, setDragging] = useState<boolean>(false);
   const [resizing, setResizing] = useState<boolean>(false);
@@ -43,22 +46,46 @@ function DragImage({
   const imageRef = useRef<HTMLImageElement | null>(null);
   const resizeDirection = useRef<string | null>(null);
 
-  // const debouncedSize = useDebounce(size, 1000);
-  // const debouncedPosition = useDebounce(position, 1000);
+  const debouncedSize = useDebounce(dimensions, 1000);
+  const debouncedPosition = useDebounce(position, 1000);
 
   useEffect(() => {
-    const savedPosition = localStorage.getItem(`${alt}_position`);
-    if (savedPosition) setPosition(JSON.parse(savedPosition));
-    const savedSize = localStorage.getItem(`${alt}_size`);
-    if (savedSize) setDimensions(JSON.parse(savedSize));
-  }, [alt]);
+    if (debouncedPosition) {
+      updateElementPosition(isAvatar ?? false, debouncedPosition);
+    }
+  }, [debouncedPosition, isAvatar, updateElementPosition]);
 
   useEffect(() => {
-    localStorage.setItem(`${alt}_position`, JSON.stringify(position));
-  }, [position, alt]);
-  useEffect(() => {
-    localStorage.setItem(`${alt}_size`, JSON.stringify(dimensions));
-  }, [dimensions, alt]);
+    if (debouncedSize) {
+      const convertToPixels = (widthPercent: string, heightPercent: string) => {
+        if (!containerRef.current) return { width: 0, height: 0 };
+
+        const container = containerRef.current.getBoundingClientRect();
+        const widthInPx = Math.round(
+          (parseFloat(widthPercent) / 100) * container.width
+        );
+        const heightInPx = Math.round(
+          (parseFloat(heightPercent) / 100) * container.height
+        );
+
+        return { width: widthInPx, height: heightInPx };
+      };
+
+      const { width, height } = convertToPixels(
+        dimensions.width,
+        dimensions.height
+      );
+      const uploadSize = { width: width, height: height };
+      updateElementSize(isAvatar ?? false, uploadSize);
+    }
+  }, [
+    debouncedSize,
+    isAvatar,
+    updateElementSize,
+    containerRef,
+    dimensions.height,
+    dimensions.width,
+  ]);
 
   const handleFocus = () => setIsFocused(true);
   const handleBlur = () => {
@@ -105,16 +132,54 @@ function DragImage({
       let newWidth = parseFloat(dimensions.width || '50');
       let newHeight = parseFloat(dimensions.height || '50');
 
-      if (resizeDirection.current?.includes('right')) {
-        newWidth = ((e.clientX - container.left) / container.width) * 100;
-      } else if (resizeDirection.current?.includes('left')) {
-        newWidth = ((container.right - e.clientX) / container.width) * 100;
-      }
+      if (isAvatar) {
+        if (resizeDirection.current?.includes('right')) {
+          newWidth = ((e.clientX - container.left) / container.width) * 100;
+          newHeight = (newWidth / 9) * 16;
 
-      if (resizeDirection.current?.includes('bottom')) {
-        newHeight = ((e.clientY - container.top) / container.height) * 100;
-      } else if (resizeDirection.current?.includes('top')) {
-        newHeight = ((container.bottom - e.clientY) / container.height) * 100;
+          if (newHeight >= 100) {
+            newHeight = 100;
+            newWidth = (newHeight / 16) * 9;
+          }
+        } else if (resizeDirection.current?.includes('left')) {
+          newWidth = ((container.right - e.clientX) / container.width) * 100;
+          newHeight = (newWidth / 9) * 16;
+
+          if (newHeight >= 100) {
+            newHeight = 100;
+            newWidth = (newHeight / 16) * 9;
+          }
+        }
+
+        if (resizeDirection.current?.includes('bottom')) {
+          newHeight = ((e.clientY - container.top) / container.height) * 100;
+          newWidth = (newHeight / 16) * 9;
+
+          if (newHeight >= 100) {
+            newHeight = 100;
+            newWidth = (newHeight / 16) * 9;
+          }
+        } else if (resizeDirection.current?.includes('top')) {
+          newHeight = ((container.bottom - e.clientY) / container.height) * 100;
+          newWidth = (newHeight / 16) * 9;
+
+          if (newHeight >= 100) {
+            newHeight = 100;
+            newWidth = (newHeight / 16) * 9;
+          }
+        }
+      } else {
+        if (resizeDirection.current?.includes('right')) {
+          newWidth = ((e.clientX - container.left) / container.width) * 100;
+        } else if (resizeDirection.current?.includes('left')) {
+          newWidth = ((container.right - e.clientX) / container.width) * 100;
+        }
+
+        if (resizeDirection.current?.includes('bottom')) {
+          newHeight = ((e.clientY - container.top) / container.height) * 100;
+        } else if (resizeDirection.current?.includes('top')) {
+          newHeight = ((container.bottom - e.clientY) / container.height) * 100;
+        }
       }
 
       setDimensions({
@@ -122,7 +187,7 @@ function DragImage({
         height: `${Math.max(10, Math.min(newHeight, 100))}%`,
       });
     },
-    [resizing, containerRef, dimensions]
+    [resizing, containerRef, dimensions, isAvatar]
   );
 
   useEffect(() => {
@@ -147,16 +212,24 @@ function DragImage({
       aspectRatio={aspectRatio}>
       <S.ImageWrapper
         isAvatar={isAvatar}
-        width={dimensions.width ?? null}
-        height={dimensions.height ?? null}
+        width={dimensions.width}
+        height={dimensions.height}
         style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
         onMouseDown={handleMouseDown}
         onFocus={handleFocus}
-        onBlur={handleBlur}>
+        onBlur={handleBlur}
+        position={position}
+        containerWidth={
+          containerRef.current?.getBoundingClientRect().width || 0
+        }
+        containerHeight={
+          containerRef.current?.getBoundingClientRect().height || 0
+        }>
         <S.SelectedBackgroundImage
           isAvatar={isAvatar}
           ref={imageRef}
           src={src}
+          alt={alt}
           draggable={false}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -190,6 +263,7 @@ function DragImage({
     </S.DragImageContainer>
   );
 }
+
 const S = {
   DragImageContainer: styled.div<{ aspectRatio: string }>`
     ${(props) =>
@@ -206,17 +280,22 @@ const S = {
     isAvatar: boolean | undefined;
     width: string | null;
     height: string | null;
+    position: { x: number; y: number };
+    containerWidth: number;
+    containerHeight: number;
   }>`
     position: absolute;
     width: ${(props) => props.width};
     height: ${(props) => props.height};
     aspect-ratio: ${(props) => (props.isAvatar ? '9 / 16' : 'auto')};
+    transform: ${(props) =>
+      `translate(${(props.position.x / 100) * props.containerWidth}px, ${(props.position.y / 100) * props.containerHeight}px)`};
   `,
   SelectedBackgroundImage: styled.img<{ isAvatar: boolean | undefined }>`
     width: 100%;
     height: 100%;
     aspect-ratio: ${(props) => (props.isAvatar ? '9 / 16' : 'auto')};
-    object-fit: cover;
+    object-fit: contain;
     position: absolute;
     cursor: grab;
     &:active {

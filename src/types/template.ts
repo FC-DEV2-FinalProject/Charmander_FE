@@ -3,7 +3,7 @@ export interface TemplateSize {
   height: number;
 }
 
-export interface TemplateBackground {
+export interface TemplateImage {
   id: number;
   name: string;
   priority: number;
@@ -13,23 +13,12 @@ export interface TemplateBackground {
   createdAt: string;
   updatedAt: string;
 }
-
-export interface TemplateAvatar {
-  id: number;
-  name: string;
-  priority: number;
-  fileUrl: string;
-  size: TemplateSize;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface TemplateData {
   name: string;
   categoryId: number;
   size: TemplateSize;
-  background: TemplateBackground;
-  avatar: TemplateAvatar;
+  background: TemplateImage;
+  avatar: TemplateImage;
 }
 
 export interface Template {

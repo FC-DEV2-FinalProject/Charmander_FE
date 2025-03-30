@@ -19,22 +19,6 @@ import useProjectEditorStore from '@/store/useProjectEditorStore';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
-interface MediaAndAvatarData {
-  items: {
-    data: {
-      background: {
-        id: string;
-        type: string;
-        url: string;
-      };
-      avatar: {
-        id: string;
-        url: string;
-      };
-    };
-  }[];
-}
-
 const ProjectHeader = () => {
   const location = useLocation();
   const { project } = Route.useParams();
@@ -75,6 +59,13 @@ const ProjectHeader = () => {
 
   const onChangeProjectTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProjectTitle(e.target.value);
+    if (projectData) {
+      setProjectData({
+        id: project,
+        name: e.target.value,
+        scenes: projectData.scenes,
+      });
+    }
   };
 
   const handleSaveProjectTitle = async () => {
@@ -82,11 +73,7 @@ const ProjectHeader = () => {
       try {
         if (projectData?.name) {
           await postProjectTitle(project, projectData.name);
-          setProjectData({
-            id: projectData.id,
-            name: projectTitle,
-            scenes: projectData.scenes || [],
-          });
+
           setIsEdit(false);
         }
       } catch (err) {
@@ -150,45 +137,10 @@ const ProjectHeader = () => {
     };
   };
 
-  const updateMediaAndAvatar = (data: MediaAndAvatarData) => {
-    useProjectEditorStore.setState((state) => {
-      if (!state.projectData) return state;
-
-      return {
-        projectData: {
-          ...state.projectData,
-          scenes: state.projectData.scenes.map((scene, index) => ({
-            ...scene,
-            media: {
-              id: Number(data.items[index].data.background.id),
-              type: data.items[index].data.background.type || 'image',
-              url: data.items[index].data.background.url,
-              position: { x: 0, y: 0 },
-              width: 1920,
-              height: 1080,
-              scale: 1,
-              viewport: [0, 0],
-            },
-            avatar: {
-              id: Number(data.items[index].data.avatar.id),
-              type: 'image',
-              url: data.items[index].data.avatar.url,
-              position: { x: 0, y: 0 },
-              width: 0,
-              height: 0,
-              scale: 1,
-              viewport: [0, 0],
-            },
-          })),
-        },
-      };
-    });
-  };
-
   const submitArticle = async (article: string) => {
     try {
       const templateData = await suggestArticle(article);
-      updateMediaAndAvatar(templateData);
+      setProjectData(templateData);
 
       router.navigate({ to: '/$project/template', params: { project } });
     } catch (error) {

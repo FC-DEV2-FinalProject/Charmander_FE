@@ -1,8 +1,7 @@
 import styled from 'styled-components';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DropDown from '@/components/common/dropdown';
 import theme from '@/styles/theme';
-import { mockTemplateImage, Template } from '@/mock/mockTemplateImage';
 import { createFileRoute } from '@tanstack/react-router';
 import SidebarBackgroundStyleIcon from '@/assets/projectIcon/background-sidebarIcon.svg?react';
 import BackgroundFileUploadIcon from '@/assets/projectIcon/backgroundFileUploadIcon.svg?react';
@@ -11,6 +10,12 @@ import DeleteBackgroundIcon from '@/assets/projectIcon/deleteBackground.svg?reac
 import GenerateBackgroundIcon from '@/assets/projectIcon/generateBackground.svg?react';
 import DragImage from '@/components/project-editor/dragImage';
 import useAspectRatioStore from '@/store/useAspectRatioStore';
+import { nanoid } from 'nanoid';
+import { useTemplates } from '@/hook/useTemplateList';
+import useProjectEditorStore from '@/store/useProjectEditorStore';
+import { patchProjectBackgroundImage } from '@/api/project/api';
+import { useDebounce } from '@/hook/useDebounce';
+import { TemplateImage } from '@/types/template';
 
 export const Route = createFileRoute(
   '/_projectSideBarLayout/$project/background/'
@@ -19,15 +24,78 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
+  const { projectData, updateMedia, resetMedia } = useProjectEditorStore();
+  const { templatesQuery } = useTemplates();
+  const { data: templateList, isLoading } = templatesQuery;
   const { aspectRatio, setAspectRatio } = useAspectRatioStore();
   const [SelectedBackgroundTemplate, setSelectedBackgroundTemplate] =
-    useState<Template | null>(null);
-  const [templateImages, setTemplateImages] = useState<Template[]>(
-    mockTemplateImage().templates
-  );
+    useState<TemplateImage | null>(null);
+  const [templateImages, setTemplateImages] = useState<TemplateImage[]>([]);
+
+  const media = projectData?.scenes[0]?.media;
+  const debouncedBackground = useDebounce(media, 1000);
+  const generateId = nanoid(10);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (projectData?.scenes[0].media) {
+      setSelectedBackgroundTemplate({
+        id: projectData.scenes[0].media.id,
+        name: '저장된 이미지',
+        priority: 0,
+        fileUrl: projectData.scenes[0].media.url,
+        size: {
+          width: projectData.scenes[0].media.width | 1920,
+          height: projectData.scenes[0].media.height | 1080,
+        },
+        type: projectData.scenes[0].media.type || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (templateList) {
+      setTemplateImages((prevBackgrounds) => {
+        const newBackgrounds = templateList.data
+          .map((template) => template.data.background)
+          .filter((bg) => bg && !prevBackgrounds.includes(bg));
+
+        return [...prevBackgrounds, ...newBackgrounds];
+      });
+    }
+  }, [templateList]);
+
+  useEffect(() => {
+    const upDateProjectImage = async () => {
+      if (projectData && debouncedBackground) {
+        try {
+          await patchProjectBackgroundImage(
+            projectData.id,
+            debouncedBackground
+          );
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.log(`이미지 업로드에 실패했습니다${error}`);
+        }
+      }
+    };
+    upDateProjectImage();
+  }, [projectData, debouncedBackground]);
+
+  const selectBakcgroundTemplateImage = (template: TemplateImage | null) => {
+    if (template) {
+      setSelectedBackgroundTemplate(template);
+      updateMedia(template);
+      // console.log(template);
+    } else {
+      setSelectedBackgroundTemplate(null);
+      resetMedia();
+    }
+  };
 
   const handleInput = () => {
     if (inputRef.current) {
@@ -43,36 +111,43 @@ function RouteComponent() {
       const imageUrl = reader.result as string;
 
       const isDuplicate = templateImages.some(
-        (template) => template.url === imageUrl
+        (template) => template.fileUrl === imageUrl
       );
       if (isDuplicate) {
         alert('이미 추가된 이미지입니다.');
         return;
       }
 
-      const newTemplate: Template = {
-        id: String(Date.now()),
-        type: '',
-        url: imageUrl,
-        position: {
-          x: 0,
-          y: 0,
-        },
-      };
+      const img = new Image();
+      img.src = imageUrl;
+      img.onload = () => {
+        const newTemplate: TemplateImage = {
+          id: Number(generateId),
+          name: 'New Background',
+          priority: 0,
+          fileUrl: imageUrl,
+          size: { width: img.width, height: img.height },
+          type: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
 
-      setTemplateImages((prev) => [...prev, newTemplate]);
+        setTemplateImages((prev) => [...prev, newTemplate]);
+      };
     };
     reader.readAsDataURL(file);
   };
-
+  if (isLoading) {
+    return <div>로딩중</div>;
+  }
   return (
     <S.BackgroundContainer>
       <S.BackgroundMain>
         {SelectedBackgroundTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
-            src={SelectedBackgroundTemplate.url}
-            alt={SelectedBackgroundTemplate.url}
+            src={SelectedBackgroundTemplate.fileUrl}
+            alt={SelectedBackgroundTemplate.name}
             containerRef={backgroundRef}
           />
         )}
@@ -113,12 +188,12 @@ function RouteComponent() {
           <S.BackgroundTemplateList>
             {templateImages.map((template) => (
               <S.BackgroundTemplateCard
-                onClick={() => setSelectedBackgroundTemplate(template)}
+                onClick={() => selectBakcgroundTemplateImage(template)}
                 key={template.id}>
                 <S.BackgroundTemplateImg
                   isSelected={SelectedBackgroundTemplate?.id === template.id}
-                  src={template.url}
-                  alt={template.url}
+                  src={template.fileUrl}
+                  alt={template.name}
                 />
               </S.BackgroundTemplateCard>
             ))}
@@ -126,7 +201,7 @@ function RouteComponent() {
 
           <S.BackgroundButtonSection>
             <S.BackgroundButton
-              onClick={() => setSelectedBackgroundTemplate(null)}>
+              onClick={() => selectBakcgroundTemplateImage(null)}>
               <DeleteBackgroundIcon />
               배경 제거
             </S.BackgroundButton>
