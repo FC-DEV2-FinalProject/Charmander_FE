@@ -1,9 +1,13 @@
+import { patchProjectAvatarImage } from '@/api/project/api';
 import DragImage from '@/components/project-editor/dragImage';
-import { mockTemplateImage, Template } from '@/mock/mockTemplateImage';
+import { useDebounce } from '@/hook/useDebounce';
+import { useTemplates } from '@/hook/useTemplateList';
 import useAspectRatioStore from '@/store/useAspectRatioStore';
+import useProjectEditorStore from '@/store/useProjectEditorStore';
 import theme from '@/styles/theme';
+import { TemplateImage } from '@/types/template';
 import { createFileRoute } from '@tanstack/react-router';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 export const Route = createFileRoute('/_projectSideBarLayout/$project/avatar/')(
@@ -13,21 +17,54 @@ export const Route = createFileRoute('/_projectSideBarLayout/$project/avatar/')(
 );
 
 function RouteComponent() {
+  const { projectData, updateAvatar } = useProjectEditorStore();
   const { aspectRatio } = useAspectRatioStore();
-  const [SelectedAvatarTemplate, setSelectedAvatarTemplate] =
-    useState<Template | null>(null);
-
-  const templateImages = mockTemplateImage();
+  const [selectedAvatarTemplate, setSelectedAvatarTemplate] =
+    useState<TemplateImage | null>(null);
+  const { templatesQuery } = useTemplates();
+  const { data: templateList, isLoading } = templatesQuery;
   const backgroundRef = useRef<HTMLDivElement>(null);
+  const avatar = projectData?.scenes[0].avatar;
+  const debouncedAvatar = useDebounce(avatar, 1000);
 
+  useEffect(() => {
+    if (projectData?.scenes[0].avatar) {
+      setSelectedAvatarTemplate(projectData?.scenes[0].avatar);
+    }
+  }, [projectData]);
+
+  useEffect(() => {
+    const upDateProjectImage = async () => {
+      if (projectData && debouncedAvatar) {
+        try {
+          await patchProjectAvatarImage(projectData.id, debouncedAvatar);
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.log(`이미지 업로드에 실패했습니다${error}`);
+        }
+      }
+    };
+    upDateProjectImage();
+  }, [projectData, debouncedAvatar]);
+
+  const handleAvatarTemplateImage = (template: TemplateImage) => {
+    if (template) {
+      setSelectedAvatarTemplate(template);
+      updateAvatar(template);
+    }
+  };
+
+  if (isLoading) {
+    return <div>로딩중 </div>;
+  }
   return (
     <S.AvatarContainer>
       <S.AvatarMain>
-        {SelectedAvatarTemplate && (
+        {selectedAvatarTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
-            src={SelectedAvatarTemplate.url}
-            alt={SelectedAvatarTemplate.url}
+            src={selectedAvatarTemplate.fileUrl}
+            alt={selectedAvatarTemplate.name}
             containerRef={backgroundRef}
             isAvatar={true}
           />
@@ -41,14 +78,14 @@ function RouteComponent() {
           </S.LabelSection>
 
           <S.AvatarTemplateList>
-            {templateImages.avatarTemplates.map((template) => (
+            {templateList?.data.map((template) => (
               <S.AvatarTemplateCard
-                onClick={() => setSelectedAvatarTemplate(template)}
-                key={template.id}>
+                onClick={() => handleAvatarTemplateImage(template.data.avatar)}
+                key={template.data.avatar.id}>
                 <S.AvatarTemplateImg
-                  isSelected={SelectedAvatarTemplate?.id === template.id}
-                  src={template.url}
-                  alt={template.url}
+                  isSelected={selectedAvatarTemplate?.id === template.id}
+                  src={template.data.avatar.fileUrl}
+                  alt={template.data.avatar.name}
                 />
               </S.AvatarTemplateCard>
             ))}

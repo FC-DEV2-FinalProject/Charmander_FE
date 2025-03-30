@@ -15,7 +15,7 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { updateMedia, updateAvartar } = useProjectEditorStore();
+  const { updateMedia, updateAvatar } = useProjectEditorStore();
   const [selectedCategory, setSelectedCategory] = useState<{
     id: number;
     name: string;
@@ -65,7 +65,7 @@ function RouteComponent() {
 
     if (selectedTemplate) {
       updateMedia(selectedTemplate?.data.background);
-      updateAvartar(selectedTemplate?.data.avatar);
+      updateAvatar(selectedTemplate?.data.avatar);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTemplate]);
