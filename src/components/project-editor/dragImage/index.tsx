@@ -7,8 +7,8 @@ import useProjectEditorStore from '@/store/useProjectEditorStore';
 
 interface ImageProps {
   aspectRatio: string;
-  src: string;
-  alt: string;
+  imgSrc: string;
+  imgAlt: string;
   containerRef: React.RefObject<HTMLDivElement | null>;
   isAvatar?: boolean;
 }
@@ -20,8 +20,8 @@ interface Position {
 
 function DragImage({
   aspectRatio,
-  src,
-  alt,
+  imgSrc,
+  imgAlt,
   containerRef,
   isAvatar,
 }: ImageProps) {
@@ -228,8 +228,8 @@ function DragImage({
         <S.SelectedBackgroundImage
           isAvatar={isAvatar}
           ref={imageRef}
-          src={src}
-          alt={alt}
+          src={imgSrc}
+          alt={imgAlt}
           draggable={false}
           onFocus={handleFocus}
           onBlur={handleBlur}
