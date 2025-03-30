@@ -15,7 +15,7 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { projectData, setProjectData } = useProjectEditorStore();
+  const { updateMedia, updateAvartar } = useProjectEditorStore();
   const [selectedCategory, setSelectedCategory] = useState<{
     id: number;
     name: string;
@@ -63,47 +63,10 @@ function RouteComponent() {
   useEffect(() => {
     if (!debouncedTemplate) return;
 
-    if (projectData) {
-      setProjectData({
-        ...projectData,
-        scenes: [
-          {
-            ...projectData.scenes[0],
-            media: {
-              ...projectData.scenes[0].media,
-              id: debouncedTemplate.data.background.id ?? 0,
-              type: debouncedTemplate.data.background.type ?? '',
-              width: debouncedTemplate.data.background.size.width ?? 0,
-              height: debouncedTemplate.data.background.size.height ?? 0,
-              url: debouncedTemplate.data.background.fileUrl || '',
-            },
-            avatar: {
-              ...projectData.scenes[0].avatar,
-              id: debouncedTemplate.data.avatar.id ?? 0,
-              width: debouncedTemplate.data.avatar.size.width ?? 0,
-              height: debouncedTemplate.data.avatar.size.height ?? 0,
-              url: debouncedTemplate.data.avatar.fileUrl || '',
-            },
-          },
-        ],
-      });
+    if (selectedTemplate) {
+      updateMedia(selectedTemplate?.data.background);
+      updateAvartar(selectedTemplate?.data.avatar);
     }
-
-    //  서버 업로드 로직 api 추가시 수정
-    // const updateServer = async () => {
-    //   try {
-    //     await updateTemplateData({
-    //       projectId: projectData?.id,
-    //       templateId: debouncedTemplate.id,
-    //     });
-    //   } catch (error) {
-    //     // eslint-disable-next-line no-console
-    //     console.error('템플릿 업데이트 실패:', error);
-    //   }
-    // };
-
-    // updateServer();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedTemplate]);
 

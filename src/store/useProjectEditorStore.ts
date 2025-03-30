@@ -1,5 +1,5 @@
 import { ImageType, Position, ProjectState } from '@/types/projectData';
-import { TemplateBackground, TemplateSize } from '@/types/template';
+import { TemplateImage, TemplateSize } from '@/types/template';
 import { create } from 'zustand';
 
 const useProjectEditorStore = create<ProjectState>((set) => ({
@@ -9,7 +9,7 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
 
   resetProjectData: () => set({ projectData: null }),
 
-  updateMedia: (template: TemplateBackground) => {
+  updateMedia: (template: TemplateImage) => {
     set((state) => {
       if (!state.projectData || state.projectData.scenes.length === 0)
         return state;
@@ -32,6 +32,35 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
             {
               ...state.projectData.scenes[0],
               media: newMedia,
+            },
+          ],
+        },
+      };
+    });
+  },
+  updateAvartar: (template: TemplateImage) => {
+    set((state) => {
+      if (!state.projectData || state.projectData.scenes.length === 0)
+        return state;
+
+      const newAvatar: ImageType = {
+        id: template.id,
+        type: template.type,
+        width: template.size.width,
+        height: template.size.height,
+        url: template.fileUrl,
+        position: { x: 0, y: 0 },
+        scale: 1,
+        viewport: [0, 0, 100, 100],
+      };
+
+      return {
+        projectData: {
+          ...state.projectData,
+          scenes: [
+            {
+              ...state.projectData.scenes[0],
+              avatar: newAvatar,
             },
           ],
         },

@@ -12,8 +12,10 @@ import DragImage from '@/components/project-editor/dragImage';
 import useAspectRatioStore from '@/store/useAspectRatioStore';
 import { nanoid } from 'nanoid';
 import { useTemplates } from '@/hook/useTemplateList';
-import { TemplateBackground } from '@/types/template';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
+import { patchProjectBackgroundImage } from '@/api/project/api';
+import { useDebounce } from '@/hook/useDebounce';
+import { TemplateImage } from '@/types/template';
 
 export const Route = createFileRoute(
   '/_projectSideBarLayout/$project/background/'
@@ -27,10 +29,15 @@ function RouteComponent() {
   const { data: templateList, isLoading } = templatesQuery;
   const { aspectRatio, setAspectRatio } = useAspectRatioStore();
   const [SelectedBackgroundTemplate, setSelectedBackgroundTemplate] =
-    useState<TemplateBackground | null>(null);
-  const [templateImages, setTemplateImages] = useState<TemplateBackground[]>(
-    []
-  );
+    useState<TemplateImage | null>(null);
+  const [templateImages, setTemplateImages] = useState<TemplateImage[]>([]);
+
+  const media = projectData?.scenes[0]?.media;
+  const debouncedBackground = useDebounce(media, 1000);
+  const generateId = nanoid(10);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const backgroundRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (projectData?.scenes[0].media) {
       setSelectedBackgroundTemplate({
@@ -62,17 +69,28 @@ function RouteComponent() {
     }
   }, [templateList]);
 
-  const generateId = nanoid(10);
+  useEffect(() => {
+    const upDateProjectImage = async () => {
+      if (projectData && debouncedBackground) {
+        try {
+          await patchProjectBackgroundImage(
+            projectData.id,
+            debouncedBackground
+          );
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.log(`이미지 업로드에 실패했습니다${error}`);
+        }
+      }
+    };
+    upDateProjectImage();
+  }, [projectData, debouncedBackground]);
 
-  const inputRef = useRef<HTMLInputElement>(null);
-  const backgroundRef = useRef<HTMLDivElement>(null);
-
-  const selectBakcgroundTemplateImage = (
-    template: TemplateBackground | null
-  ) => {
+  const selectBakcgroundTemplateImage = (template: TemplateImage | null) => {
     if (template) {
       setSelectedBackgroundTemplate(template);
       updateMedia(template);
+      // console.log(template);
     } else {
       setSelectedBackgroundTemplate(null);
       resetMedia();
@@ -100,18 +118,22 @@ function RouteComponent() {
         return;
       }
 
-      const newTemplate: TemplateBackground = {
-        id: Number(generateId),
-        name: 'New Background',
-        priority: 0,
-        fileUrl: imageUrl,
-        size: { width: 0, height: 0 },
-        type: '',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      const img = new Image();
+      img.src = imageUrl;
+      img.onload = () => {
+        const newTemplate: TemplateImage = {
+          id: Number(generateId),
+          name: 'New Background',
+          priority: 0,
+          fileUrl: imageUrl,
+          size: { width: img.width, height: img.height },
+          type: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
 
-      setTemplateImages((prev) => [...prev, newTemplate]);
+        setTemplateImages((prev) => [...prev, newTemplate]);
+      };
     };
     reader.readAsDataURL(file);
   };

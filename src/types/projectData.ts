@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { TemplateBackground, TemplateSize } from './template';
+import { TemplateImage, TemplateSize } from './template';
 
 export interface Position {
   x: number;
@@ -40,7 +40,8 @@ export interface ProjectState {
   projectData: Project | null;
   setProjectData: (project: Project) => void;
   resetProjectData: () => void;
-  updateMedia: (template: TemplateBackground) => void;
+  updateMedia: (template: TemplateImage) => void;
+  updateAvartar: (template: TemplateImage) => void;
   updateElementPosition: (isAvatar: boolean, newPosition: Position) => void;
   updateElementSize: (isAvatar: boolean, newSize: TemplateSize) => void;
   resetMedia: () => void;

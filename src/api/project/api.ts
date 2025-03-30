@@ -1,5 +1,6 @@
 import { FetchTemplateResponse } from '@/types/template';
 import api from '../login/api';
+import { ImageType } from '@/types/projectData';
 
 export const fetchProjects = async (projectId: string) => {
   try {
@@ -39,7 +40,7 @@ export const suggestArticle = async (article: string) => {
     throw error;
   }
 };
-export const updateArticle = async (projectId: string, article: string) => {
+export const postArticle = async (projectId: string, article: string) => {
   try {
     const response = await api.post(`/api/v1/article/${projectId}/update`, {
       article,
@@ -49,6 +50,17 @@ export const updateArticle = async (projectId: string, article: string) => {
     // eslint-disable-next-line no-console
     console.error('Error updating article:', error);
     throw error;
+  }
+};
+
+export const patchArticle = async (projectId: string, article: string) => {
+  try {
+    const response = await api.patch(`/api/${projectId}/newsArticle
+      ?${article}`);
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log('기사 업데이트 실패:', error);
   }
 };
 
@@ -68,5 +80,16 @@ export const fetchTemplate = async () => {
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log('템플릿 페칭 에러', error);
+  }
+};
+export const patchProjectBackgroundImage = async (
+  projectId: number | null,
+  backgroundImageData: ImageType | null
+) => {
+  if (projectId) {
+    const response = await api.patch(`api/v1/project/${projectId}`, {
+      backgroundImageData,
+    });
+    return response;
   }
 };

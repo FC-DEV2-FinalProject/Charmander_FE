@@ -1,4 +1,4 @@
-import { updateArticle } from '@/api/project/api';
+import { postArticle } from '@/api/project/api';
 import { useDebounce } from '@/hook/useDebounce';
 import useArticlePDFStore from '@/store/useArticlePDFStore';
 import theme from '@/styles/theme';
@@ -25,10 +25,13 @@ function RouteComponent() {
   };
 
   useEffect(() => {
-    if (debouncedArticle) {
-      updateArticle(project, article);
-    }
-  }, [debouncedArticle, article, project]);
+    const postProjectArticle = async () => {
+      if (debouncedArticle) {
+        await postArticle(project, debouncedArticle);
+      }
+    };
+    postProjectArticle();
+  }, [debouncedArticle, project]);
 
   useEffect(() => {
     if (articlePDFText != '') {
