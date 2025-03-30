@@ -7,13 +7,16 @@ export interface Position {
 }
 export interface ImageType {
   id: number;
+  name: string;
+  priority: number;
   type: string;
-  width: number;
-  height: number;
-  url: string;
+  fileUrl: string;
   position: Position;
   scale: number;
   viewport: number[];
+  size: TemplateSize;
+  createdAt: string;
+  updatedAt: string;
 }
 export interface Scene {
   id: number;
@@ -41,7 +44,7 @@ export interface ProjectState {
   setProjectData: (project: Project) => void;
   resetProjectData: () => void;
   updateMedia: (template: TemplateImage) => void;
-  updateAvartar: (template: TemplateImage) => void;
+  updateAvatar: (template: TemplateImage) => void;
   updateElementPosition: (isAvatar: boolean, newPosition: Position) => void;
   updateElementSize: (isAvatar: boolean, newSize: TemplateSize) => void;
   resetMedia: () => void;

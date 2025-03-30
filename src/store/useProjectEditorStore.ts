@@ -16,13 +16,16 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
 
       const newMedia: ImageType = {
         id: template.id,
+        name: template.name,
+        priority: template.priority,
         type: template.type,
-        width: template.size.width,
-        height: template.size.height,
-        url: template.fileUrl,
+        fileUrl: template.fileUrl,
         position: { x: 0, y: 0 },
+        size: template.size,
         scale: 1,
         viewport: [0, 0, 100, 100],
+        createdAt: template.createdAt,
+        updatedAt: template.updatedAt,
       };
 
       return {
@@ -38,20 +41,23 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
       };
     });
   },
-  updateAvartar: (template: TemplateImage) => {
+  updateAvatar: (template: TemplateImage) => {
     set((state) => {
       if (!state.projectData || state.projectData.scenes.length === 0)
         return state;
 
       const newAvatar: ImageType = {
         id: template.id,
+        name: template.name,
+        priority: template.priority,
         type: template.type,
-        width: template.size.width,
-        height: template.size.height,
-        url: template.fileUrl,
+        fileUrl: template.fileUrl,
         position: { x: 0, y: 0 },
+        size: template.size,
         scale: 1,
         viewport: [0, 0, 100, 100],
+        createdAt: template.createdAt,
+        updatedAt: template.updatedAt,
       };
 
       return {

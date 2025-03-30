@@ -93,3 +93,14 @@ export const patchProjectBackgroundImage = async (
     return response;
   }
 };
+export const patchProjectAvatarImage = async (
+  projectId: number | null,
+  avatarImageData: ImageType | null
+) => {
+  if (projectId) {
+    const response = await api.patch(`api/v1/project/${projectId}`, {
+      avatarImageData,
+    });
+    return response;
+  }
+};

@@ -28,7 +28,7 @@ function RouteComponent() {
   const { templatesQuery } = useTemplates();
   const { data: templateList, isLoading } = templatesQuery;
   const { aspectRatio, setAspectRatio } = useAspectRatioStore();
-  const [SelectedBackgroundTemplate, setSelectedBackgroundTemplate] =
+  const [selectedBackgroundTemplate, setSelectedBackgroundTemplate] =
     useState<TemplateImage | null>(null);
   const [templateImages, setTemplateImages] = useState<TemplateImage[]>([]);
 
@@ -38,21 +38,10 @@ function RouteComponent() {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (projectData?.scenes[0].media) {
-      setSelectedBackgroundTemplate({
-        id: projectData.scenes[0].media.id,
-        name: '저장된 이미지',
-        priority: 0,
-        fileUrl: projectData.scenes[0].media.url,
-        size: {
-          width: projectData.scenes[0].media.width | 1920,
-          height: projectData.scenes[0].media.height | 1080,
-        },
-        type: projectData.scenes[0].media.type || '',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+      setSelectedBackgroundTemplate(projectData?.scenes[0].media);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -86,7 +75,7 @@ function RouteComponent() {
     upDateProjectImage();
   }, [projectData, debouncedBackground]);
 
-  const selectBakcgroundTemplateImage = (template: TemplateImage | null) => {
+  const handleBakcgroundTemplateImage = (template: TemplateImage | null) => {
     if (template) {
       setSelectedBackgroundTemplate(template);
       updateMedia(template);
@@ -143,11 +132,11 @@ function RouteComponent() {
   return (
     <S.BackgroundContainer>
       <S.BackgroundMain>
-        {SelectedBackgroundTemplate && (
+        {selectedBackgroundTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
-            src={SelectedBackgroundTemplate.fileUrl}
-            alt={SelectedBackgroundTemplate.name}
+            src={selectedBackgroundTemplate.fileUrl}
+            alt={selectedBackgroundTemplate.name}
             containerRef={backgroundRef}
           />
         )}
@@ -188,10 +177,10 @@ function RouteComponent() {
           <S.BackgroundTemplateList>
             {templateImages.map((template) => (
               <S.BackgroundTemplateCard
-                onClick={() => selectBakcgroundTemplateImage(template)}
+                onClick={() => handleBakcgroundTemplateImage(template)}
                 key={template.id}>
                 <S.BackgroundTemplateImg
-                  isSelected={SelectedBackgroundTemplate?.id === template.id}
+                  isSelected={selectedBackgroundTemplate?.id === template.id}
                   src={template.fileUrl}
                   alt={template.name}
                 />
@@ -201,7 +190,7 @@ function RouteComponent() {
 
           <S.BackgroundButtonSection>
             <S.BackgroundButton
-              onClick={() => selectBakcgroundTemplateImage(null)}>
+              onClick={() => handleBakcgroundTemplateImage(null)}>
               <DeleteBackgroundIcon />
               배경 제거
             </S.BackgroundButton>
