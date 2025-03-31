@@ -29,7 +29,7 @@ function RouteComponent() {
   const { data: templateList, isLoading } = templatesQuery;
   const { aspectRatio, setAspectRatio } = useAspectRatioStore();
   const [selectedBackgroundTemplate, setSelectedBackgroundTemplate] =
-    useState<TemplateImage | null>(null);
+    useState<TemplateImage | null>(projectData?.scenes[0].media || null);
   const [templateImages, setTemplateImages] = useState<TemplateImage[]>([]);
 
   const media = projectData?.scenes[0]?.media;
@@ -38,13 +38,6 @@ function RouteComponent() {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (projectData?.scenes[0].media) {
-      setSelectedBackgroundTemplate(projectData?.scenes[0].media);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if (templateList) {
@@ -74,12 +67,16 @@ function RouteComponent() {
     };
     upDateProjectImage();
   }, [projectData, debouncedBackground]);
+  useEffect(() => {
+    if (selectedBackgroundTemplate) {
+      updateMedia(selectedBackgroundTemplate);
+    }
+  }, [selectedBackgroundTemplate, updateMedia]);
 
   const handleBakcgroundTemplateImage = (template: TemplateImage | null) => {
     if (template) {
       setSelectedBackgroundTemplate(template);
       updateMedia(template);
-      // console.log(template);
     } else {
       setSelectedBackgroundTemplate(null);
       resetMedia();
@@ -135,8 +132,8 @@ function RouteComponent() {
         {selectedBackgroundTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
-            src={selectedBackgroundTemplate.fileUrl}
-            alt={selectedBackgroundTemplate.name}
+            imgSrc={selectedBackgroundTemplate.fileUrl}
+            imgAlt={selectedBackgroundTemplate.name}
             containerRef={backgroundRef}
           />
         )}

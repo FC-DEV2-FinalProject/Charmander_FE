@@ -1,4 +1,10 @@
-import { ImageType, Position, ProjectState } from '@/types/projectData';
+import {
+  ImageType,
+  Position,
+  ProjectState,
+  Scene,
+  Subtitle,
+} from '@/types/projectData';
 import { TemplateImage, TemplateSize } from '@/types/template';
 import { create } from 'zustand';
 
@@ -11,8 +17,9 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
 
   updateMedia: (template: TemplateImage) => {
     set((state) => {
-      if (!state.projectData || state.projectData.scenes.length === 0)
+      if (!state.projectData || state.projectData.scenes.length === 0) {
         return state;
+      }
 
       const newMedia: ImageType = {
         id: template.id,
@@ -117,8 +124,7 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
                   ]
                     ? {
                         ...scene[isAvatar ? 'avatar' : 'media'],
-                        width: newSize.width,
-                        height: newSize.height,
+                        size: newSize,
                       }
                     : null,
                 }
@@ -143,6 +149,47 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
               media: null,
             },
           ],
+        },
+      };
+    });
+  },
+  updateTranscripts: (
+    sceneId: number,
+    transcriptId: number,
+    newData: Partial<Scene['transcripts'][0]>
+  ) => {
+    set((state) => {
+      if (!state.projectData) return state;
+
+      return {
+        projectData: {
+          ...state.projectData,
+          scenes: state.projectData.scenes.map((scene) =>
+            scene.id === sceneId
+              ? {
+                  ...scene,
+                  transcripts: scene.transcripts.map((t) =>
+                    t.id === transcriptId ? { ...t, ...newData } : t
+                  ),
+                }
+              : scene
+          ),
+        },
+      };
+    });
+  },
+  updateSubtitle: (sceneId: number, newSubtitle: Partial<Subtitle>) => {
+    set((state) => {
+      if (!state.projectData) return state;
+
+      return {
+        projectData: {
+          ...state.projectData,
+          scenes: state.projectData.scenes.map((scene) =>
+            scene.id === sceneId
+              ? { ...scene, subtitle: { ...scene.subtitle, ...newSubtitle } }
+              : scene
+          ),
         },
       };
     });

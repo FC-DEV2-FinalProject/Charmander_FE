@@ -15,7 +15,7 @@
           "name": "Background 1",
           "priority": 1,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_1.png",
+          "fileUrl": "https://cdn.charmander.xyz/template-background/CK_ti436a26701_1920.png",
           "size": {
             "width": 1920,
             "height": 1080
@@ -28,7 +28,7 @@
           "name": "Hope avatar 1",
           "priority": 1,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "fileUrl": "https://cdn.charmander.xyz/template-avatar/avatar-hope1.webm",
           "size": {
             "width": 0,
             "height": 0
@@ -56,7 +56,7 @@
           "name": "Background 2",
           "priority": 2,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_2.png",
+          "fileUrl": "https://cdn.charmander.xyz/template-background/CK_ti436a26703_1920.png",
           "size": {
             "width": 1920,
             "height": 1080
@@ -69,7 +69,7 @@
           "name": "Hope avatar 1",
           "priority": 1,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "fileUrl": "https://cdn.charmander.xyz/template-avatar/avatar-hope1.webm",
           "size": {
             "width": 0,
             "height": 0
@@ -97,7 +97,7 @@
           "name": "Background 3",
           "priority": 3,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_3.png",
+          "fileUrl": "https://cdn.charmander.xyz/template-background/CK_ti436a26706_1920.png",
           "size": {
             "width": 1920,
             "height": 1080
@@ -110,7 +110,7 @@
           "name": "Hope avatar 1",
           "priority": 1,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "fileUrl": "https://cdn.charmander.xyz/template-avatar/avatar-hope1.webm",
           "size": {
             "width": 0,
             "height": 0
@@ -138,7 +138,7 @@
           "name": "Background 4",
           "priority": 4,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_4.png",
+          "fileUrl": "https://cdn.charmander.xyz/template-background/CK_tii219a0206_1920.png",
           "size": {
             "width": 1920,
             "height": 1080
@@ -151,7 +151,7 @@
           "name": "Hope avatar 1",
           "priority": 1,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "fileUrl": "https://cdn.charmander.xyz/template-avatar/avatar-hope1.webm",
           "size": {
             "width": 0,
             "height": 0
@@ -179,7 +179,7 @@
           "name": "Background 5",
           "priority": 5,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_5.png",
+          "fileUrl": "https://cdn.charmander.xyz/template-background/CK_tii219a0206_1920.png",
           "size": {
             "width": 1920,
             "height": 1080
@@ -192,7 +192,7 @@
           "name": "Hope avatar 1",
           "priority": 1,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "fileUrl": "https://cdn.charmander.xyz/template-avatar/avatar-hope1.webm",
           "size": {
             "width": 0,
             "height": 0
@@ -220,7 +220,7 @@
           "name": "Background 6",
           "priority": 6,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-background/CK_x9i3a65Tz9_1920_6.png",
+          "fileUrl": "https://cdn.charmander.xyz/template-background/CK_tii219a0210_1920.png",
           "size": {
             "width": 1920,
             "height": 1080
@@ -233,7 +233,7 @@
           "name": "Hope avatar 1",
           "priority": 1,
           "type": "Image",
-          "fileUrl": "https://charmander-resource-static-public.s3.ap-northeast-2.amazonaws.com/template-avatar/barae-logo1.webm",
+          "fileUrl": "https://cdn.charmander.xyz/template-avatar/avatar-hope1.webm",
           "size": {
             "width": 0,
             "height": 0

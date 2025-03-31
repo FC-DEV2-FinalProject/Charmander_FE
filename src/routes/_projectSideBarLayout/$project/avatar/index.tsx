@@ -20,18 +20,12 @@ function RouteComponent() {
   const { projectData, updateAvatar } = useProjectEditorStore();
   const { aspectRatio } = useAspectRatioStore();
   const [selectedAvatarTemplate, setSelectedAvatarTemplate] =
-    useState<TemplateImage | null>(null);
+    useState<TemplateImage | null>(projectData?.scenes[0].avatar || null);
   const { templatesQuery } = useTemplates();
   const { data: templateList, isLoading } = templatesQuery;
   const backgroundRef = useRef<HTMLDivElement>(null);
   const avatar = projectData?.scenes[0].avatar;
   const debouncedAvatar = useDebounce(avatar, 1000);
-
-  useEffect(() => {
-    if (projectData?.scenes[0].avatar) {
-      setSelectedAvatarTemplate(projectData?.scenes[0].avatar);
-    }
-  }, [projectData]);
 
   useEffect(() => {
     const upDateProjectImage = async () => {
@@ -63,8 +57,8 @@ function RouteComponent() {
         {selectedAvatarTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
-            src={selectedAvatarTemplate.fileUrl}
-            alt={selectedAvatarTemplate.name}
+            imgSrc={selectedAvatarTemplate.fileUrl}
+            imgAlt={selectedAvatarTemplate.name}
             containerRef={backgroundRef}
             isAvatar={true}
           />
@@ -85,7 +79,7 @@ function RouteComponent() {
                 <S.AvatarTemplateImg
                   isSelected={selectedAvatarTemplate?.id === template.id}
                   src={template.data.avatar.fileUrl}
-                  alt={template.data.avatar.name}
+                  autoPlay={true}
                 />
               </S.AvatarTemplateCard>
             ))}
@@ -165,7 +159,7 @@ const S = {
     background-color: ${theme.colors.background2};
     border-radius: ${theme.radius.medium};
   `,
-  AvatarTemplateImg: styled.img<{ isSelected: boolean }>`
+  AvatarTemplateImg: styled.video<{ isSelected: boolean }>`
     width: 100%;
     height: 100%;
     object-fit: cover;

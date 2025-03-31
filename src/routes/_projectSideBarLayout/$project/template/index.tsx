@@ -67,8 +67,7 @@ function RouteComponent() {
       updateMedia(selectedTemplate?.data.background);
       updateAvatar(selectedTemplate?.data.avatar);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedTemplate]);
+  }, [debouncedTemplate, selectedTemplate, updateAvatar, updateMedia]);
 
   return (
     <S.TemplateContainer>

@@ -5,14 +5,14 @@ import theme from '@/styles/theme';
 interface ScriptSectionProps {
   id: number;
   text: string;
-  font: string;
-  weight: string;
-  size: string;
-  backgroundStyle: string;
+  // font: string;
+  // weight: string;
+  // size: string;
+  // backgroundStyle: string;
   // eslint-disable-next-line no-unused-vars
   onDelete: (id: number) => void;
   // eslint-disable-next-line no-unused-vars
-  onUpdate: (id: number, field: 'text', value: string) => void;
+  handleSubTitle: (id: number, field: 'text', value: string) => void;
   onSelect: () => void;
   isSelected: boolean;
 }
@@ -20,12 +20,12 @@ interface ScriptSectionProps {
 const ScriptSection = ({
   id,
   text,
-  font,
-  weight,
-  size,
-  backgroundStyle,
+  // font,
+  // weight,
+  // size,
+  // backgroundStyle,
   onDelete,
-  onUpdate,
+  handleSubTitle,
   onSelect,
   isSelected,
 }: ScriptSectionProps) => {
@@ -34,16 +34,17 @@ const ScriptSection = ({
       isSelected={isSelected}
       onClick={onSelect}>
       <S.Header>
-        <S.SubtitleText
+        <S.TranscriptText
           contentEditable
           suppressContentEditableWarning
-          onBlur={(e) => onUpdate(id, 'text', e.target.innerText)}
-          font={font}
-          weight={weight}
-          size={size}
-          backgroundStyle={backgroundStyle}>
+          onBlur={(e) => handleSubTitle(id, 'text', e.target.innerText)}
+          // font={font}
+          // weight={weight}
+          // size={size}
+          // backgroundStyle={backgroundStyle}
+        >
           {text}
-        </S.SubtitleText>
+        </S.TranscriptText>
         <S.DeleteButton onClick={() => onDelete(id)}>
           <DeleteIcon />
         </S.DeleteButton>
@@ -73,16 +74,19 @@ const S = {
     align-items: center;
   `,
 
-  SubtitleText: styled.span<{
-    font: string;
-    weight: string;
-    size: string;
-    backgroundStyle: string;
-  }>`
+  TranscriptText: styled.span // <{
+  //   // font: string;
+  //   // weight: string;
+  //   // size: string;
+  //   // backgroundStyle: string;
+  // }>
+  `
+    width: 80%;
     font-weight: ${theme.fontWeights.medium};
     color: ${theme.colors.black};
     padding: ${theme.spacing.sm};
     border-radius: ${theme.radius.small};
+    max-width: 80%;
   `,
 
   DeleteButton: styled.button`
@@ -93,5 +97,6 @@ const S = {
     border-radius: ${theme.radius.medium};
     cursor: pointer;
     padding: ${theme.spacing.md};
+    margin-left: ${theme.spacing.sm};
   `,
 };

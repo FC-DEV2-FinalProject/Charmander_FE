@@ -42,14 +42,33 @@ const ProjectHeader = () => {
     const loadProjects = async () => {
       try {
         const data = await fetchProjects(project);
+
+        if (!data.scenes || data.scenes.length === 0) {
+          data.scenes = [
+            {
+              id: 1,
+              transcript: [],
+              subtitle: {
+                text: '',
+                fontFamily: 'Arial',
+                fontSize: 24,
+                fontColor: '#ffffff',
+                backgroundColor: '#000000',
+                position: { x: 0, y: 0 },
+              },
+              media: null,
+              avatar: null,
+            },
+          ];
+        }
+
         setProjectData(data);
       } catch (err) {
         alert(err);
       }
     };
     loadProjects();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setProjectData, project]);
 
   useEffect(() => {
     if (projectData?.name) {
