@@ -3,6 +3,8 @@ import VideoExportIcon from '@/assets/projectIcon/free-icon-video-production.svg
 import theme from '@/styles/theme';
 import WarningEditModal from './warningModal';
 import { useState } from 'react';
+import { postGenerateVideo } from '@/api/project/api';
+import { Route } from '@/routes/__root';
 
 interface EditModalProps {
   // eslint-disable-next-line no-unused-vars
@@ -10,7 +12,18 @@ interface EditModalProps {
 }
 
 const EditModal = ({ setModalOpen }: EditModalProps) => {
+  const { project } = Route.useParams();
   const [isExporting, setIsExporting] = useState(false);
+  const generateVideo = async (projectId: number) => {
+    try {
+      await postGenerateVideo(projectId);
+      setModalOpen(false);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(`영상 생성 에러, ${error}`);
+      setIsExporting(!isExporting);
+    }
+  };
   return (
     <>
       {isExporting ? (
@@ -28,7 +41,7 @@ const EditModal = ({ setModalOpen }: EditModalProps) => {
             <S.CancelButton onClick={() => setModalOpen(false)}>
               취소
             </S.CancelButton>
-            <S.ConfirmButton onClick={() => setIsExporting(!isExporting)}>
+            <S.ConfirmButton onClick={() => generateVideo(project)}>
               제작
             </S.ConfirmButton>
           </S.ButtonWrap>

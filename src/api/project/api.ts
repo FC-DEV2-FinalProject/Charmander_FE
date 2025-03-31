@@ -138,3 +138,7 @@ export const patchTranscript = async (
   );
   return response.data;
 };
+export const postGenerateVideo = async (id: number) => {
+  const response = await api.post(`/api/v1/projects/${id}/generate-video`);
+  return response.data;
+};
