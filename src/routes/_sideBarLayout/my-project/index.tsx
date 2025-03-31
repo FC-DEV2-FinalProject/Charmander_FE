@@ -1,11 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import ProjectCard from './_components/projectCard';
 import DropdownSelect from './_components/dropdownSelect';
 import EmptyVideoIcon from '@/assets/icons/icon-empty-video.svg?react';
 import { getProjects } from '@/api/dashboard/api';
 import { sortProjects } from '@/utils/sort';
+import { useInfiniteQuery } from 'node_modules/@tanstack/react-query/build/modern';
+import LoadingSpinner from '@/components/loading/LoadingSpinner';
 
 export const Route = createFileRoute('/_sideBarLayout/my-project/')({
   component: RouteComponent,
@@ -29,9 +31,9 @@ export interface IProject {
 }
 
 function RouteComponent() {
-  const [projects, setProjects] = useState<IProject[]>([]);
   const [selectItems, setSelectItems] = useState<string>('생성일자');
   const [activeTab, setActiveTab] = useState<TabKey>('all');
+  const observerTarget = useRef<HTMLDivElement>(null);
 
   const tabMenus = [
     { label: '전체', value: 'all' },
@@ -39,68 +41,118 @@ function RouteComponent() {
     { label: '렌더링 완료', value: 'cmpltRendering' },
   ];
 
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['projects', activeTab],
+    queryFn: ({ pageParam = 0 }) => getProjects(pageParam, 9),
+    getNextPageParam: (lastPage, allPages) => {
+      const nextOffset = allPages.length * 9;
+      return lastPage.hasMore ? nextOffset : undefined;
+    },
+    initialPageParam: 0,
+  });
+
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const data = await getProjects();
-        setProjects(data.data);
-      } catch (err) {
-        alert(`${err}`);
+    refetch();
+  }, [activeTab, refetch]);
+
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const [entry] = entries;
+      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage]
+  );
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleObserver, {
+      threshold: 0.1,
+    });
+    const currentTarget = observerTarget.current;
+
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
       }
     };
+  }, [handleObserver]);
 
-    fetchProjects();
-  }, []);
+  const allProjects = useMemo(() => {
+    return data?.pages.flatMap((page) => page.data) || [];
+  }, [data]);
 
   const sortedProjects = useMemo(() => {
-    let filteredProjects = projects;
+    let filteredProjects = allProjects;
 
-    // 탭에 따른 필터링 추가
     if (activeTab === 'editing') {
-      filteredProjects = projects.filter((project) => project.active);
+      filteredProjects = allProjects.filter((project) => project.active);
     } else if (activeTab === 'cmpltRendering') {
-      filteredProjects = projects.filter((project) => !project.active);
+      filteredProjects = allProjects.filter((project) => !project.active);
     }
 
     return sortProjects(filteredProjects, selectItems);
-  }, [projects, selectItems, activeTab]);
+  }, [allProjects, selectItems, activeTab]);
+
+  if (isLoading)
+    return <LoadingSpinner text="프로젝트를 불러오는 중입니다..." />;
+  if (error) return <div>오류가 발생했습니다: {(error as Error).message}</div>;
 
   return (
     <S.MyProjectWrap>
-      {sortedProjects && sortedProjects.length > 0 ? (
+      <S.TopSortSect>
+        <S.DropDownWrap>
+          <DropdownSelect
+            placeholder={selectItems}
+            options={['생성일자', '이름', '최종수정날짜', '마지막 열어본 시간']}
+            onSelect={(value) => setSelectItems(value)}
+          />
+        </S.DropDownWrap>
+        <S.TapWrap>
+          {tabMenus.map((menu) => (
+            <S.TapItem
+              key={menu.value}
+              $isActive={activeTab === menu.value}
+              onClick={() => setActiveTab(menu.value as TabKey)}>
+              {menu.label}
+            </S.TapItem>
+          ))}
+        </S.TapWrap>
+      </S.TopSortSect>
+
+      {isLoading ? (
+        <LoadingSpinner text="프로젝트를 불러오는 중입니다..." />
+      ) : sortedProjects && sortedProjects.length > 0 ? (
         <>
-          <S.TopSortSect>
-            <S.DropDownWrap>
-              <DropdownSelect
-                placeholder={selectItems}
-                options={[
-                  '생성일자',
-                  '이름',
-                  '최종수정날짜',
-                  '마지막 열어본 시간',
-                ]}
-                onSelect={(value) => setSelectItems(value)}
-              />
-            </S.DropDownWrap>
-            <S.TapWrap>
-              {tabMenus.map((menu) => (
-                <S.TapItem
-                  key={menu.value}
-                  $isActive={activeTab === menu.value}
-                  onClick={() => setActiveTab(menu.value as TabKey)}>
-                  {menu.label}
-                </S.TapItem>
-              ))}
-            </S.TapWrap>
-          </S.TopSortSect>
           <S.MyProjectContent>
-            {projects.map((project) => (
+            {sortedProjects.map((project) => (
               <ProjectCard
                 key={project.id}
                 {...project}
               />
             ))}
           </S.MyProjectContent>
+
+          {isFetchingNextPage && <LoadingSpinner showText={false} />}
+
+          {hasNextPage && (
+            <div
+              ref={observerTarget}
+              style={{ height: '20px', margin: '20px 0' }}
+            />
+          )}
         </>
       ) : (
         <S.NoneContent>
