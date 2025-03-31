@@ -4,7 +4,7 @@ import { getTokens } from '@/utils/Tokens';
 export type ProjectResponseType = {
   id: string;
 };
-export const getProjects = async () => {
+export const getProjects = async (offset = 0, limit = 9) => {
   const { accessToken } = getTokens();
 
   try {
@@ -14,10 +14,23 @@ export const getProjects = async () => {
       },
     });
 
-    return response.data;
+    const allProjects = Array.isArray(response.data)
+      ? response.data
+      : response.data.data && Array.isArray(response.data.data)
+        ? response.data.data
+        : [];
+
+    const paginatedProjects = allProjects.slice(offset, offset + limit);
+
+    return {
+      data: paginatedProjects,
+      total: allProjects.length,
+      hasMore: offset + limit < allProjects.length,
+    };
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(error);
+    throw error;
   }
 };
 
