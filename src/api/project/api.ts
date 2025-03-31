@@ -13,14 +13,11 @@ export const fetchProjects = async (projectId: string) => {
   }
 };
 
-export const postProjectTitle = async (projectId: string, title: string) => {
+export const patchProjectTitle = async (projectId: string, title: string) => {
   try {
-    const response = await api.post(
-      `/api/v1/projects/${projectId}/updateTitle`,
-      {
-        name: title,
-      }
-    );
+    const response = await api.patch(`/api/v1/projects/${projectId}`, {
+      name: title,
+    });
 
     return response.data;
   } catch (error) {
@@ -40,23 +37,12 @@ export const suggestArticle = async (article: string) => {
     throw error;
   }
 };
-export const postArticle = async (projectId: string, article: string) => {
-  try {
-    const response = await api.post(`/api/v1/article/${projectId}/update`, {
-      article,
-    });
-    return response.data;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error updating article:', error);
-    throw error;
-  }
-};
 
 export const patchArticle = async (projectId: string, article: string) => {
   try {
-    const response = await api.patch(`/api/${projectId}/newsArticle
-      ?${article}`);
+    const response = await api.patch(
+      `/api/v1/projects/${projectId}/newsArticle?newsArticle=${article}`
+    );
     return response.data;
   } catch (error) {
     // eslint-disable-next-line no-console
