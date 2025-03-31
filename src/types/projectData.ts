@@ -18,17 +18,31 @@ export interface ImageType {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Subtitle {
+  text: string;
+  fontFamily: string;
+  fontSize: number;
+  fontColor: string;
+  backgroundColor: string;
+  position: Position;
+}
+export interface Transcript {
+  id: number;
+  sceneId: number;
+  text: string;
+  property: {
+    speed: number;
+    postDelay: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Scene {
   id: number;
-  transcript: { id: number; text: string; postDelay: string }[];
-  subtitle: {
-    text: string;
-    fontFamily: string;
-    fontSize: number;
-    fontColor: string;
-    backgroundColor: string;
-    position: Position;
-  };
+  transcripts: Transcript[];
+  subtitle: Subtitle;
   media: ImageType | null;
   avatar: ImageType | null;
 }
@@ -48,4 +62,10 @@ export interface ProjectState {
   updateElementPosition: (isAvatar: boolean, newPosition: Position) => void;
   updateElementSize: (isAvatar: boolean, newSize: TemplateSize) => void;
   resetMedia: () => void;
+  updateTranscripts: (
+    sceneId: number,
+    transcriptId: number,
+    newData: Partial<Scene['transcripts'][0]>
+  ) => void;
+  updateSubtitle: (sceneId: number, newSubtitle: Partial<Subtitle>) => void;
 }

@@ -6,9 +6,11 @@ interface ScriptTermInputProps {
   value: string;
   // eslint-disable-next-line no-unused-vars
   setValue: (value: string) => void;
+
+  onBlur: () => void;
 }
 
-const ScriptTermInput = ({ value, setValue }: ScriptTermInputProps) => {
+const ScriptTermInput = ({ value, setValue, onBlur }: ScriptTermInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -36,7 +38,10 @@ const ScriptTermInput = ({ value, setValue }: ScriptTermInputProps) => {
         value={value}
         onChange={handleChange}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onBlur={() => {
+          onBlur();
+          setIsFocused(false);
+        }}
       />
       <S.Text>초</S.Text>
     </S.InputContainer>

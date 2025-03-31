@@ -79,7 +79,7 @@ function RouteComponent() {
                 <S.AvatarTemplateImg
                   isSelected={selectedAvatarTemplate?.id === template.id}
                   src={template.data.avatar.fileUrl}
-                  alt={template.data.avatar.name}
+                  autoPlay={true}
                 />
               </S.AvatarTemplateCard>
             ))}
@@ -159,7 +159,7 @@ const S = {
     background-color: ${theme.colors.background2};
     border-radius: ${theme.radius.medium};
   `,
-  AvatarTemplateImg: styled.img<{ isSelected: boolean }>`
+  AvatarTemplateImg: styled.video<{ isSelected: boolean }>`
     width: 100%;
     height: 100%;
     object-fit: cover;

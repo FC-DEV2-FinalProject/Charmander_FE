@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-// import { useDebounce } from '@/hook/useDebounce';
 import theme from '@/styles/theme';
 import { useDebounce } from '@/hook/useDebounce';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
@@ -225,40 +224,53 @@ function DragImage({
         containerHeight={
           containerRef.current?.getBoundingClientRect().height || 0
         }>
-        <S.SelectedBackgroundImage
-          isAvatar={isAvatar}
-          ref={imageRef}
-          src={imgSrc}
-          alt={imgAlt}
-          draggable={false}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          tabIndex={-1}
-        />
-        {isFocused && (
-          <>
-            <S.ResizeHandle
-              className="top-left"
-              onMouseDown={(e) => handleResizeMouseDown(e, 'top-left')}
+        <>
+          {isAvatar ? (
+            <S.SelectedAvatarImage
+              isAvatar={isAvatar}
+              src={imgSrc}
+              draggable={false}
               onFocus={handleFocus}
+              onBlur={handleBlur}
+              tabIndex={-1}
             />
-            <S.ResizeHandle
-              className="top-right"
-              onMouseDown={(e) => handleResizeMouseDown(e, 'top-right')}
+          ) : (
+            <S.SelectedBackgroundImage
+              isAvatar={isAvatar}
+              ref={imageRef}
+              src={imgSrc}
+              alt={imgAlt}
+              draggable={false}
               onFocus={handleFocus}
+              onBlur={handleBlur}
+              tabIndex={-1}
             />
-            <S.ResizeHandle
-              className="bottom-left"
-              onMouseDown={(e) => handleResizeMouseDown(e, 'bottom-left')}
-              onFocus={handleFocus}
-            />
-            <S.ResizeHandle
-              className="bottom-right"
-              onMouseDown={(e) => handleResizeMouseDown(e, 'bottom-right')}
-              onFocus={handleFocus}
-            />
-          </>
-        )}
+          )}
+          {isFocused && (
+            <>
+              <S.ResizeHandle
+                className="top-left"
+                onMouseDown={(e) => handleResizeMouseDown(e, 'top-left')}
+                onFocus={handleFocus}
+              />
+              <S.ResizeHandle
+                className="top-right"
+                onMouseDown={(e) => handleResizeMouseDown(e, 'top-right')}
+                onFocus={handleFocus}
+              />
+              <S.ResizeHandle
+                className="bottom-left"
+                onMouseDown={(e) => handleResizeMouseDown(e, 'bottom-left')}
+                onFocus={handleFocus}
+              />
+              <S.ResizeHandle
+                className="bottom-right"
+                onMouseDown={(e) => handleResizeMouseDown(e, 'bottom-right')}
+                onFocus={handleFocus}
+              />
+            </>
+          )}
+        </>
       </S.ImageWrapper>
     </S.DragImageContainer>
   );
@@ -292,6 +304,17 @@ const S = {
       `translate(${(props.position.x / 100) * props.containerWidth}px, ${(props.position.y / 100) * props.containerHeight}px)`};
   `,
   SelectedBackgroundImage: styled.img<{ isAvatar: boolean | undefined }>`
+    width: 100%;
+    height: 100%;
+    aspect-ratio: ${(props) => (props.isAvatar ? '9 / 16' : 'auto')};
+    object-fit: contain;
+    position: absolute;
+    cursor: grab;
+    &:active {
+      cursor: grabbing;
+    }
+  `,
+  SelectedAvatarImage: styled.video<{ isAvatar: boolean | undefined }>`
     width: 100%;
     height: 100%;
     aspect-ratio: ${(props) => (props.isAvatar ? '9 / 16' : 'auto')};

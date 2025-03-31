@@ -1,6 +1,6 @@
 import { FetchTemplateResponse } from '@/types/template';
 import api from '../login/api';
-import { ImageType } from '@/types/projectData';
+import { ImageType, Transcript } from '@/types/projectData';
 
 export const fetchProjects = async (projectId: string) => {
   try {
@@ -87,7 +87,7 @@ export const patchProjectBackgroundImage = async (
   backgroundImageData: ImageType | null
 ) => {
   if (projectId) {
-    const response = await api.patch(`api/v1/project/${projectId}`, {
+    const response = await api.patch(`/api/v1/project/${projectId}`, {
       backgroundImageData,
     });
     return response;
@@ -98,9 +98,43 @@ export const patchProjectAvatarImage = async (
   avatarImageData: ImageType | null
 ) => {
   if (projectId) {
-    const response = await api.patch(`api/v1/project/${projectId}`, {
-      avatarImageData,
+    const response = await api.patch(`/api/v1/project/${projectId}`, {
+      avatar: avatarImageData,
     });
     return response;
   }
+};
+export const postTranscript = async (projectId: number, sceneId: number) => {
+  const response = await api.post(
+    `/api/v1/projects/${projectId}/scenes/${sceneId}/ts`
+  );
+  return response.data;
+};
+export const deleteTranscript = async (
+  projectId: number,
+  sceneId: number,
+  tsId: number
+) => {
+  const response = await api.delete(
+    `/api/v1/projects/${projectId}/scenes/${sceneId}/ts/${tsId}`,
+    {
+      withCredentials: true,
+    }
+  );
+  return response.data;
+};
+export const patchTranscript = async (
+  projectId: number,
+  sceneId: number,
+  tsId: number,
+  bodyData: Transcript
+) => {
+  const response = await api.patch(
+    `/api/v1/projects/${projectId}/scenes/${sceneId}/ts/${tsId}`,
+    {
+      text: bodyData.text,
+      property: bodyData.property,
+    }
+  );
+  return response.data;
 };
