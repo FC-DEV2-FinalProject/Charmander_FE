@@ -34,7 +34,7 @@
         "type": "image",
         "width": 1920,
         "height": 1080,
-        "url": "/src/mock/mockImage/news/CK_tii219a0208.jpg",
+        "url": "https://cdn.charmander.xyz/template-background/CK_ti436a26703_1920.png",
         "position": {
           "x": 0,
           "y": 0
@@ -52,7 +52,7 @@
         "type": "image",
         "width": 1920,
         "height": 1080,
-        "url": "/src/mock/mockImage/AVATAR/Yura_02A.png",
+        "url": "https://cdn.charmander.xyz/template-avatar/avatar-hope1.webm",
         "position": {
           "x": 0,
           "y": 0
