@@ -31,11 +31,14 @@ function RouteComponent() {
           return;
         }
 
-        const response = await axios.post(import.meta.env.VITE_OAUTH_API_URL, {
-          provider: 'kakao',
-          code: code,
-          state: state,
-        });
+        const response = await axios.post(
+          import.meta.env.VITE_OAUTH_API_URL + 'kakao',
+          {
+            provider: 'kakao',
+            code: code,
+            state: state,
+          }
+        );
 
         if (response.data) {
           const { accessToken } = response.data;
