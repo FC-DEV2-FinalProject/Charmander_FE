@@ -26,7 +26,15 @@ export const patchProjectTitle = async (projectId: string, title: string) => {
     throw error;
   }
 };
-
+export const postProjectScenes = async (projectId: string) => {
+  try {
+    const response = await api.post(`/api/v1/projects/${projectId}/scenes`);
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log(`프로젝트 씬 제작 에러 ${error}`);
+  }
+};
 export const suggestArticle = async (article: string) => {
   try {
     const response = await api.post('/api/v1/templates/suggest', { article });
@@ -69,24 +77,32 @@ export const fetchTemplate = async () => {
   }
 };
 export const patchProjectBackgroundImage = async (
-  projectId: number | null,
+  projectId: number,
+  sceneId: number,
   backgroundImageData: ImageType | null
 ) => {
   if (projectId) {
-    const response = await api.patch(`/api/v1/project/${projectId}`, {
-      backgroundImageData,
-    });
+    const response = await api.patch(
+      `/api/v1/projects/${projectId}/scenes/${sceneId}`,
+      {
+        background: backgroundImageData,
+      }
+    );
     return response;
   }
 };
 export const patchProjectAvatarImage = async (
-  projectId: number | null,
+  projectId: number,
+  sceneId: number,
   avatarImageData: ImageType | null
 ) => {
   if (projectId) {
-    const response = await api.patch(`/api/v1/project/${projectId}`, {
-      avatar: avatarImageData,
-    });
+    const response = await api.patch(
+      `/api/v1/projects/${projectId}/scenes/${sceneId}`,
+      {
+        avatar: avatarImageData,
+      }
+    );
     return response;
   }
 };

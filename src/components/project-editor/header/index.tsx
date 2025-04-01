@@ -10,7 +10,11 @@ import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import Modal from '@/components/common/modal';
 import EditModal from '../modal/editModal';
 import { Route } from '@/routes/__root';
-import { fetchProjects, patchProjectTitle } from '@/api/project/api';
+import {
+  fetchProjects,
+  patchProjectTitle,
+  postProjectScenes,
+} from '@/api/project/api';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import useSuggestTemplateStore from '@/store/useSuggestTemplatStore';
 
@@ -34,29 +38,13 @@ const ProjectHeader = () => {
       inputRef.current.click();
     }
   };
-
   useEffect(() => {
     const loadProjects = async () => {
       try {
         const data = await fetchProjects(project);
 
         if (!data.scenes || data.scenes.length === 0) {
-          data.scenes = [
-            {
-              id: 1,
-              transcript: [],
-              subtitle: {
-                text: '',
-                fontFamily: 'Arial',
-                fontSize: 24,
-                fontColor: '#ffffff',
-                backgroundColor: '#000000',
-                position: { x: 0, y: 0 },
-              },
-              media: null,
-              avatar: null,
-            },
-          ];
+          data.scenes = await postProjectScenes(project);
         }
 
         setProjectData(data);

@@ -4,7 +4,6 @@ import {
   suggestArticle,
 } from '@/api/project/api';
 import DropDown from '@/components/common/dropdown';
-import { useDebounce } from '@/hook/useDebounce';
 import useArticlePDFStore from '@/store/useArticlePDFStore';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import useSuggestTemplateStore from '@/store/useSuggestTemplatStore';
@@ -38,7 +37,6 @@ function RouteComponent() {
       name: string;
     }[]
   >();
-  const debouncedTemplate = useDebounce(selectedTemplate, 1000);
   const filteredTemplates =
     template?.data.filter(
       (template) =>
@@ -91,13 +89,11 @@ function RouteComponent() {
   }, [isSuggest, articlePDFText, category, template, toggleIsSuggest]);
 
   useEffect(() => {
-    if (!debouncedTemplate) return;
-
     if (selectedTemplate) {
       updateBackground(selectedTemplate?.data.background);
       updateAvatar(selectedTemplate?.data.avatar);
     }
-  }, [debouncedTemplate, selectedTemplate, updateAvatar, updateBackground]);
+  }, [selectedTemplate, updateAvatar, updateBackground]);
   return (
     <S.TemplateContainer>
       <S.TemplateMain>
