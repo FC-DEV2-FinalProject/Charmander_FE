@@ -28,14 +28,23 @@ function RouteComponent() {
   const debouncedAvatar = useDebounce(avatar, 1000);
 
   useEffect(() => {
+    if (!projectData || !debouncedAvatar) return;
+
+    const currentAvatar = projectData.scenes[0].avatar;
+    if (currentAvatar && currentAvatar === debouncedAvatar) {
+      return;
+    }
+
     const upDateProjectImage = async () => {
-      if (projectData && debouncedAvatar) {
-        try {
-          await patchProjectAvatarImage(projectData.id, debouncedAvatar);
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.log(`이미지 업로드에 실패했습니다${error}`);
-        }
+      try {
+        await patchProjectAvatarImage(
+          projectData.id,
+          projectData.scenes[0].id,
+          debouncedAvatar
+        );
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(`이미지 업로드에 실패했습니다: ${error}`);
       }
     };
     upDateProjectImage();
@@ -54,7 +63,7 @@ function RouteComponent() {
   return (
     <S.AvatarContainer>
       <S.AvatarMain>
-        {selectedAvatarTemplate && (
+        {selectedAvatarTemplate && selectedAvatarTemplate.fileUrl && (
           <DragImage
             aspectRatio={aspectRatio}
             imgSrc={selectedAvatarTemplate.fileUrl}

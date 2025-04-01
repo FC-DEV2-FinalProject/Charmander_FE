@@ -13,6 +13,7 @@ import {
   postTranscript,
 } from '@/api/project/api';
 import { useDebounce } from '@/hook/useDebounce';
+import VideoViewPortComponent from '@/components/project-editor/scriptVeiwPort';
 // import ShortScriptTemplate from '@/assets/projectIcon/scriptTemplateShort.svg?react';
 // import LongScriptTemplate from '@/assets/projectIcon/scriptTemplateLong.svg?react';
 // import TransparentBackground from '@/assets/projectIcon/transparentBackground.svg?react';
@@ -241,18 +242,7 @@ function RouteComponent() {
           <S.AddScriptButton onClick={addSubtitle}>문단 추가</S.AddScriptButton>
         </S.ScriptSection>
         <S.VideoSection>
-          <S.VideoVeiwPort aspectRatio={aspectRatio}>
-            <S.SelectedBackgroundImage
-              aspectRatio={aspectRatio}
-              src={projectData?.scenes[0].media?.fileUrl}
-              alt={projectData?.scenes[0].media?.name}
-            />
-            <S.SelectedAvatarImage
-              aspectRatio={aspectRatio}
-              src={projectData?.scenes[0].avatar?.fileUrl}
-              autoPlay={true}
-            />
-          </S.VideoVeiwPort>
+          <VideoViewPortComponent aspectRatio={aspectRatio} />
         </S.VideoSection>
       </S.ScriptMain>
 
@@ -387,32 +377,6 @@ const S = {
     justify-content: center;
     align-items: center;
     padding: ${theme.spacing.md};
-  `,
-  VideoVeiwPort: styled.div<{ aspectRatio: string }>`
-    ${(props) =>
-      props.aspectRatio === '16:9(pc)' ? 'width:100%;' : 'height:100%;'}
-    aspect-ratio: ${(props) =>
-      props.aspectRatio === '16:9(pc)' ? '16 / 9' : '9 / 16'};
-    position: relative;
-    border: 2px solid ${theme.colors.secondary1};
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  `,
-  SelectedBackgroundImage: styled.img<{ aspectRatio: string }>`
-    ${(props) =>
-      props.aspectRatio === '16:9(pc)' ? 'width:100%;' : 'height:100%;'}
-    aspect-ratio: ${(props) =>
-      props.aspectRatio === '16:9(pc)' ? '16 / 9' : '9 / 16'};
-    position: absolute;
-  `,
-  SelectedAvatarImage: styled.video<{ aspectRatio: string }>`
-    ${(props) =>
-      props.aspectRatio === '16:9(pc)' ? 'width:100%;' : 'height:100%;'}
-    aspect-ratio: ${(props) =>
-      props.aspectRatio === '16:9(pc)' ? '16 / 9' : '9 / 16'};
-    position: absolute;
-    z-index: 1;
   `,
   VideoInnerScriptContainer: styled.div`
     width: 100%;

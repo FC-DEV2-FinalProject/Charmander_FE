@@ -4,6 +4,7 @@ import {
   ProjectState,
   Scene,
   Subtitle,
+  SuggestProjectData,
 } from '@/types/projectData';
 import { TemplateImage, TemplateSize } from '@/types/template';
 import { create } from 'zustand';
@@ -14,14 +15,60 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
   setProjectData: (projectData) => set({ projectData }),
 
   resetProjectData: () => set({ projectData: null }),
+  setSuggestProjectData: (newData: SuggestProjectData) => {
+    set((state) => {
+      if (!state.projectData) return state;
 
-  updateMedia: (template: TemplateImage) => {
+      const { avatar, background } = newData;
+
+      return {
+        projectData: {
+          ...state.projectData,
+          scenes: state.projectData.scenes.map((scene) => ({
+            ...scene,
+            avatar: avatar
+              ? {
+                  id: avatar.id,
+                  name: avatar.name,
+                  priority: avatar.priority,
+                  type: avatar.type,
+                  fileUrl: avatar.fileUrl,
+                  position: { x: 0, y: 0 },
+                  size: avatar.size,
+                  scale: 1,
+                  viewport: [0, 0, 100, 100],
+                  createdAt: avatar.createdAt,
+                  updatedAt: avatar.updatedAt,
+                }
+              : null,
+            background: background
+              ? {
+                  id: background.id,
+                  name: background.name,
+                  priority: background.priority,
+                  type: background.type,
+                  fileUrl: background.fileUrl,
+                  position: { x: 0, y: 0 },
+                  size: background.size,
+                  scale: 1,
+                  viewport: [0, 0, 100, 100],
+                  createdAt: background.createdAt,
+                  updatedAt: background.updatedAt,
+                }
+              : null,
+          })),
+        },
+      };
+    });
+  },
+
+  updateBackground: (template: TemplateImage) => {
     set((state) => {
       if (!state.projectData || state.projectData.scenes.length === 0) {
         return state;
       }
 
-      const newMedia: ImageType = {
+      const newBackground: ImageType = {
         id: template.id,
         name: template.name,
         priority: template.priority,
@@ -41,7 +88,7 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
           scenes: [
             {
               ...state.projectData.scenes[0],
-              media: newMedia,
+              background: newBackground,
             },
           ],
         },
@@ -92,11 +139,11 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
             index === 0
               ? {
                   ...scene,
-                  [isAvatar ? 'avatar' : 'media']: scene[
-                    isAvatar ? 'avatar' : 'media'
+                  [isAvatar ? 'avatar' : 'background']: scene[
+                    isAvatar ? 'avatar' : 'background'
                   ]
                     ? {
-                        ...scene[isAvatar ? 'avatar' : 'media'],
+                        ...scene[isAvatar ? 'avatar' : 'background'],
                         position: newPosition,
                       }
                     : null,
@@ -119,11 +166,11 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
             index === 0
               ? {
                   ...scene,
-                  [isAvatar ? 'avatar' : 'media']: scene[
-                    isAvatar ? 'avatar' : 'media'
+                  [isAvatar ? 'avatar' : 'background']: scene[
+                    isAvatar ? 'avatar' : 'background'
                   ]
                     ? {
-                        ...scene[isAvatar ? 'avatar' : 'media'],
+                        ...scene[isAvatar ? 'avatar' : 'background'],
                         size: newSize,
                       }
                     : null,
@@ -135,7 +182,7 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
     });
   },
 
-  resetMedia: () => {
+  resetBackground: () => {
     set((state) => {
       if (!state.projectData || state.projectData.scenes.length === 0)
         return state;
@@ -146,7 +193,7 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
           scenes: [
             {
               ...state.projectData.scenes[0],
-              media: null,
+              background: null,
             },
           ],
         },

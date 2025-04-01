@@ -24,15 +24,16 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { projectData, updateMedia, resetMedia } = useProjectEditorStore();
+  const { projectData, updateBackground, resetBackground } =
+    useProjectEditorStore();
   const { templatesQuery } = useTemplates();
   const { data: templateList, isLoading } = templatesQuery;
   const { aspectRatio, setAspectRatio } = useAspectRatioStore();
   const [selectedBackgroundTemplate, setSelectedBackgroundTemplate] =
-    useState<TemplateImage | null>(projectData?.scenes[0].media || null);
+    useState<TemplateImage | null>(projectData?.scenes[0].background || null);
   const [templateImages, setTemplateImages] = useState<TemplateImage[]>([]);
 
-  const media = projectData?.scenes[0]?.media;
+  const media = projectData?.scenes[0]?.background;
   const debouncedBackground = useDebounce(media, 1000);
   const generateId = nanoid(10);
 
@@ -52,34 +53,43 @@ function RouteComponent() {
   }, [templateList]);
 
   useEffect(() => {
+    if (selectedBackgroundTemplate) {
+      updateBackground(selectedBackgroundTemplate);
+    }
+  }, [selectedBackgroundTemplate, updateBackground]);
+
+  useEffect(() => {
+    if (!debouncedBackground || !projectData) return;
+
+    const currentBackground = projectData.scenes[0].background;
+
+    if (currentBackground && currentBackground === debouncedBackground) {
+      return;
+    }
+
     const upDateProjectImage = async () => {
-      if (projectData && debouncedBackground) {
-        try {
-          await patchProjectBackgroundImage(
-            projectData.id,
-            debouncedBackground
-          );
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.log(`이미지 업로드에 실패했습니다${error}`);
-        }
+      try {
+        await patchProjectBackgroundImage(
+          projectData.id,
+          projectData.scenes[0].id,
+          debouncedBackground
+        );
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(`이미지 업로드에 실패했습니다${error}`);
       }
     };
+
     upDateProjectImage();
   }, [projectData, debouncedBackground]);
-  useEffect(() => {
-    if (selectedBackgroundTemplate) {
-      updateMedia(selectedBackgroundTemplate);
-    }
-  }, [selectedBackgroundTemplate, updateMedia]);
 
   const handleBakcgroundTemplateImage = (template: TemplateImage | null) => {
     if (template) {
       setSelectedBackgroundTemplate(template);
-      updateMedia(template);
+      updateBackground(template);
     } else {
       setSelectedBackgroundTemplate(null);
-      resetMedia();
+      resetBackground();
     }
   };
 
@@ -129,7 +139,7 @@ function RouteComponent() {
   return (
     <S.BackgroundContainer>
       <S.BackgroundMain>
-        {selectedBackgroundTemplate && (
+        {selectedBackgroundTemplate && selectedBackgroundTemplate.fileUrl && (
           <DragImage
             aspectRatio={aspectRatio}
             imgSrc={selectedBackgroundTemplate.fileUrl}

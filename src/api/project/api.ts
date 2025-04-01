@@ -13,14 +13,11 @@ export const fetchProjects = async (projectId: string) => {
   }
 };
 
-export const postProjectTitle = async (projectId: string, title: string) => {
+export const patchProjectTitle = async (projectId: string, title: string) => {
   try {
-    const response = await api.post(
-      `/api/v1/projects/${projectId}/updateTitle`,
-      {
-        name: title,
-      }
-    );
+    const response = await api.patch(`/api/v1/projects/${projectId}`, {
+      name: title,
+    });
 
     return response.data;
   } catch (error) {
@@ -29,7 +26,15 @@ export const postProjectTitle = async (projectId: string, title: string) => {
     throw error;
   }
 };
-
+export const postProjectScenes = async (projectId: string) => {
+  try {
+    const response = await api.post(`/api/v1/projects/${projectId}/scenes`);
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log(`프로젝트 씬 제작 에러 ${error}`);
+  }
+};
 export const suggestArticle = async (article: string) => {
   try {
     const response = await api.post('/api/v1/templates/suggest', { article });
@@ -40,23 +45,12 @@ export const suggestArticle = async (article: string) => {
     throw error;
   }
 };
-export const postArticle = async (projectId: string, article: string) => {
-  try {
-    const response = await api.post(`/api/v1/article/${projectId}/update`, {
-      article,
-    });
-    return response.data;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error updating article:', error);
-    throw error;
-  }
-};
 
 export const patchArticle = async (projectId: string, article: string) => {
   try {
-    const response = await api.patch(`/api/${projectId}/newsArticle
-      ?${article}`);
+    const response = await api.patch(
+      `/api/v1/projects/${projectId}/newsArticle?newsArticle=${article}`
+    );
     return response.data;
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -83,24 +77,32 @@ export const fetchTemplate = async () => {
   }
 };
 export const patchProjectBackgroundImage = async (
-  projectId: number | null,
+  projectId: number,
+  sceneId: number,
   backgroundImageData: ImageType | null
 ) => {
   if (projectId) {
-    const response = await api.patch(`/api/v1/project/${projectId}`, {
-      backgroundImageData,
-    });
+    const response = await api.patch(
+      `/api/v1/projects/${projectId}/scenes/${sceneId}`,
+      {
+        background: backgroundImageData,
+      }
+    );
     return response;
   }
 };
 export const patchProjectAvatarImage = async (
-  projectId: number | null,
+  projectId: number,
+  sceneId: number,
   avatarImageData: ImageType | null
 ) => {
   if (projectId) {
-    const response = await api.patch(`/api/v1/project/${projectId}`, {
-      avatar: avatarImageData,
-    });
+    const response = await api.patch(
+      `/api/v1/projects/${projectId}/scenes/${sceneId}`,
+      {
+        avatar: avatarImageData,
+      }
+    );
     return response;
   }
 };

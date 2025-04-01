@@ -43,7 +43,7 @@ export interface Scene {
   id: number;
   transcripts: Transcript[];
   subtitle: Subtitle;
-  media: ImageType | null;
+  background: ImageType | null;
   avatar: ImageType | null;
 }
 
@@ -53,15 +53,28 @@ export interface Project {
   scenes: Scene[];
 }
 
+export type SuggestProjectData = {
+  avatar: ImageType | null;
+  background: ImageType | null;
+  categoryId: number;
+  name: string;
+  size: TemplateSize;
+  id: number;
+  priority: number;
+  thumbnailUrl: string;
+  updatedAt: string;
+};
+
 export interface ProjectState {
   projectData: Project | null;
   setProjectData: (project: Project) => void;
   resetProjectData: () => void;
-  updateMedia: (template: TemplateImage) => void;
+  setSuggestProjectData: (newData: SuggestProjectData) => void;
+  updateBackground: (template: TemplateImage) => void;
   updateAvatar: (template: TemplateImage) => void;
   updateElementPosition: (isAvatar: boolean, newPosition: Position) => void;
   updateElementSize: (isAvatar: boolean, newSize: TemplateSize) => void;
-  resetMedia: () => void;
+  resetBackground: () => void;
   updateTranscripts: (
     sceneId: number,
     transcriptId: number,

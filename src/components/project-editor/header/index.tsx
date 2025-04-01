@@ -12,10 +12,11 @@ import EditModal from '../modal/editModal';
 import { Route } from '@/routes/__root';
 import {
   fetchProjects,
-  postProjectTitle,
-  suggestArticle,
+  patchProjectTitle,
+  postProjectScenes,
 } from '@/api/project/api';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
+import useSuggestTemplateStore from '@/store/useSuggestTemplatStore';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
@@ -23,10 +24,10 @@ const ProjectHeader = () => {
   const location = useLocation();
   const { project } = Route.useParams();
   const router = useRouter();
-  const { projectData, setProjectData } = useProjectEditorStore();
-  const { articlePDFText, setArticlePDFText, clearArticlePDFText } =
-    useArticlePDFStore();
-
+  const { projectData, setProjectData, resetProjectData } =
+    useProjectEditorStore();
+  const { setArticlePDFText, clearArticlePDFText } = useArticlePDFStore();
+  const { isSuggest, toggleIsSuggest } = useSuggestTemplateStore();
   const [projectTitle, setProjectTitle] = useState(
     projectData?.name || '새 프로젝트'
   );
@@ -37,29 +38,13 @@ const ProjectHeader = () => {
       inputRef.current.click();
     }
   };
-
   useEffect(() => {
     const loadProjects = async () => {
       try {
         const data = await fetchProjects(project);
 
         if (!data.scenes || data.scenes.length === 0) {
-          data.scenes = [
-            {
-              id: 1,
-              transcript: [],
-              subtitle: {
-                text: '',
-                fontFamily: 'Arial',
-                fontSize: 24,
-                fontColor: '#ffffff',
-                backgroundColor: '#000000',
-                position: { x: 0, y: 0 },
-              },
-              media: null,
-              avatar: null,
-            },
-          ];
+          data.scenes = await postProjectScenes(project);
         }
 
         setProjectData(data);
@@ -67,8 +52,9 @@ const ProjectHeader = () => {
         alert(err);
       }
     };
+    resetProjectData();
     loadProjects();
-  }, [setProjectData, project]);
+  }, [setProjectData, resetProjectData, project]);
 
   useEffect(() => {
     if (projectData?.name) {
@@ -91,7 +77,7 @@ const ProjectHeader = () => {
     if (isEdit) {
       try {
         if (projectData?.name) {
-          await postProjectTitle(project, projectData.name);
+          await patchProjectTitle(project, projectData.name);
 
           setIsEdit(false);
         }
@@ -156,14 +142,10 @@ const ProjectHeader = () => {
     };
   };
 
-  const submitArticle = async (article: string) => {
-    try {
-      const templateData = await suggestArticle(article);
-      setProjectData(templateData);
-
+  const submitArticle = async () => {
+    if (!isSuggest) {
+      toggleIsSuggest();
       router.navigate({ to: '/$project/template', params: { project } });
-    } catch (error) {
-      alert(error);
     }
   };
   return (
@@ -199,7 +181,7 @@ const ProjectHeader = () => {
                   ref={inputRef}
                 />
               </S.ArticleUploadButton>
-              <S.HeaderButton onClick={() => submitArticle(articlePDFText)}>
+              <S.HeaderButton onClick={() => submitArticle()}>
                 템플릿 추천
               </S.HeaderButton>
               <Link
@@ -240,12 +222,13 @@ const S = {
     }
   `,
   HeaderLeftContents: styled.div`
+    width: 60%;
     display: flex;
     align-items: center;
   `,
   TitleBox: styled.div`
-    width: 100%;
-    margin-left: 270px;
+    width: 40%;
+    margin-left: 25%;
     display: flex;
     align-items: center;
   `,

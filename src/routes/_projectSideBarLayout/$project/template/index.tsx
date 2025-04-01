@@ -1,7 +1,12 @@
-import { fetchTemplate, fetchTemplateCategories } from '@/api/project/api';
+import {
+  fetchTemplate,
+  fetchTemplateCategories,
+  suggestArticle,
+} from '@/api/project/api';
 import DropDown from '@/components/common/dropdown';
-import { useDebounce } from '@/hook/useDebounce';
+import useArticlePDFStore from '@/store/useArticlePDFStore';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
+import useSuggestTemplateStore from '@/store/useSuggestTemplatStore';
 import theme from '@/styles/theme';
 import { FetchTemplateResponse } from '@/types/template';
 import { createFileRoute } from '@tanstack/react-router';
@@ -15,7 +20,9 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { updateMedia, updateAvatar } = useProjectEditorStore();
+  const { isSuggest, toggleIsSuggest } = useSuggestTemplateStore();
+  const { articlePDFText } = useArticlePDFStore();
+  const { updateBackground, updateAvatar } = useProjectEditorStore();
   const [selectedCategory, setSelectedCategory] = useState<{
     id: number;
     name: string;
@@ -30,7 +37,6 @@ function RouteComponent() {
       name: string;
     }[]
   >();
-  const debouncedTemplate = useDebounce(selectedTemplate, 1000);
   const filteredTemplates =
     template?.data.filter(
       (template) =>
@@ -38,37 +44,56 @@ function RouteComponent() {
     ) || [];
 
   useEffect(() => {
-    const loadCategory = async () => {
+    const loadCategoryAndTemplate = async () => {
       try {
-        const data = await fetchTemplateCategories();
-        setCategory(data.data);
+        const categoryData = await fetchTemplateCategories();
+        const templateData = await fetchTemplate();
+
+        setCategory(categoryData.data);
+        setTemplate(templateData);
       } catch (err) {
         alert(err);
       }
     };
-    loadCategory();
-  }, []);
-  useEffect(() => {
-    const loadTemplateData = async () => {
-      try {
-        const data = await fetchTemplate();
-        setTemplate(data);
-      } catch (err) {
-        alert(err);
-      }
-    };
-    loadTemplateData();
+
+    loadCategoryAndTemplate();
   }, []);
 
   useEffect(() => {
-    if (!debouncedTemplate) return;
+    if (isSuggest && category && template) {
+      const loadSuggestTemplate = async () => {
+        try {
+          const postSuggestArticle = await suggestArticle(articlePDFText);
 
+          const suggestedCategory = category.find(
+            (cat) => cat.id === postSuggestArticle._info.category.id
+          );
+          setSelectedCategory(suggestedCategory || null);
+
+          const matchedTemplate = template.data.find(
+            (t) =>
+              t.data.categoryId === postSuggestArticle.items[0].data.categoryId
+          );
+          if (matchedTemplate) {
+            setSelectedTemplate(matchedTemplate);
+          }
+        } catch (err) {
+          alert(err);
+        } finally {
+          toggleIsSuggest();
+        }
+      };
+
+      loadSuggestTemplate();
+    }
+  }, [isSuggest, articlePDFText, category, template, toggleIsSuggest]);
+
+  useEffect(() => {
     if (selectedTemplate) {
-      updateMedia(selectedTemplate?.data.background);
+      updateBackground(selectedTemplate?.data.background);
       updateAvatar(selectedTemplate?.data.avatar);
     }
-  }, [debouncedTemplate, selectedTemplate, updateAvatar, updateMedia]);
-
+  }, [selectedTemplate, updateAvatar, updateBackground]);
   return (
     <S.TemplateContainer>
       <S.TemplateMain>
