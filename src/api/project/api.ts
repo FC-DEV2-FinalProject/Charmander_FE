@@ -45,11 +45,24 @@ export const suggestArticle = async (article: string) => {
     throw error;
   }
 };
+export const suggestArticleScript = async (article: string) => {
+  try {
+    const response = await api.post('/api/v1/projects/generate-transcript', {
+      article,
+    });
+    return response.data;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('기사 등록 에러:', error);
+    throw error;
+  }
+};
 
 export const patchArticle = async (projectId: string, article: string) => {
   try {
     const response = await api.patch(
-      `/api/v1/projects/${projectId}/newsArticle?newsArticle=${article}`
+      `/api/v1/projects/${projectId}/newsArticle`,
+      { article }
     );
     return response.data;
   } catch (error) {

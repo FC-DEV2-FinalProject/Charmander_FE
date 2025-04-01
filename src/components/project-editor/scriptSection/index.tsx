@@ -5,10 +5,7 @@ import theme from '@/styles/theme';
 interface ScriptSectionProps {
   id: number;
   text: string;
-  // font: string;
-  // weight: string;
-  // size: string;
-  // backgroundStyle: string;
+
   // eslint-disable-next-line no-unused-vars
   onDelete: (id: number) => void;
   // eslint-disable-next-line no-unused-vars
@@ -20,10 +17,6 @@ interface ScriptSectionProps {
 const ScriptSection = ({
   id,
   text,
-  // font,
-  // weight,
-  // size,
-  // backgroundStyle,
   onDelete,
   handleSubTitle,
   onSelect,
@@ -35,16 +28,10 @@ const ScriptSection = ({
       onClick={onSelect}>
       <S.Header>
         <S.TranscriptText
-          contentEditable
-          suppressContentEditableWarning
-          onBlur={(e) => handleSubTitle(id, 'text', e.target.innerText)}
-          // font={font}
-          // weight={weight}
-          // size={size}
-          // backgroundStyle={backgroundStyle}
-        >
-          {text}
-        </S.TranscriptText>
+          onChange={(e) => handleSubTitle(id, 'text', e.target.value)}
+          value={text}
+        />
+
         <S.DeleteButton onClick={() => onDelete(id)}>
           <DeleteIcon />
         </S.DeleteButton>
@@ -74,13 +61,7 @@ const S = {
     align-items: center;
   `,
 
-  TranscriptText: styled.span // <{
-  //   // font: string;
-  //   // weight: string;
-  //   // size: string;
-  //   // backgroundStyle: string;
-  // }>
-  `
+  TranscriptText: styled.input`
     width: 80%;
     font-weight: ${theme.fontWeights.medium};
     color: ${theme.colors.black};

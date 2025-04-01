@@ -47,6 +47,28 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
       };
     }
 
+    if (!background || !background.position || !background.size) {
+      return {
+        transform: '',
+        backgroundWidth: '100%',
+        backgroundHeight: '100%',
+        avatarTransform: '',
+        avatarWidth: '100%',
+        avatarHeight: '100%',
+      };
+    }
+
+    if (!avatar || !avatar.position || !avatar.size) {
+      return {
+        transform: '',
+        backgroundWidth: `${containerSize.width}px`,
+        backgroundHeight: `${containerSize.height}px`,
+        avatarTransform: '',
+        avatarWidth: '100%',
+        avatarHeight: '100%',
+      };
+    }
+
     const containerWidth = containerSize.width;
     const containerHeight = containerSize.height;
 
@@ -92,6 +114,15 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
     handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  if (!background && !avatar) {
+    return (
+      <S.VideoVeiwPort
+        ref={viewportRef}
+        aspectRatio={aspectRatio}
+      />
+    );
+  }
 
   return (
     <S.VideoVeiwPort

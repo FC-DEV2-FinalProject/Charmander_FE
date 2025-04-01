@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import theme from '@/styles/theme';
 import BackIcon from '@/assets/projectIcon/back.svg?react';
 import EditIcon from '@/assets/projectIcon/edit-2.svg?react';
-import { Link, useLocation, useRouter } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 import useArticlePDFStore from '@/store/useArticlePDFStore';
 import { pdfjs } from 'react-pdf';
 import { TextItem } from 'pdfjs-dist/types/src/display/api';
@@ -16,18 +16,16 @@ import {
   postProjectScenes,
 } from '@/api/project/api';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
-import useSuggestTemplateStore from '@/store/useSuggestTemplatStore';
+import { ScriptConFirmModal } from '../modal/scriptConFirmModal';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 const ProjectHeader = () => {
   const location = useLocation();
   const { project } = Route.useParams();
-  const router = useRouter();
   const { projectData, setProjectData, resetProjectData } =
     useProjectEditorStore();
   const { setArticlePDFText, clearArticlePDFText } = useArticlePDFStore();
-  const { isSuggest, toggleIsSuggest } = useSuggestTemplateStore();
   const [projectTitle, setProjectTitle] = useState(
     projectData?.name || '새 프로젝트'
   );
@@ -142,12 +140,6 @@ const ProjectHeader = () => {
     };
   };
 
-  const submitArticle = async () => {
-    if (!isSuggest) {
-      toggleIsSuggest();
-      router.navigate({ to: '/$project/template', params: { project } });
-    }
-  };
   return (
     <>
       <S.HeaderContainer>
@@ -181,14 +173,16 @@ const ProjectHeader = () => {
                   ref={inputRef}
                 />
               </S.ArticleUploadButton>
-              <S.HeaderButton onClick={() => submitArticle()}>
-                템플릿 추천
-              </S.HeaderButton>
               <Link
                 to="/$project/background"
                 params={{ project: '1' }}>
-                <S.HeaderButton>템플릿 없이 진행하기</S.HeaderButton>
+                <S.HeaderButton>템플릿 직접 선택하기</S.HeaderButton>
               </Link>
+              <Modal openText="템플릿 추천">
+                {(setModalOpen) => (
+                  <ScriptConFirmModal setModalOpen={setModalOpen} />
+                )}
+              </Modal>
             </>
           ) : (
             <Modal openText="제작하기">

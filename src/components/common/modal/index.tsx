@@ -6,17 +6,21 @@ import CloseIcon from '@/assets/projectIcon/icon_size.svg?react';
 const Modal = ({
   children,
   openText,
+  isArticle,
 }: {
   // eslint-disable-next-line no-unused-vars
   children: ReactNode | ((setModalOpen: (open: boolean) => void) => ReactNode);
   openText: string;
+  isArticle?: boolean;
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const modalBackground = useRef<HTMLDivElement>(null);
 
   return (
     <>
-      <S.ModalOpenBtn onClick={() => setModalOpen(true)}>
+      <S.ModalOpenBtn
+        onClick={() => setModalOpen(true)}
+        isArticle={isArticle}>
         {openText}
       </S.ModalOpenBtn>
 
@@ -54,7 +58,18 @@ const S = {
   ModalCloseBtn: styled.div`
     cursor: pointer;
   `,
-  ModalOpenBtn: styled.button`
+  ModalOpenBtn: styled.button<{ isArticle?: boolean }>`
+    ${(props) =>
+      props.isArticle
+        ? `
+    background-color: ${theme.colors.primaryOpacity};
+    margin-right: ${theme.spacing.md};
+    border-radius: ${theme.radius.small};
+    padding: ${theme.spacing.sm} ${theme.spacing.md};
+    color: ${theme.colors.primary};
+    font-weight: ${theme.fontWeights.bold};
+  `
+        : `
     background-color: ${theme.colors.primary};
     margin-right: ${theme.spacing.md};
     border-radius: ${theme.radius.small};
@@ -62,6 +77,7 @@ const S = {
     color: ${theme.colors.white};
     font-weight: ${theme.fontWeights.bold};
     cursor: pointer;
+  `}
   `,
   ModalContainer: styled.div`
     width: 100%;
