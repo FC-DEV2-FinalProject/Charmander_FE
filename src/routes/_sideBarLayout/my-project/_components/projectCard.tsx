@@ -77,7 +77,7 @@ function ProjectCard(project: ProjectProps) {
             <MoreIcon color="#92929D" />
           </p>
         </S.CardTopInfo>
-        <Link to={`/project/${project.id}/article`}>
+        <Link to={`/${project.id}/article`}>
           <S.ProjectTitle>
             <h3 className="title">{project.name}</h3>
             <div>
