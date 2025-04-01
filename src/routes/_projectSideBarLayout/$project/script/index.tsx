@@ -23,8 +23,9 @@ export const Route = createFileRoute('/_projectSideBarLayout/$project/script/')(
 
 function RouteComponent() {
   const { aspectRatio } = useAspectRatioStore();
-  const { projectData, updateTranscripts } = useProjectEditorStore();
-  const [termValue, setTermValue] = useState(`0.5`);
+  const { projectData, updateTranscripts, addTranscript, removeTranscript } =
+    useProjectEditorStore();
+  const [termValue, setTermValue] = useState(`1`);
   const [subtitles, setSubtitles] = useState<Transcript[]>([]);
   const [selectedSubtitle, setSelectedSubtitle] = useState<Transcript | null>(
     null
@@ -49,6 +50,7 @@ function RouteComponent() {
       );
 
       setSubtitles((prevSubtitles) => [...prevSubtitles, newSubtitle]);
+      addTranscript(projectData.scenes[0].id, newSubtitle);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
@@ -77,6 +79,7 @@ function RouteComponent() {
       setSubtitles((prevSubtitles) =>
         prevSubtitles.filter((subtitle) => subtitle.id !== id)
       );
+      removeTranscript(projectData.scenes[0].id, id);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('자막 삭제 실패:', error);
@@ -93,7 +96,7 @@ function RouteComponent() {
     setTermValue(value);
   };
 
-  const handleTermValueBlur = () => {
+  const handleTermValueBlur = async () => {
     if (selectedSubtitle) {
       const parsedValue = parseFloat(termValue);
 
@@ -105,18 +108,26 @@ function RouteComponent() {
             postDelay: parsedValue * 1000,
           },
         };
-        updateTranscripts(
-          projectData?.scenes[0].id ?? 0,
-          updatedSubtitle.id,
-          updatedSubtitle
-        );
-        setSelectedSubtitle(updatedSubtitle);
-        setTermValue(parsedValue.toString());
+
+        // Update the subtitles array
         setSubtitles((prevSubtitles) =>
           prevSubtitles.map((subtitle) =>
             subtitle.id === updatedSubtitle.id ? updatedSubtitle : subtitle
           )
         );
+
+        // Trigger the API call
+        try {
+          await patchTranscript(
+            projectData?.id ?? 0,
+            projectData?.scenes[0].id ?? 0,
+            updatedSubtitle.id,
+            updatedSubtitle
+          );
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error('Failed to update subtitle:', error);
+        }
       }
     }
   };
@@ -185,7 +196,9 @@ function RouteComponent() {
               text={subtitle.text}
               onDelete={deleteSubtitle}
               handleSubTitle={handleSubtitle}
-              onSelect={() => setSelectedSubtitle(subtitle)}
+              onSelect={() => {
+                setSelectedSubtitle(subtitle);
+              }}
               isSelected={selectedSubtitle?.id === subtitle.id}
             />
           ))}
