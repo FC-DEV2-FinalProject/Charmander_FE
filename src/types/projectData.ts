@@ -80,5 +80,7 @@ export interface ProjectState {
     transcriptId: number,
     newData: Partial<Scene['transcripts'][0]>
   ) => void;
+  addTranscript: (sceneId: number, transcript: Transcript) => void;
+  removeTranscript: (sceneId: number, transcriptId: number) => void;
   updateSubtitle: (sceneId: number, newSubtitle: Partial<Subtitle>) => void;
 }

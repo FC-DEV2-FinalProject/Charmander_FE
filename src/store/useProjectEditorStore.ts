@@ -5,6 +5,7 @@ import {
   Scene,
   Subtitle,
   SuggestProjectData,
+  Transcript,
 } from '@/types/projectData';
 import { TemplateImage, TemplateSize } from '@/types/template';
 import { create } from 'zustand';
@@ -225,6 +226,47 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
       };
     });
   },
+
+  addTranscript: (sceneId: number, transcript: Transcript) => {
+    set((state) => {
+      if (!state.projectData) return state;
+      return {
+        projectData: {
+          ...state.projectData,
+          scenes: state.projectData.scenes.map((scene) =>
+            scene.id === sceneId
+              ? {
+                  ...scene,
+                  transcripts: [...scene.transcripts, transcript],
+                }
+              : scene
+          ),
+        },
+      };
+    });
+  },
+
+  removeTranscript: (sceneId: number, transcriptId: number) => {
+    set((state) => {
+      if (!state.projectData) return state;
+      return {
+        projectData: {
+          ...state.projectData,
+          scenes: state.projectData.scenes.map((scene) =>
+            scene.id === sceneId
+              ? {
+                  ...scene,
+                  transcripts: scene.transcripts.filter(
+                    (t) => t.id !== transcriptId
+                  ),
+                }
+              : scene
+          ),
+        },
+      };
+    });
+  },
+
   updateSubtitle: (sceneId: number, newSubtitle: Partial<Subtitle>) => {
     set((state) => {
       if (!state.projectData) return state;
