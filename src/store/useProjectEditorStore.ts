@@ -201,6 +201,24 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
       };
     });
   },
+  resetAvatar: () => {
+    set((state) => {
+      if (!state.projectData || state.projectData.scenes.length === 0)
+        return state;
+
+      return {
+        projectData: {
+          ...state.projectData,
+          scenes: [
+            {
+              ...state.projectData.scenes[0],
+              avatar: null,
+            },
+          ],
+        },
+      };
+    });
+  },
   updateTranscripts: (
     sceneId: number,
     transcriptId: number,

@@ -5,9 +5,8 @@ import { useTemplates } from '@/hook/useTemplateList';
 import useAspectRatioStore from '@/store/useAspectRatioStore';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import theme from '@/styles/theme';
-import { TemplateImage } from '@/types/template';
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import styled from 'styled-components';
 
 export const Route = createFileRoute('/_projectSideBarLayout/$project/avatar/')(
@@ -17,21 +16,42 @@ export const Route = createFileRoute('/_projectSideBarLayout/$project/avatar/')(
 );
 
 function RouteComponent() {
-  const { projectData, updateAvatar } = useProjectEditorStore();
+  const { projectData, updateAvatar, resetAvatar } = useProjectEditorStore();
   const { aspectRatio } = useAspectRatioStore();
-  const [selectedAvatarTemplate, setSelectedAvatarTemplate] =
-    useState<TemplateImage | null>(projectData?.scenes[0].avatar || null);
+  const [selectedAvatarTemplateIndex, setSelectedAvatarTemplateIndex] =
+    useState(-1);
   const { templatesQuery } = useTemplates();
   const { data: templateList, isLoading } = templatesQuery;
   const backgroundRef = useRef<HTMLDivElement>(null);
-  const avatar = projectData?.scenes[0].avatar;
-  const debouncedAvatar = useDebounce(avatar, 1000);
+  const debouncedAvatarIndex = useDebounce(selectedAvatarTemplateIndex, 1000);
 
   useEffect(() => {
-    if (!projectData || !debouncedAvatar) return;
+    if (!templateList) return;
 
-    const currentAvatar = projectData.scenes[0].avatar;
-    if (currentAvatar && currentAvatar === debouncedAvatar) {
+    const template = templateList.data[selectedAvatarTemplateIndex] || null;
+    if (!template) {
+      resetAvatar();
+    } else {
+      updateAvatar(template.data.avatar);
+    }
+  }, [templateList, selectedAvatarTemplateIndex, resetAvatar, updateAvatar]);
+
+  const selectedAvatarTemplate = useMemo(() => {
+    if (!templateList || selectedAvatarTemplateIndex === -1) {
+      return null;
+    }
+    return templateList.data[selectedAvatarTemplateIndex].data.avatar;
+  }, [templateList, selectedAvatarTemplateIndex]);
+
+  useEffect(() => {
+    if (!templateList || !projectData || !debouncedAvatarIndex) return;
+
+    const currentTemplate = templateList.data[debouncedAvatarIndex];
+
+    if (
+      currentTemplate &&
+      selectedAvatarTemplateIndex === debouncedAvatarIndex
+    ) {
       return;
     }
 
@@ -40,26 +60,29 @@ function RouteComponent() {
         await patchProjectAvatarImage(
           projectData.id,
           projectData.scenes[0].id,
-          debouncedAvatar
+          currentTemplate.data.avatar
         );
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log(`이미지 업로드에 실패했습니다: ${error}`);
+        console.log(`아바타 업데이트에 실패했습니다: ${error}`);
       }
     };
     upDateProjectImage();
-  }, [projectData, debouncedAvatar]);
+  }, [
+    projectData,
+    templateList,
+    selectedAvatarTemplateIndex,
+    debouncedAvatarIndex,
+  ]);
 
-  const handleAvatarTemplateImage = (template: TemplateImage) => {
-    if (template) {
-      setSelectedAvatarTemplate(template);
-      updateAvatar(template);
-    }
+  const handleAvatarTemplateImage = (idx: number) => {
+    setSelectedAvatarTemplateIndex(idx);
   };
 
   if (isLoading) {
     return <div>로딩중 </div>;
   }
+
   return (
     <S.AvatarContainer>
       <S.AvatarMain>
@@ -81,12 +104,14 @@ function RouteComponent() {
           </S.LabelSection>
 
           <S.AvatarTemplateList>
-            {templateList?.data.map((template) => (
+            {templateList?.data.map((template, idx) => (
               <S.AvatarTemplateCard
-                onClick={() => handleAvatarTemplateImage(template.data.avatar)}
+                onClick={() => handleAvatarTemplateImage(idx)}
                 key={template.data.avatar.id}>
                 <S.AvatarTemplateImg
-                  isSelected={selectedAvatarTemplate?.id === template.id}
+                  isSelected={
+                    selectedAvatarTemplate?.id === template.data.avatar.id
+                  }
                   src={template.data.avatar.fileUrl}
                   autoPlay={true}
                 />
@@ -98,6 +123,7 @@ function RouteComponent() {
     </S.AvatarContainer>
   );
 }
+
 const S = {
   AvatarContainer: styled.div`
     width: 100%;

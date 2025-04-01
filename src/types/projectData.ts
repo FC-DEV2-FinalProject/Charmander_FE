@@ -75,6 +75,7 @@ export interface ProjectState {
   updateElementPosition: (isAvatar: boolean, newPosition: Position) => void;
   updateElementSize: (isAvatar: boolean, newSize: TemplateSize) => void;
   resetBackground: () => void;
+  resetAvatar: () => void;
   updateTranscripts: (
     sceneId: number,
     transcriptId: number,
