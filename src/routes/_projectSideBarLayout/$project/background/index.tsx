@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import DropDown from '@/components/common/dropdown';
 import theme from '@/styles/theme';
 import { createFileRoute } from '@tanstack/react-router';
@@ -26,15 +26,15 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { projectData, updateBackground, resetBackground } =
     useProjectEditorStore();
+
   const { templatesQuery } = useTemplates();
   const { data: templateList, isLoading } = templatesQuery;
+  const [selectedTemplateBgIndex, setSelectedTemplateBgIndex] = useState(-1);
+  const debouncedTemplateBgIndex = useDebounce(selectedTemplateBgIndex, 1000);
+
   const { aspectRatio, setAspectRatio } = useAspectRatioStore();
-  const [selectedBackgroundTemplate, setSelectedBackgroundTemplate] =
-    useState<TemplateImage | null>(projectData?.scenes[0].background || null);
   const [templateImages, setTemplateImages] = useState<TemplateImage[]>([]);
 
-  const media = projectData?.scenes[0]?.background;
-  const debouncedBackground = useDebounce(media, 1000);
   const generateId = nanoid(10);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -53,17 +53,37 @@ function RouteComponent() {
   }, [templateList]);
 
   useEffect(() => {
-    if (selectedBackgroundTemplate) {
-      updateBackground(selectedBackgroundTemplate);
+    if (!templateList) return;
+
+    const template = templateList.data[selectedTemplateBgIndex] || null;
+    if (!template) {
+      resetBackground();
+    } else {
+      updateBackground(template.data.background);
     }
-  }, [selectedBackgroundTemplate, updateBackground]);
+  }, [
+    templateList,
+    selectedTemplateBgIndex,
+    resetBackground,
+    updateBackground,
+  ]);
+
+  const selectedBackgroundTemplate = useMemo(() => {
+    if (!templateList || selectedTemplateBgIndex == -1) {
+      return null;
+    }
+    return templateList.data[selectedTemplateBgIndex].data.background;
+  }, [templateList, selectedTemplateBgIndex]);
 
   useEffect(() => {
-    if (!debouncedBackground || !projectData) return;
+    if (!templateList || !projectData || !debouncedTemplateBgIndex) return;
 
-    const currentBackground = projectData.scenes[0].background;
+    const currentTemplate = templateList.data[debouncedTemplateBgIndex];
 
-    if (currentBackground && currentBackground === debouncedBackground) {
+    if (
+      currentTemplate &&
+      selectedTemplateBgIndex === debouncedTemplateBgIndex
+    ) {
       return;
     }
 
@@ -72,7 +92,7 @@ function RouteComponent() {
         await patchProjectBackgroundImage(
           projectData.id,
           projectData.scenes[0].id,
-          debouncedBackground
+          currentTemplate.data.background
         );
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -81,16 +101,15 @@ function RouteComponent() {
     };
 
     upDateProjectImage();
-  }, [projectData, debouncedBackground]);
+  }, [
+    projectData,
+    templateList,
+    selectedTemplateBgIndex,
+    debouncedTemplateBgIndex,
+  ]);
 
-  const handleBakcgroundTemplateImage = (template: TemplateImage | null) => {
-    if (template) {
-      setSelectedBackgroundTemplate(template);
-      updateBackground(template);
-    } else {
-      setSelectedBackgroundTemplate(null);
-      resetBackground();
-    }
+  const handleBakcgroundTemplateImage = (idx: number) => {
+    setSelectedTemplateBgIndex(idx);
   };
 
   const handleInput = () => {
@@ -133,13 +152,18 @@ function RouteComponent() {
     };
     reader.readAsDataURL(file);
   };
+
   if (isLoading) {
     return <div>로딩중</div>;
   }
+
+  const isTemplabeBgSelected =
+    selectedBackgroundTemplate && selectedBackgroundTemplate.fileUrl;
+
   return (
     <S.BackgroundContainer>
       <S.BackgroundMain>
-        {selectedBackgroundTemplate && selectedBackgroundTemplate.fileUrl && (
+        {isTemplabeBgSelected && (
           <DragImage
             aspectRatio={aspectRatio}
             imgSrc={selectedBackgroundTemplate.fileUrl}
@@ -182,9 +206,9 @@ function RouteComponent() {
           </S.LabelSection>
 
           <S.BackgroundTemplateList>
-            {templateImages.map((template) => (
+            {templateImages.map((template, idx) => (
               <S.BackgroundTemplateCard
-                onClick={() => handleBakcgroundTemplateImage(template)}
+                onClick={() => handleBakcgroundTemplateImage(idx)}
                 key={template.id}>
                 <S.BackgroundTemplateImg
                   isSelected={selectedBackgroundTemplate?.id === template.id}
@@ -197,7 +221,7 @@ function RouteComponent() {
 
           <S.BackgroundButtonSection>
             <S.BackgroundButton
-              onClick={() => handleBakcgroundTemplateImage(null)}>
+              onClick={() => handleBakcgroundTemplateImage(-1)}>
               <DeleteBackgroundIcon />
               배경 제거
             </S.BackgroundButton>

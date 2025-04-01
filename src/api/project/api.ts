@@ -1,4 +1,4 @@
-import { FetchTemplateResponse } from '@/types/template';
+import { FetchTemplateResponse, TemplateImage } from '@/types/template';
 import api from '../login/api';
 import { ImageType, Transcript } from '@/types/projectData';
 
@@ -92,13 +92,15 @@ export const fetchTemplate = async () => {
 export const patchProjectBackgroundImage = async (
   projectId: number,
   sceneId: number,
-  backgroundImageData: ImageType | null
+  template: TemplateImage
 ) => {
   if (projectId) {
     const response = await api.patch(
       `/api/v1/projects/${projectId}/scenes/${sceneId}`,
       {
-        background: backgroundImageData,
+        background: {
+          templateId: template.id,
+        },
       }
     );
     return response;
