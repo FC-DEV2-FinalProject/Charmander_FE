@@ -135,25 +135,35 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
     newPosition: Position
   ) => {
     set((state) => {
-      if (!state.projectData || !state.projectData.scenes.length) return state;
+      if (!state.projectData?.scenes.length) return state;
+
+      const currentScene = state.projectData.scenes[0];
+      const element = isAvatar ? currentScene.avatar : currentScene.background;
+
+      if (!element || element.id !== elementId) return state;
+
+      // 현재 위치와 새 위치가 동일하면 업데이트하지 않음
+      if (
+        element.position.x === newPosition.x &&
+        element.position.y === newPosition.y
+      ) {
+        return state;
+      }
 
       return {
         projectData: {
           ...state.projectData,
-          scenes: state.projectData.scenes.map((scene) => {
-            const element = isAvatar ? scene.avatar : scene.background;
-
-            if (element && element.id === elementId) {
-              return {
-                ...scene,
-                [isAvatar ? 'avatar' : 'background']: {
-                  ...element,
-                  position: newPosition,
-                },
-              };
-            }
-            return scene;
-          }),
+          scenes: state.projectData.scenes.map((scene, index) =>
+            index === 0
+              ? {
+                  ...scene,
+                  [isAvatar ? 'avatar' : 'background']: {
+                    ...element,
+                    position: newPosition,
+                  },
+                }
+              : scene
+          ),
         },
       };
     });
@@ -165,25 +175,35 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
     newSize: TemplateSize
   ) => {
     set((state) => {
-      if (!state.projectData || !state.projectData.scenes.length) return state;
+      if (!state.projectData?.scenes.length) return state;
+
+      const currentScene = state.projectData.scenes[0];
+      const element = isAvatar ? currentScene.avatar : currentScene.background;
+
+      if (!element || element.id !== elementId) return state;
+
+      // 현재 크기와 새 크기가 동일하면 업데이트하지 않음
+      if (
+        element.size.width === newSize.width &&
+        element.size.height === newSize.height
+      ) {
+        return state;
+      }
 
       return {
         projectData: {
           ...state.projectData,
-          scenes: state.projectData.scenes.map((scene) => {
-            const element = isAvatar ? scene.avatar : scene.background;
-
-            if (element && element.id === elementId) {
-              return {
-                ...scene,
-                [isAvatar ? 'avatar' : 'background']: {
-                  ...element,
-                  size: newSize,
-                },
-              };
-            }
-            return scene;
-          }),
+          scenes: state.projectData.scenes.map((scene, index) =>
+            index === 0
+              ? {
+                  ...scene,
+                  [isAvatar ? 'avatar' : 'background']: {
+                    ...element,
+                    size: newSize,
+                  },
+                }
+              : scene
+          ),
         },
       };
     });

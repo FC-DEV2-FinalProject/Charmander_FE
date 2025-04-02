@@ -50,41 +50,47 @@ function RouteComponent() {
 
   // 초기 선택된 배경 복원
   useEffect(() => {
-    const backgroundFileId = projectData?.scenes[0]?.background?.fileId;
+    if (!templateImages.length || !projectData?.scenes[0]?.background?.fileId)
+      return;
 
-    if (!templateImages.length || !backgroundFileId) return;
-
+    const backgroundFileId = projectData.scenes[0].background.fileId;
     const savedIndex = templateImages.findIndex(
       (bg) => bg.fileUrl === backgroundFileId
     );
 
-    if (savedIndex !== -1 && savedIndex !== selectedTemplateBgIndex) {
+    if (savedIndex !== -1 && selectedTemplateBgIndex === -1) {
       setSelectedTemplateBgIndex(savedIndex);
     }
-  }, [projectData?.scenes, templateImages, selectedTemplateBgIndex]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectData?.scenes[0]?.background?.fileId, templateImages]);
 
   // 배경 업데이트
-  useEffect(() => {
+  const selectedBackgroundTemplate = useMemo(() => {
     if (
       selectedTemplateBgIndex === -1 ||
       !templateImages[selectedTemplateBgIndex]
-    )
-      return;
-    updateBackground(templateImages[selectedTemplateBgIndex]);
-  }, [selectedTemplateBgIndex, templateImages, updateBackground]);
+    ) {
+      return null;
+    }
+    return templateImages[selectedTemplateBgIndex];
+  }, [selectedTemplateBgIndex, templateImages]);
+
+  useEffect(() => {
+    if (!selectedBackgroundTemplate) return;
+    updateBackground(selectedBackgroundTemplate);
+  }, [selectedBackgroundTemplate, updateBackground]);
 
   // 서버 업데이트 - 디바운스 적용
   useEffect(() => {
     if (
       !projectData?.id ||
       !projectData?.scenes[0]?.id ||
-      debouncedTemplateBgIndex === undefined ||
-      debouncedTemplateBgIndex === -1
+      debouncedTemplateBgIndex === -1 ||
+      !templateImages[debouncedTemplateBgIndex]
     )
       return;
 
     const selectedTemplate = templateImages[debouncedTemplateBgIndex];
-    if (!selectedTemplate) return;
 
     const upDateProjectImage = async () => {
       try {
@@ -100,26 +106,17 @@ function RouteComponent() {
     };
 
     upDateProjectImage();
-    const projectSceneId = projectData?.scenes?.[0]?.id;
-    const projectId = projectData?.id;
-
-    if (!projectId || !projectSceneId) return;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     debouncedTemplateBgIndex,
     projectData?.id,
-    projectData?.scenes,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    projectData?.scenes[0]?.id,
     templateImages,
   ]);
 
-  // selectedBackgroundTemplate 계산 로직 수정
-  const selectedBackgroundTemplate = useMemo(() => {
-    if (!templateImages || selectedTemplateBgIndex === -1) {
-      return null;
-    }
-    return templateImages[selectedTemplateBgIndex];
-  }, [templateImages, selectedTemplateBgIndex]);
-
   const handleBakcgroundTemplateImage = (idx: number) => {
+    if (idx === selectedTemplateBgIndex) return;
     setSelectedTemplateBgIndex(idx);
   };
 
