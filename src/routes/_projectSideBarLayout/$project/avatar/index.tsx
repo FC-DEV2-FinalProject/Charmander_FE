@@ -16,7 +16,7 @@ export const Route = createFileRoute('/_projectSideBarLayout/$project/avatar/')(
 );
 
 function RouteComponent() {
-  const { projectData, updateAvatar, resetAvatar } = useProjectEditorStore();
+  const { projectData, updateAvatar } = useProjectEditorStore();
   const { aspectRatio } = useAspectRatioStore();
   const [selectedAvatarTemplateIndex, setSelectedAvatarTemplateIndex] =
     useState(-1);
@@ -25,55 +25,71 @@ function RouteComponent() {
   const backgroundRef = useRef<HTMLDivElement>(null);
   const debouncedAvatarIndex = useDebounce(selectedAvatarTemplateIndex, 1000);
 
+  // 초기 선택된 아바타 복원
   useEffect(() => {
-    if (!templateList) return;
+    const avatarFileId = projectData?.scenes?.[0]?.avatar?.fileId;
 
-    const template = templateList.data[selectedAvatarTemplateIndex] || null;
-    if (!template) {
-      resetAvatar();
-    } else {
-      updateAvatar(template.data.avatar);
+    if (!templateList?.data || !avatarFileId) return;
+
+    const savedIndex = templateList.data.findIndex(
+      (template) => template.data.avatar.fileUrl === avatarFileId
+    );
+
+    if (savedIndex !== -1 && savedIndex !== selectedAvatarTemplateIndex) {
+      setSelectedAvatarTemplateIndex(savedIndex);
     }
-  }, [templateList, selectedAvatarTemplateIndex, resetAvatar, updateAvatar]);
+  }, [projectData?.scenes, templateList?.data, selectedAvatarTemplateIndex]);
 
-  const selectedAvatarTemplate = useMemo(() => {
-    if (!templateList || selectedAvatarTemplateIndex === -1) {
-      return null;
-    }
-    return templateList.data[selectedAvatarTemplateIndex].data.avatar;
-  }, [templateList, selectedAvatarTemplateIndex]);
-
+  // 아바타 업데이트
   useEffect(() => {
-    if (!templateList || !projectData || !debouncedAvatarIndex) return;
+    if (selectedAvatarTemplateIndex === -1) return;
 
-    const currentTemplate = templateList.data[debouncedAvatarIndex];
+    const selectedTemplate = templateList?.data[selectedAvatarTemplateIndex];
+    if (!selectedTemplate) return;
 
+    updateAvatar(selectedTemplate.data.avatar);
+  }, [selectedAvatarTemplateIndex, templateList?.data, updateAvatar]);
+
+  // 서버 업데이트 - 디바운스 적용
+  useEffect(() => {
     if (
-      currentTemplate &&
-      selectedAvatarTemplateIndex === debouncedAvatarIndex
-    ) {
+      !projectData?.id ||
+      !debouncedAvatarIndex ||
+      debouncedAvatarIndex === -1
+    )
       return;
-    }
+    if (!templateList?.data[debouncedAvatarIndex]) return;
 
-    const upDateProjectImage = async () => {
+    const sceneId = projectData.scenes?.[0]?.id;
+
+    const updateProjectImage = async () => {
       try {
         await patchProjectAvatarImage(
           projectData.id,
-          projectData.scenes[0].id,
-          currentTemplate.data.avatar
+          sceneId,
+          templateList.data[debouncedAvatarIndex].data.avatar
         );
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log(`아바타 업데이트에 실패했습니다: ${error}`);
+        console.error(`아바타 업데이트에 실패했습니다: ${error}`);
       }
     };
-    upDateProjectImage();
+
+    updateProjectImage();
   }, [
-    projectData,
-    templateList,
-    selectedAvatarTemplateIndex,
     debouncedAvatarIndex,
+    projectData?.id,
+    projectData?.scenes,
+    templateList?.data,
   ]);
+
+  // 선택된 아바타 템플릿 메모이제이션
+  const selectedAvatarTemplate = useMemo(() => {
+    if (!templateList?.data || selectedAvatarTemplateIndex === -1) {
+      return null;
+    }
+    return templateList.data[selectedAvatarTemplateIndex].data.avatar;
+  }, [templateList?.data, selectedAvatarTemplateIndex]);
 
   const handleAvatarTemplateImage = (idx: number) => {
     setSelectedAvatarTemplateIndex(idx);
@@ -86,7 +102,7 @@ function RouteComponent() {
   return (
     <S.AvatarContainer>
       <S.AvatarMain>
-        {selectedAvatarTemplate && selectedAvatarTemplate.fileUrl && (
+        {selectedAvatarTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
             imgSrc={selectedAvatarTemplate.fileUrl}

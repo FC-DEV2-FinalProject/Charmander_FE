@@ -33,7 +33,7 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
                   name: avatar.name,
                   priority: avatar.priority,
                   type: avatar.type,
-                  fileUrl: avatar.fileUrl,
+                  fileId: avatar.fileId,
                   position: { x: 0, y: 0 },
                   size: avatar.size,
                   scale: 1,
@@ -48,7 +48,7 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
                   name: background.name,
                   priority: background.priority,
                   type: background.type,
-                  fileUrl: background.fileUrl,
+                  fileId: background.fileId,
                   position: { x: 0, y: 0 },
                   size: background.size,
                   scale: 1,
@@ -74,7 +74,7 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
         name: template.name,
         priority: template.priority,
         type: template.type,
-        fileUrl: template.fileUrl,
+        fileId: template.fileUrl,
         position: { x: 0, y: 0 },
         size: template.size,
         scale: 1,
@@ -106,7 +106,7 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
         name: template.name,
         priority: template.priority,
         type: template.type,
-        fileUrl: template.fileUrl,
+        fileId: template.fileUrl,
         position: { x: 0, y: 0 },
         size: template.size,
         scale: 1,
@@ -129,55 +129,61 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
     });
   },
 
-  updateElementPosition: (isAvatar: boolean, newPosition: Position) => {
+  updateElementPosition: (
+    elementId: number,
+    isAvatar: boolean,
+    newPosition: Position
+  ) => {
     set((state) => {
       if (!state.projectData || !state.projectData.scenes.length) return state;
 
       return {
         projectData: {
           ...state.projectData,
-          scenes: state.projectData.scenes.map((scene, index) =>
-            index === 0
-              ? {
-                  ...scene,
-                  [isAvatar ? 'avatar' : 'background']: scene[
-                    isAvatar ? 'avatar' : 'background'
-                  ]
-                    ? {
-                        ...scene[isAvatar ? 'avatar' : 'background'],
-                        position: newPosition,
-                      }
-                    : null,
-                }
-              : scene
-          ),
+          scenes: state.projectData.scenes.map((scene) => {
+            const element = isAvatar ? scene.avatar : scene.background;
+
+            if (element && element.id === elementId) {
+              return {
+                ...scene,
+                [isAvatar ? 'avatar' : 'background']: {
+                  ...element,
+                  position: newPosition,
+                },
+              };
+            }
+            return scene;
+          }),
         },
       };
     });
   },
 
-  updateElementSize: (isAvatar: boolean, newSize: TemplateSize) => {
+  updateElementSize: (
+    elementId: number,
+    isAvatar: boolean,
+    newSize: TemplateSize
+  ) => {
     set((state) => {
       if (!state.projectData || !state.projectData.scenes.length) return state;
 
       return {
         projectData: {
           ...state.projectData,
-          scenes: state.projectData.scenes.map((scene, index) =>
-            index === 0
-              ? {
-                  ...scene,
-                  [isAvatar ? 'avatar' : 'background']: scene[
-                    isAvatar ? 'avatar' : 'background'
-                  ]
-                    ? {
-                        ...scene[isAvatar ? 'avatar' : 'background'],
-                        size: newSize,
-                      }
-                    : null,
-                }
-              : scene
-          ),
+          scenes: state.projectData.scenes.map((scene) => {
+            const element = isAvatar ? scene.avatar : scene.background;
+
+            if (element && element.id === elementId) {
+              return {
+                ...scene,
+                [isAvatar ? 'avatar' : 'background']: {
+                  ...element,
+                  size: newSize,
+                },
+              };
+            }
+            return scene;
+          }),
         },
       };
     });

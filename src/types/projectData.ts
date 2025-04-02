@@ -10,7 +10,7 @@ export interface ImageType {
   name: string;
   priority: number;
   type: string;
-  fileUrl: string;
+  fileId: string;
   position: Position;
   scale: number;
   viewport: number[];
@@ -72,8 +72,16 @@ export interface ProjectState {
   setSuggestProjectData: (newData: SuggestProjectData) => void;
   updateBackground: (template: TemplateImage) => void;
   updateAvatar: (template: TemplateImage) => void;
-  updateElementPosition: (isAvatar: boolean, newPosition: Position) => void;
-  updateElementSize: (isAvatar: boolean, newSize: TemplateSize) => void;
+  updateElementPosition: (
+    elementId: number,
+    isAvatar: boolean,
+    newPosition: Position
+  ) => void;
+  updateElementSize: (
+    elementId: number,
+    isAvatar: boolean,
+    newSize: TemplateSize
+  ) => void;
   resetBackground: () => void;
   resetAvatar: () => void;
   updateTranscripts: (

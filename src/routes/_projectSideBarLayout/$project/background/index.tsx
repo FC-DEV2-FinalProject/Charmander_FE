@@ -24,8 +24,7 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { projectData, updateBackground, resetBackground } =
-    useProjectEditorStore();
+  const { projectData, updateBackground } = useProjectEditorStore();
 
   const { templatesQuery } = useTemplates();
   const { data: templateList, isLoading } = templatesQuery;
@@ -40,73 +39,85 @@ function RouteComponent() {
   const inputRef = useRef<HTMLInputElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
+  // 초기 템플릿 이미지 설정
   useEffect(() => {
-    if (templateList) {
-      setTemplateImages((prevBackgrounds) => {
-        const newBackgrounds = templateList.data
-          .map((template) => template.data.background)
-          .filter((bg) => bg && !prevBackgrounds.includes(bg));
+    if (!templateList?.data) return;
+    const backgrounds = templateList.data.map(
+      (template) => template.data.background
+    );
+    setTemplateImages(backgrounds);
+  }, [templateList?.data]);
 
-        return [...prevBackgrounds, ...newBackgrounds];
-      });
-    }
-  }, [templateList]);
-
+  // 초기 선택된 배경 복원
   useEffect(() => {
-    if (!templateList) return;
+    const backgroundFileId = projectData?.scenes[0]?.background?.fileId;
 
-    const template = templateList.data[selectedTemplateBgIndex] || null;
-    if (!template) {
-      resetBackground();
-    } else {
-      updateBackground(template.data.background);
+    if (!templateImages.length || !backgroundFileId) return;
+
+    const savedIndex = templateImages.findIndex(
+      (bg) => bg.fileUrl === backgroundFileId
+    );
+
+    if (savedIndex !== -1 && savedIndex !== selectedTemplateBgIndex) {
+      setSelectedTemplateBgIndex(savedIndex);
     }
-  }, [
-    templateList,
-    selectedTemplateBgIndex,
-    resetBackground,
-    updateBackground,
-  ]);
+  }, [projectData?.scenes, templateImages, selectedTemplateBgIndex]);
 
-  const selectedBackgroundTemplate = useMemo(() => {
-    if (!templateList || selectedTemplateBgIndex == -1) {
-      return null;
-    }
-    return templateList.data[selectedTemplateBgIndex].data.background;
-  }, [templateList, selectedTemplateBgIndex]);
-
+  // 배경 업데이트
   useEffect(() => {
-    if (!templateList || !projectData || !debouncedTemplateBgIndex) return;
-
-    const currentTemplate = templateList.data[debouncedTemplateBgIndex];
-
     if (
-      currentTemplate &&
-      selectedTemplateBgIndex === debouncedTemplateBgIndex
-    ) {
+      selectedTemplateBgIndex === -1 ||
+      !templateImages[selectedTemplateBgIndex]
+    )
       return;
-    }
+    updateBackground(templateImages[selectedTemplateBgIndex]);
+  }, [selectedTemplateBgIndex, templateImages, updateBackground]);
+
+  // 서버 업데이트 - 디바운스 적용
+  useEffect(() => {
+    if (
+      !projectData?.id ||
+      !projectData?.scenes[0]?.id ||
+      debouncedTemplateBgIndex === undefined ||
+      debouncedTemplateBgIndex === -1
+    )
+      return;
+
+    const selectedTemplate = templateImages[debouncedTemplateBgIndex];
+    if (!selectedTemplate) return;
 
     const upDateProjectImage = async () => {
       try {
         await patchProjectBackgroundImage(
           projectData.id,
           projectData.scenes[0].id,
-          currentTemplate.data.background
+          selectedTemplate
         );
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log(`이미지 업로드에 실패했습니다${error}`);
+        console.error(`이미지 업로드에 실패했습니다: ${error}`);
       }
     };
 
     upDateProjectImage();
+    const projectSceneId = projectData?.scenes?.[0]?.id;
+    const projectId = projectData?.id;
+
+    if (!projectId || !projectSceneId) return;
   }, [
-    projectData,
-    templateList,
-    selectedTemplateBgIndex,
     debouncedTemplateBgIndex,
+    projectData?.id,
+    projectData?.scenes,
+    templateImages,
   ]);
+
+  // selectedBackgroundTemplate 계산 로직 수정
+  const selectedBackgroundTemplate = useMemo(() => {
+    if (!templateImages || selectedTemplateBgIndex === -1) {
+      return null;
+    }
+    return templateImages[selectedTemplateBgIndex];
+  }, [templateImages, selectedTemplateBgIndex]);
 
   const handleBakcgroundTemplateImage = (idx: number) => {
     setSelectedTemplateBgIndex(idx);
