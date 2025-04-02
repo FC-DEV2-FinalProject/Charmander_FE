@@ -81,10 +81,10 @@ function RouteComponent() {
       <S.LoginContainer>
         <S.LoginLeftContainer>
           <BannerSlider images={images} />
-          <S.LoginTitleContainer>
+          {/* <S.LoginTitleContainer>
             <h2>설명 아무거나</h2>
             <p>로그인 페이지에용</p>
-          </S.LoginTitleContainer>
+          </S.LoginTitleContainer> */}
         </S.LoginLeftContainer>
         <S.LoginRightContainer>
           <S.LoginRightFormContainer>

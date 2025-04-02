@@ -1,9 +1,7 @@
 import type { BannerSliderType } from '@/types/types';
-import image1 from '@/assets/loginBanner/image1.png';
-import image2 from '@/assets/loginBanner/image2.png';
-import image3 from '@/assets/loginBanner/image3.png';
+import loginBanner1 from '@/assets/loginBanner/aivatar메인1.png';
 
 export const loginBanner = (): BannerSliderType => {
-  const images = [image1, image2, image3];
+  const images = [loginBanner1];
   return { images };
 };
