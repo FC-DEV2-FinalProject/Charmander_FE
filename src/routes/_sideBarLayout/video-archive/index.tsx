@@ -18,6 +18,14 @@ export const Route = createFileRoute('/_sideBarLayout/video-archive/')({
   component: RouteComponent,
 });
 
+const STATUS: Record<string, string> = {
+  PENDING: '대기중',
+  IN_PROGRESS: '진행중',
+  SUCCESS: '완료',
+  FAILED: '실패',
+  CANCELED: '취소됨',
+};
+
 function RouteComponent() {
   const [data, setData] = useState<videoArchiveType[]>([]);
   const [selectedRows, setSelectedRows] = useState<Record<number, boolean>>({});
@@ -129,12 +137,12 @@ function RouteComponent() {
       },
     },
     {
-      accessorKey: 'progress',
+      accessorKey: 'status',
       header: '진행상태',
       size: 50,
       cell: (info) => (
-        <S.Badge $progress={info.getValue() as boolean}>
-          {(info.getValue() as boolean) ? '완료' : '진행중'}
+        <S.Badge $progress={(info.getValue() as string) == 'IN_PROGRESS'}>
+          {STATUS[info.getValue() as string] || '알수없음'}
         </S.Badge>
       ),
     },
@@ -150,11 +158,22 @@ function RouteComponent() {
       cell: (info) => info.getValue() as string,
     },
     {
-      accessorKey: 'download',
+      accessorKey: 'output.fileUrl',
       header: '다운로드',
       size: 50,
-      cell: () => (
-        <S.DownloadBtn>
+      cell: (info) => (
+        <S.DownloadBtn
+          onClick={() => {
+            const fileUrl = info.getValue() as string;
+            if (fileUrl) {
+              const link = document.createElement('a');
+              link.href = fileUrl;
+              link.download = fileUrl.split('/').pop() || 'download';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
+          }}>
           <DownloadIcon width={28} />
         </S.DownloadBtn>
       ),
