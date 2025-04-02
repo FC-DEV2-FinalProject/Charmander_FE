@@ -134,7 +134,7 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
         {background && (
           <S.SelectedBackgroundImage
             aspectRatio={aspectRatio}
-            src={background.fileUrl}
+            src={background.fileId}
             alt={background.name}
             style={{
               transform,
@@ -146,7 +146,7 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
         {avatar && (
           <S.SelectedAvatarImage
             aspectRatio={aspectRatio}
-            src={avatar.fileUrl}
+            src={avatar.fileId}
             autoPlay
             style={{
               transform: avatarTransform,
