@@ -4,6 +4,8 @@ import { useRouter } from '@tanstack/react-router';
 import { updateAndCleanupTranscripts } from '@/api/project/transcriptService';
 import useArticlePDFStore from '@/store/useArticlePDFStore';
 import { Route } from '@/routes/__root';
+import { suggestArticle } from '@/api/project/api';
+import useProjectEditorStore from '@/store/useProjectEditorStore';
 
 interface EditModalProps {
   // eslint-disable-next-line no-unused-vars
@@ -12,11 +14,14 @@ interface EditModalProps {
 
 export const ScriptConFirmModal = ({ setModalOpen }: EditModalProps) => {
   const { articlePDFText } = useArticlePDFStore();
+  const { setProjectData } = useProjectEditorStore();
   const router = useRouter();
   const { project } = Route.useParams();
 
   const submitArticle = async () => {
     try {
+      const templateData = await suggestArticle(articlePDFText);
+      setProjectData(templateData);
       await updateAndCleanupTranscripts(articlePDFText);
     } catch (error) {
       // eslint-disable-next-line no-console
