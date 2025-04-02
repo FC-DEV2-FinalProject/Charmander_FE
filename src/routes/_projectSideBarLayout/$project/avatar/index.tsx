@@ -130,6 +130,7 @@ function RouteComponent() {
                   }
                   src={template.data.avatar.fileUrl}
                   autoPlay={true}
+                  loop
                 />
               </S.AvatarTemplateCard>
             ))}

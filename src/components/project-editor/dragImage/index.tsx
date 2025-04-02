@@ -275,6 +275,7 @@ function DragImage({
               onBlur={handleBlur}
               tabIndex={-1}
               autoPlay
+              loop
             />
           ) : (
             <S.SelectedBackgroundImage
