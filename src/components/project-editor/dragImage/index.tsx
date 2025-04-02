@@ -93,10 +93,23 @@ function DragImage({
       Math.abs(position.x - newPosition.x) > 0.1 ||
       Math.abs(position.y - newPosition.y) > 0.1
     ) {
-      setPosition(newPosition);
+      setPosition((prev) => {
+        if (
+          Math.abs(prev.x - newPosition.x) < 0.1 &&
+          Math.abs(prev.y - newPosition.y) < 0.1
+        ) {
+          return prev;
+        }
+        return newPosition;
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentElement?.position, referenceDimensions, projectData]);
+  }, [
+    currentElement?.position?.x,
+    currentElement?.position?.y,
+    referenceDimensions.width,
+    referenceDimensions.height,
+  ]);
 
   useEffect(() => {
     if (!debouncedPosition || !currentElement?.id) return;
@@ -104,9 +117,11 @@ function DragImage({
     const finalX = (debouncedPosition.x / 100) * referenceDimensions.width;
     const finalY = (debouncedPosition.y / 100) * referenceDimensions.height;
 
+    // 현재 위치와 새로운 위치가 크게 다를 때만 업데이트
+    const threshold = 1;
     if (
-      Math.abs(currentElement.position.x - finalX) > 1 ||
-      Math.abs(currentElement.position.y - finalY) > 1
+      Math.abs(currentElement.position.x - finalX) > threshold ||
+      Math.abs(currentElement.position.y - finalY) > threshold
     ) {
       updateElementPosition(currentElement.id, isAvatar ?? false, {
         x: finalX,
@@ -114,7 +129,12 @@ function DragImage({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedPosition, currentElement?.id, referenceDimensions]);
+  }, [
+    debouncedPosition,
+    currentElement?.id,
+    referenceDimensions.width,
+    referenceDimensions.height,
+  ]);
 
   useEffect(() => {
     if (!debouncedDimensions || !currentElement?.id) return;
@@ -130,9 +150,20 @@ function DragImage({
       ),
     };
 
-    updateElementSize(currentElement.id, isAvatar ?? false, finalSize);
+    // 현재 크기와 새로운 크기가 크게 다를 때만 업데이트
+    if (
+      Math.abs(currentElement.size.width - finalSize.width) > 1 ||
+      Math.abs(currentElement.size.height - finalSize.height) > 1
+    ) {
+      updateElementSize(currentElement.id, isAvatar ?? false, finalSize);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedDimensions, currentElement?.id, referenceDimensions]);
+  }, [
+    debouncedDimensions,
+    currentElement?.id,
+    referenceDimensions.width,
+    referenceDimensions.height,
+  ]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLImageElement>) => {
     if (resizing) return;
