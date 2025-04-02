@@ -148,6 +148,7 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
             aspectRatio={aspectRatio}
             src={avatar.fileId}
             autoPlay
+            loop
             style={{
               transform: avatarTransform,
               width: avatarWidth,
