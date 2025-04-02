@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
   useLayoutEffect,
+  useMemo,
 } from 'react';
 import theme from '@/styles/theme';
 import { useDebounce } from '@/hook/useDebounce';
@@ -72,70 +73,66 @@ function DragImage({
     }
   }, [containerRef, isAvatar]);
 
-  useEffect(() => {
-    if (!debouncedPosition || !projectData) return;
-
-    const element = isAvatar
+  const currentElement = useMemo(() => {
+    if (!projectData?.scenes[0]) return null;
+    return isAvatar
       ? projectData.scenes[0].avatar
       : projectData.scenes[0].background;
-    if (!element) return;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectData?.scenes[0], isAvatar]);
+
+  useEffect(() => {
+    if (!currentElement?.position || !projectData) return;
+
+    const newPosition = {
+      x: (currentElement.position.x / referenceDimensions.width) * 100,
+      y: (currentElement.position.y / referenceDimensions.height) * 100,
+    };
+
+    if (
+      Math.abs(position.x - newPosition.x) > 0.1 ||
+      Math.abs(position.y - newPosition.y) > 0.1
+    ) {
+      setPosition(newPosition);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentElement?.position, referenceDimensions, projectData]);
+
+  useEffect(() => {
+    if (!debouncedPosition || !currentElement?.id) return;
 
     const finalX = (debouncedPosition.x / 100) * referenceDimensions.width;
     const finalY = (debouncedPosition.y / 100) * referenceDimensions.height;
 
     if (
-      Math.abs(element.position.x - finalX) < 1 &&
-      Math.abs(element.position.y - finalY) < 1
+      Math.abs(currentElement.position.x - finalX) > 1 ||
+      Math.abs(currentElement.position.y - finalY) > 1
     ) {
-      return;
-    }
-
-    updateElementPosition(isAvatar ?? false, { x: finalX, y: finalY });
-  }, [
-    debouncedPosition,
-    isAvatar,
-    projectData,
-    updateElementPosition,
-    referenceDimensions,
-  ]);
-
-  useEffect(() => {
-    if (debouncedDimensions && containerRef.current) {
-      const finalSize = {
-        width: percentToPxForFinal(
-          debouncedDimensions.width,
-          referenceDimensions.width
-        ),
-        height: percentToPxForFinal(
-          debouncedDimensions.height,
-          referenceDimensions.height
-        ),
-      };
-      updateElementSize(isAvatar ?? false, finalSize);
-    }
-  }, [
-    debouncedDimensions,
-    isAvatar,
-    updateElementSize,
-    containerRef,
-    referenceDimensions,
-  ]);
-
-  useEffect(() => {
-    if (isAvatar && projectData?.scenes[0].avatar?.position) {
-      const pos = projectData.scenes[0].avatar.position;
-      setPosition({
-        x: (pos.x / referenceDimensions.width) * 100,
-        y: (pos.y / referenceDimensions.height) * 100,
-      });
-    } else if (!isAvatar && projectData?.scenes[0].background?.position) {
-      const pos = projectData.scenes[0].background.position;
-      setPosition({
-        x: (pos.x / referenceDimensions.width) * 100,
-        y: (pos.y / referenceDimensions.height) * 100,
+      updateElementPosition(currentElement.id, isAvatar ?? false, {
+        x: finalX,
+        y: finalY,
       });
     }
-  }, [isAvatar, projectData, referenceDimensions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedPosition, currentElement?.id, referenceDimensions]);
+
+  useEffect(() => {
+    if (!debouncedDimensions || !currentElement?.id) return;
+
+    const finalSize = {
+      width: percentToPxForFinal(
+        debouncedDimensions.width,
+        referenceDimensions.width
+      ),
+      height: percentToPxForFinal(
+        debouncedDimensions.height,
+        referenceDimensions.height
+      ),
+    };
+
+    updateElementSize(currentElement.id, isAvatar ?? false, finalSize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedDimensions, currentElement?.id, referenceDimensions]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLImageElement>) => {
     if (resizing) return;

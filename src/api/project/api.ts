@@ -1,6 +1,6 @@
-import { FetchTemplateResponse } from '@/types/template';
+import { FetchTemplateResponse, TemplateImage } from '@/types/template';
 import api from '../login/api';
-import { ImageType, Transcript } from '@/types/projectData';
+import { Transcript } from '@/types/projectData';
 
 export const fetchProjects = async (projectId: string) => {
   try {
@@ -92,13 +92,15 @@ export const fetchTemplate = async () => {
 export const patchProjectBackgroundImage = async (
   projectId: number,
   sceneId: number,
-  backgroundImageData: ImageType | null
+  template: TemplateImage
 ) => {
   if (projectId) {
     const response = await api.patch(
       `/api/v1/projects/${projectId}/scenes/${sceneId}`,
       {
-        background: backgroundImageData,
+        background: {
+          templateId: template.id,
+        },
       }
     );
     return response;
@@ -107,13 +109,15 @@ export const patchProjectBackgroundImage = async (
 export const patchProjectAvatarImage = async (
   projectId: number,
   sceneId: number,
-  avatarImageData: ImageType | null
+  template: TemplateImage
 ) => {
   if (projectId) {
     const response = await api.patch(
       `/api/v1/projects/${projectId}/scenes/${sceneId}`,
       {
-        avatar: avatarImageData,
+        avatar: {
+          templateId: template.id,
+        },
       }
     );
     return response;

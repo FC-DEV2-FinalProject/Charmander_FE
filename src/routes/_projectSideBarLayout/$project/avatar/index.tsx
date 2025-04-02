@@ -5,9 +5,8 @@ import { useTemplates } from '@/hook/useTemplateList';
 import useAspectRatioStore from '@/store/useAspectRatioStore';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import theme from '@/styles/theme';
-import { TemplateImage } from '@/types/template';
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import styled from 'styled-components';
 
 export const Route = createFileRoute('/_projectSideBarLayout/$project/avatar/')(
@@ -19,51 +18,91 @@ export const Route = createFileRoute('/_projectSideBarLayout/$project/avatar/')(
 function RouteComponent() {
   const { projectData, updateAvatar } = useProjectEditorStore();
   const { aspectRatio } = useAspectRatioStore();
-  const [selectedAvatarTemplate, setSelectedAvatarTemplate] =
-    useState<TemplateImage | null>(projectData?.scenes[0].avatar || null);
+  const [selectedAvatarTemplateIndex, setSelectedAvatarTemplateIndex] =
+    useState(-1);
   const { templatesQuery } = useTemplates();
   const { data: templateList, isLoading } = templatesQuery;
   const backgroundRef = useRef<HTMLDivElement>(null);
-  const avatar = projectData?.scenes[0].avatar;
-  const debouncedAvatar = useDebounce(avatar, 1000);
+  const debouncedAvatarIndex = useDebounce(selectedAvatarTemplateIndex, 1000);
 
+  // 초기 선택된 아바타 복원
   useEffect(() => {
-    if (!projectData || !debouncedAvatar) return;
+    const avatarFileId = projectData?.scenes?.[0]?.avatar?.fileId;
 
-    const currentAvatar = projectData.scenes[0].avatar;
-    if (currentAvatar && currentAvatar === debouncedAvatar) {
-      return;
+    if (!templateList?.data || !avatarFileId) return;
+
+    const savedIndex = templateList.data.findIndex(
+      (template) => template.data.avatar.fileUrl === avatarFileId
+    );
+
+    if (savedIndex !== -1 && savedIndex !== selectedAvatarTemplateIndex) {
+      setSelectedAvatarTemplateIndex(savedIndex);
     }
+  }, [projectData?.scenes, templateList?.data, selectedAvatarTemplateIndex]);
 
-    const upDateProjectImage = async () => {
+  // 아바타 업데이트
+  useEffect(() => {
+    if (selectedAvatarTemplateIndex === -1) return;
+
+    const selectedTemplate = templateList?.data[selectedAvatarTemplateIndex];
+    if (!selectedTemplate) return;
+
+    updateAvatar(selectedTemplate.data.avatar);
+  }, [selectedAvatarTemplateIndex, templateList?.data, updateAvatar]);
+
+  // 서버 업데이트 - 디바운스 적용
+  useEffect(() => {
+    if (
+      !projectData?.id ||
+      !debouncedAvatarIndex ||
+      debouncedAvatarIndex === -1
+    )
+      return;
+    if (!templateList?.data[debouncedAvatarIndex]) return;
+
+    const sceneId = projectData.scenes?.[0]?.id;
+
+    const updateProjectImage = async () => {
       try {
         await patchProjectAvatarImage(
           projectData.id,
-          projectData.scenes[0].id,
-          debouncedAvatar
+          sceneId,
+          templateList.data[debouncedAvatarIndex].data.avatar
         );
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log(`이미지 업로드에 실패했습니다: ${error}`);
+        console.error(`아바타 업데이트에 실패했습니다: ${error}`);
       }
     };
-    upDateProjectImage();
-  }, [projectData, debouncedAvatar]);
 
-  const handleAvatarTemplateImage = (template: TemplateImage) => {
-    if (template) {
-      setSelectedAvatarTemplate(template);
-      updateAvatar(template);
+    updateProjectImage();
+  }, [
+    debouncedAvatarIndex,
+    projectData?.id,
+    projectData?.scenes,
+    templateList?.data,
+  ]);
+
+  // 선택된 아바타 템플릿 메모이제이션
+  const selectedAvatarTemplate = useMemo(() => {
+    if (!templateList?.data || selectedAvatarTemplateIndex === -1) {
+      return null;
     }
+    return templateList.data[selectedAvatarTemplateIndex].data.avatar;
+  }, [templateList?.data, selectedAvatarTemplateIndex]);
+
+  const handleAvatarTemplateImage = (idx: number) => {
+    setSelectedAvatarTemplateIndex(idx);
   };
 
   if (isLoading) {
     return <div>로딩중 </div>;
   }
+
   return (
     <S.AvatarContainer>
       <S.AvatarMain>
-        {selectedAvatarTemplate && selectedAvatarTemplate.fileUrl && (
+        {selectedAvatarTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
             imgSrc={selectedAvatarTemplate.fileUrl}
@@ -81,12 +120,14 @@ function RouteComponent() {
           </S.LabelSection>
 
           <S.AvatarTemplateList>
-            {templateList?.data.map((template) => (
+            {templateList?.data.map((template, idx) => (
               <S.AvatarTemplateCard
-                onClick={() => handleAvatarTemplateImage(template.data.avatar)}
+                onClick={() => handleAvatarTemplateImage(idx)}
                 key={template.data.avatar.id}>
                 <S.AvatarTemplateImg
-                  isSelected={selectedAvatarTemplate?.id === template.id}
+                  isSelected={
+                    selectedAvatarTemplate?.id === template.data.avatar.id
+                  }
                   src={template.data.avatar.fileUrl}
                   autoPlay={true}
                 />
@@ -98,6 +139,7 @@ function RouteComponent() {
     </S.AvatarContainer>
   );
 }
+
 const S = {
   AvatarContainer: styled.div`
     width: 100%;

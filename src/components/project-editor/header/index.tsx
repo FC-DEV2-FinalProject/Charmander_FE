@@ -37,6 +37,7 @@ const ProjectHeader = () => {
     }
   };
   useEffect(() => {
+    resetProjectData();
     const loadProjects = async () => {
       try {
         const data = await fetchProjects(project);
@@ -50,7 +51,7 @@ const ProjectHeader = () => {
         alert(err);
       }
     };
-    resetProjectData();
+
     loadProjects();
   }, [setProjectData, resetProjectData, project]);
 
@@ -70,7 +71,6 @@ const ProjectHeader = () => {
       });
     }
   };
-
   const handleSaveProjectTitle = async () => {
     if (isEdit) {
       try {
