@@ -21,8 +21,8 @@ interface ImageProps {
 }
 
 interface Dimensions {
-  width: number; // % 단위 (0~100)
-  height: number; // % 단위 (0~100)
+  width: number;
+  height: number;
 }
 
 const percentToPxForFinal = (percent: number, finalDimension: number): number =>
@@ -38,7 +38,7 @@ function DragImage({
   const { projectData, updateElementPosition, updateElementSize } =
     useProjectEditorStore();
 
-  const referenceDimensions = React.useMemo(
+  const referenceDimensions = useMemo(
     () =>
       aspectRatio === '16:9(pc)'
         ? { width: 1920, height: 1080 }
@@ -55,6 +55,14 @@ function DragImage({
   const [dragging, setDragging] = useState<boolean>(false);
   const [resizing, setResizing] = useState<boolean>(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
+
+  const [initialSize, setInitialSize] = useState<Dimensions>({
+    width: 100,
+    height: 100,
+  });
+  const [initialPos, setInitialPos] = useState<Position>({ x: 0, y: 0 });
+  const [startMousePos, setStartMousePos] = useState<Position>({ x: 0, y: 0 });
+
   const resizeDirection = useRef<string | null>(null);
 
   const debouncedPosition = useDebounce(position, 1000);
@@ -117,7 +125,6 @@ function DragImage({
     const finalX = (debouncedPosition.x / 100) * referenceDimensions.width;
     const finalY = (debouncedPosition.y / 100) * referenceDimensions.height;
 
-    // 현재 위치와 새로운 위치가 크게 다를 때만 업데이트
     const threshold = 1;
     if (
       Math.abs(currentElement.position.x - finalX) > threshold ||
@@ -150,7 +157,6 @@ function DragImage({
       ),
     };
 
-    // 현재 크기와 새로운 크기가 크게 다를 때만 업데이트
     if (
       Math.abs(currentElement.size.width - finalSize.width) > 1 ||
       Math.abs(currentElement.size.height - finalSize.height) > 1
@@ -199,21 +205,87 @@ function DragImage({
     e.stopPropagation();
     setResizing(true);
     resizeDirection.current = direction;
+    setInitialSize(dimensions);
+    setInitialPos(position);
+    setStartMousePos({ x: e.clientX, y: e.clientY });
   };
 
   const handleResizeMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!resizing || !containerRef.current) return;
       const container = containerRef.current.getBoundingClientRect();
-      let newWidth = ((e.clientX - container.left) / container.width) * 100;
-      let newHeight = ((e.clientY - container.top) / container.height) * 100;
+      const deltaX = e.clientX - startMousePos.x;
+      const deltaY = e.clientY - startMousePos.y;
+
+      let newWidth = initialSize.width;
+      let newHeight = initialSize.height;
+      let newPosX = initialPos.x;
+      let newPosY = initialPos.y;
+
+      switch (resizeDirection.current) {
+        case 'top-left': {
+          const computedWidth =
+            initialSize.width - (deltaX / container.width) * 100;
+          const computedHeight =
+            initialSize.height - (deltaY / container.height) * 100;
+
+          if (computedWidth >= 100) {
+            newWidth = 100;
+            newPosX = initialPos.x;
+          } else {
+            newWidth = computedWidth;
+            newPosX = initialPos.x + (deltaX / container.width) * 100;
+          }
+          if (computedHeight >= 100) {
+            newHeight = 100;
+            newPosY = initialPos.y;
+          } else {
+            newHeight = computedHeight;
+            newPosY = initialPos.y + (deltaY / container.height) * 100;
+          }
+          break;
+        }
+        case 'top-right': {
+          const computedHeight =
+            initialSize.height - (deltaY / container.height) * 100;
+          newWidth = initialSize.width + (deltaX / container.width) * 100;
+          if (computedHeight >= 100) {
+            newHeight = 100;
+            newPosY = initialPos.y;
+          } else {
+            newHeight = computedHeight;
+            newPosY = initialPos.y + (deltaY / container.height) * 100;
+          }
+          break;
+        }
+        case 'bottom-left': {
+          const computedWidth =
+            initialSize.width - (deltaX / container.width) * 100;
+          newHeight = initialSize.height + (deltaY / container.height) * 100;
+          if (computedWidth >= 100) {
+            newWidth = 100;
+            newPosX = initialPos.x;
+          } else {
+            newWidth = computedWidth;
+            newPosX = initialPos.x + (deltaX / container.width) * 100;
+          }
+          break;
+        }
+        case 'bottom-right':
+        default: {
+          newWidth = initialSize.width + (deltaX / container.width) * 100;
+          newHeight = initialSize.height + (deltaY / container.height) * 100;
+          break;
+        }
+      }
 
       newWidth = Math.max(10, Math.min(newWidth, 100));
       newHeight = Math.max(10, Math.min(newHeight, 100));
 
       setDimensions({ width: newWidth, height: newHeight });
+      setPosition({ x: newPosX, y: newPosY });
     },
-    [resizing, containerRef]
+    [resizing, containerRef, startMousePos, initialSize, initialPos]
   );
 
   useEffect(() => {
