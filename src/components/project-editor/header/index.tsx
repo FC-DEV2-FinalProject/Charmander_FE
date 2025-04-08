@@ -175,7 +175,7 @@ const ProjectHeader = () => {
               </S.ArticleUploadButton>
               <Link
                 to="/$project/background"
-                params={{ project: '1' }}>
+                params={{ project: project }}>
                 <S.HeaderButton>템플릿 직접 선택하기</S.HeaderButton>
               </Link>
               <Modal openText="템플릿 추천">
