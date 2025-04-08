@@ -6,7 +6,6 @@ import EditIcon from '@/assets/projectIcon/edit-2.svg?react';
 import { Link, useLocation } from '@tanstack/react-router';
 import useArticlePDFStore from '@/store/useArticlePDFStore';
 import { pdfjs } from 'react-pdf';
-import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import Modal from '@/components/common/modal';
 import EditModal from '../modal/editModal';
 import { Route } from '@/routes/__root';
@@ -17,6 +16,7 @@ import {
 } from '@/api/project/api';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import { ScriptConFirmModal } from '../modal/scriptConFirmModal';
+import { extractTextFromPDF } from '@/utils/extractPdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
@@ -71,6 +71,7 @@ const ProjectHeader = () => {
       });
     }
   };
+
   const handleSaveProjectTitle = async () => {
     if (isEdit) {
       try {
@@ -101,43 +102,7 @@ const ProjectHeader = () => {
       return;
     }
 
-    await extractTextFromPDF(file);
-  };
-
-  const extractTextFromPDF = async (file: File): Promise<void> => {
-    clearArticlePDFText();
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-
-    reader.onload = async () => {
-      try {
-        const loadingTask = pdfjs.getDocument(
-          new Uint8Array(reader.result as ArrayBuffer)
-        );
-        const pdf = await loadingTask.promise;
-
-        let extractedText = '';
-
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const textContent = await page.getTextContent();
-
-          extractedText +=
-            textContent.items
-              .map((item) => {
-                if ('str' in item) {
-                  return (item as TextItem).str;
-                }
-                return '';
-              })
-              .join(' ') + '\n';
-        }
-
-        setArticlePDFText(extractedText);
-      } catch (error) {
-        alert(error);
-      }
-    };
+    await extractTextFromPDF({ file, setArticlePDFText, clearArticlePDFText });
   };
 
   return (
