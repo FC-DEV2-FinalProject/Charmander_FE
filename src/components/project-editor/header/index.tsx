@@ -9,22 +9,19 @@ import { pdfjs } from 'react-pdf';
 import Modal from '@/components/common/modal';
 import EditModal from '../modal/editModal';
 import { Route } from '@/routes/__root';
-import {
-  fetchProjects,
-  patchProjectTitle,
-  postProjectScenes,
-} from '@/api/project/api';
+import { patchProjectTitle } from '@/api/project/api';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import { ScriptConFirmModal } from '../modal/scriptConFirmModal';
 import { extractTextFromPDF } from '@/utils/extractPdf';
+import useProjectData from '@/hook/useProjectData';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 const ProjectHeader = () => {
   const location = useLocation();
   const { project } = Route.useParams();
-  const { projectData, setProjectData, resetProjectData } =
-    useProjectEditorStore();
+  const { projectData, loading, error } = useProjectData(project);
+  const { setProjectData } = useProjectEditorStore();
   const { setArticlePDFText, clearArticlePDFText } = useArticlePDFStore();
   const [projectTitle, setProjectTitle] = useState(
     projectData?.name || '새 프로젝트'
@@ -36,24 +33,6 @@ const ProjectHeader = () => {
       inputRef.current.click();
     }
   };
-  useEffect(() => {
-    resetProjectData();
-    const loadProjects = async () => {
-      try {
-        const data = await fetchProjects(project);
-
-        if (!data.scenes || data.scenes.length === 0) {
-          data.scenes = await postProjectScenes(project);
-        }
-
-        setProjectData(data);
-      } catch (err) {
-        alert(err);
-      }
-    };
-
-    loadProjects();
-  }, [setProjectData, resetProjectData, project]);
 
   useEffect(() => {
     if (projectData?.name) {
@@ -104,6 +83,9 @@ const ProjectHeader = () => {
 
     await extractTextFromPDF({ file, setArticlePDFText, clearArticlePDFText });
   };
+  if (loading) return <div>로딩중</div>;
+  // eslint-disable-next-line no-console
+  if (error) return console.log(error);
 
   return (
     <>
@@ -139,7 +121,7 @@ const ProjectHeader = () => {
                 />
               </S.ArticleUploadButton>
               <Link
-                to="/$project/background"
+                to="/$project/template"
                 params={{ project: project }}>
                 <S.HeaderButton>템플릿 직접 선택하기</S.HeaderButton>
               </Link>
@@ -175,10 +157,6 @@ const S = {
       cursor: pointer;
       margin-left: ${theme.spacing.sm};
     }
-    svg:last-of-type {
-      cursor: default;
-      margin-left: 0;
-    }
   `,
   HeaderLeftContents: styled.div`
     width: 60%;
@@ -194,7 +172,7 @@ const S = {
 
   ProjectTitle: styled.input`
     width: 100%;
-    background-color: theme.colors.white;
+    background-color: ${theme.colors.white};
     color: theme.colors.black;
     font-size: ${theme.fontSizes.fz30};
   `,
