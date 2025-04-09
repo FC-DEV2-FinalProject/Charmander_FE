@@ -4,56 +4,38 @@ import theme from '@/styles/theme';
 import BackIcon from '@/assets/projectIcon/back.svg?react';
 import EditIcon from '@/assets/projectIcon/edit-2.svg?react';
 import { Link, useLocation } from '@tanstack/react-router';
-import useArticlePDFStore from '@/store/useArticlePDFStore';
 import { pdfjs } from 'react-pdf';
-import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import Modal from '@/components/common/modal';
 import EditModal from '../modal/editModal';
 import { Route } from '@/routes/__root';
-import {
-  fetchProjects,
-  patchProjectTitle,
-  postProjectScenes,
-} from '@/api/project/api';
+import { patchProjectTitle } from '@/api/project/api';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import { ScriptConFirmModal } from '../modal/scriptConFirmModal';
+import useProjectData from '@/hook/useProjectData';
+import usePDFExtractor from '@/hook/usePDFExtractor';
+import LoadingSpinner from '@/components/loading/LoadingSpinner';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 const ProjectHeader = () => {
   const location = useLocation();
   const { project } = Route.useParams();
-  const { projectData, setProjectData, resetProjectData } =
-    useProjectEditorStore();
-  const { setArticlePDFText, clearArticlePDFText } = useArticlePDFStore();
+  const { projectData, loading, error } = useProjectData(project);
+  const { setProjectData } = useProjectEditorStore();
+  const { handleFileUpload } = usePDFExtractor();
+
   const [projectTitle, setProjectTitle] = useState(
     projectData?.name || '새 프로젝트'
   );
   const [isEdit, setIsEdit] = useState(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
-  const handleInput = () => {
+
+  const handleArticleInput = () => {
     if (inputRef.current) {
       inputRef.current.click();
     }
   };
-  useEffect(() => {
-    resetProjectData();
-    const loadProjects = async () => {
-      try {
-        const data = await fetchProjects(project);
-
-        if (!data.scenes || data.scenes.length === 0) {
-          data.scenes = await postProjectScenes(project);
-        }
-
-        setProjectData(data);
-      } catch (err) {
-        alert(err);
-      }
-    };
-
-    loadProjects();
-  }, [setProjectData, resetProjectData, project]);
 
   useEffect(() => {
     if (projectData?.name) {
@@ -65,12 +47,13 @@ const ProjectHeader = () => {
     setProjectTitle(e.target.value);
     if (projectData) {
       setProjectData({
-        id: project,
+        id: projectData.id,
         name: e.target.value,
         scenes: projectData.scenes,
       });
     }
   };
+
   const handleSaveProjectTitle = async () => {
     if (isEdit) {
       try {
@@ -90,55 +73,9 @@ const ProjectHeader = () => {
     }
   };
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.name.endsWith('.pdf')) {
-      alert('PDF 파일만 업로드 가능합니다.');
-      return;
-    }
-
-    await extractTextFromPDF(file);
-  };
-
-  const extractTextFromPDF = async (file: File): Promise<void> => {
-    clearArticlePDFText();
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-
-    reader.onload = async () => {
-      try {
-        const loadingTask = pdfjs.getDocument(
-          new Uint8Array(reader.result as ArrayBuffer)
-        );
-        const pdf = await loadingTask.promise;
-
-        let extractedText = '';
-
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const textContent = await page.getTextContent();
-
-          extractedText +=
-            textContent.items
-              .map((item) => {
-                if ('str' in item) {
-                  return (item as TextItem).str;
-                }
-                return '';
-              })
-              .join(' ') + '\n';
-        }
-
-        setArticlePDFText(extractedText);
-      } catch (error) {
-        alert(error);
-      }
-    };
-  };
+  if (loading) return <LoadingSpinner />;
+  // eslint-disable-next-line no-console
+  if (error) return console.log(error);
 
   return (
     <>
@@ -164,7 +101,7 @@ const ProjectHeader = () => {
         <S.ButtonBox>
           {location.pathname.endsWith('/article') ? (
             <>
-              <S.ArticleUploadButton onClick={handleInput}>
+              <S.ArticleUploadButton onClick={handleArticleInput}>
                 기사 파일 업로드
                 <input
                   type="file"
@@ -174,8 +111,8 @@ const ProjectHeader = () => {
                 />
               </S.ArticleUploadButton>
               <Link
-                to="/$project/background"
-                params={{ project: '1' }}>
+                to="/$project/template"
+                params={{ project: project }}>
                 <S.HeaderButton>템플릿 직접 선택하기</S.HeaderButton>
               </Link>
               <Modal openText="템플릿 추천">
@@ -210,10 +147,6 @@ const S = {
       cursor: pointer;
       margin-left: ${theme.spacing.sm};
     }
-    svg:last-of-type {
-      cursor: default;
-      margin-left: 0;
-    }
   `,
   HeaderLeftContents: styled.div`
     width: 60%;
@@ -229,7 +162,7 @@ const S = {
 
   ProjectTitle: styled.input`
     width: 100%;
-    background-color: theme.colors.white;
+    background-color: ${theme.colors.white};
     color: theme.colors.black;
     font-size: ${theme.fontSizes.fz30};
   `,
