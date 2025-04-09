@@ -4,7 +4,6 @@ import theme from '@/styles/theme';
 import BackIcon from '@/assets/projectIcon/back.svg?react';
 import EditIcon from '@/assets/projectIcon/edit-2.svg?react';
 import { Link, useLocation } from '@tanstack/react-router';
-import useArticlePDFStore from '@/store/useArticlePDFStore';
 import { pdfjs } from 'react-pdf';
 import Modal from '@/components/common/modal';
 import EditModal from '../modal/editModal';
@@ -12,8 +11,9 @@ import { Route } from '@/routes/__root';
 import { patchProjectTitle } from '@/api/project/api';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import { ScriptConFirmModal } from '../modal/scriptConFirmModal';
-import { extractTextFromPDF } from '@/utils/extractPdf';
 import useProjectData from '@/hook/useProjectData';
+import usePDFExtractor from '@/hook/usePDFExtractor';
+import LoadingSpinner from '@/components/loading/LoadingSpinner';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
@@ -22,13 +22,16 @@ const ProjectHeader = () => {
   const { project } = Route.useParams();
   const { projectData, loading, error } = useProjectData(project);
   const { setProjectData } = useProjectEditorStore();
-  const { setArticlePDFText, clearArticlePDFText } = useArticlePDFStore();
+  const { handleFileUpload } = usePDFExtractor();
+
   const [projectTitle, setProjectTitle] = useState(
     projectData?.name || '새 프로젝트'
   );
   const [isEdit, setIsEdit] = useState(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
-  const handleInput = () => {
+
+  const handleArticleInput = () => {
     if (inputRef.current) {
       inputRef.current.click();
     }
@@ -44,7 +47,7 @@ const ProjectHeader = () => {
     setProjectTitle(e.target.value);
     if (projectData) {
       setProjectData({
-        id: project,
+        id: projectData.id,
         name: e.target.value,
         scenes: projectData.scenes,
       });
@@ -70,20 +73,7 @@ const ProjectHeader = () => {
     }
   };
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.name.endsWith('.pdf')) {
-      alert('PDF 파일만 업로드 가능합니다.');
-      return;
-    }
-
-    await extractTextFromPDF({ file, setArticlePDFText, clearArticlePDFText });
-  };
-  if (loading) return <div>로딩중</div>;
+  if (loading) return <LoadingSpinner />;
   // eslint-disable-next-line no-console
   if (error) return console.log(error);
 
@@ -111,7 +101,7 @@ const ProjectHeader = () => {
         <S.ButtonBox>
           {location.pathname.endsWith('/article') ? (
             <>
-              <S.ArticleUploadButton onClick={handleInput}>
+              <S.ArticleUploadButton onClick={handleArticleInput}>
                 기사 파일 업로드
                 <input
                   type="file"
