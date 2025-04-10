@@ -1,12 +1,14 @@
 import { patchProjectAvatarImage } from '@/api/project/api';
+import LoadingSpinner from '@/components/loading/LoadingSpinner';
 import DragImage from '@/components/project-editor/dragImage';
-import { useDebounce } from '@/hook/useDebounce';
+import { usePatchTemplate } from '@/hook/usePatchTemplate';
 import { useTemplates } from '@/hook/useTemplateList';
+import { useTemplateSelector } from '@/hook/useTemplateSelector';
 import useAspectRatioStore from '@/store/useAspectRatioStore';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import theme from '@/styles/theme';
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 export const Route = createFileRoute('/_projectSideBarLayout/$project/avatar/')(
@@ -18,95 +20,60 @@ export const Route = createFileRoute('/_projectSideBarLayout/$project/avatar/')(
 function RouteComponent() {
   const { projectData, updateAvatar } = useProjectEditorStore();
   const { aspectRatio } = useAspectRatioStore();
-  const [selectedAvatarTemplateIndex, setSelectedAvatarTemplateIndex] =
-    useState(-1);
   const { templatesQuery } = useTemplates();
   const { data: templateList, isLoading } = templatesQuery;
+  const [templateImages, setTemplateImages] = useState(
+    templateList?.data.map((template) => template.data.avatar) || []
+  );
   const backgroundRef = useRef<HTMLDivElement>(null);
-  const debouncedAvatarIndex = useDebounce(selectedAvatarTemplateIndex, 1000);
 
-  // 초기 선택된 아바타 복원
   useEffect(() => {
-    const avatarFileId = projectData?.scenes?.[0]?.avatar?.fileId;
-
-    if (!templateList?.data || !avatarFileId) return;
-
-    const savedIndex = templateList.data.findIndex(
-      (template) => template.data.avatar.fileUrl === avatarFileId
-    );
-
-    if (savedIndex !== -1 && savedIndex !== selectedAvatarTemplateIndex) {
-      setSelectedAvatarTemplateIndex(savedIndex);
+    if (templateList?.data) {
+      setTemplateImages(
+        templateList.data.map((template) => template.data.avatar)
+      );
     }
-  }, [projectData?.scenes, templateList?.data, selectedAvatarTemplateIndex]);
+  }, [templateList?.data]);
 
-  // 아바타 업데이트
+  const savedAvatarId = projectData?.scenes[0]?.avatar?.fileId;
+  const { selectedIndex, setSelectedIndex, selectedTemplate } =
+    useTemplateSelector({
+      templates: templateImages,
+      savedFileId: savedAvatarId,
+    });
+
   useEffect(() => {
-    if (selectedAvatarTemplateIndex === -1) return;
-
-    const selectedTemplate = templateList?.data[selectedAvatarTemplateIndex];
-    if (!selectedTemplate) return;
-
-    updateAvatar(selectedTemplate.data.avatar);
-  }, [selectedAvatarTemplateIndex, templateList?.data, updateAvatar]);
-
-  // 서버 업데이트 - 디바운스 적용
-  useEffect(() => {
-    if (
-      !projectData?.id ||
-      !debouncedAvatarIndex ||
-      debouncedAvatarIndex === -1
-    )
-      return;
-    if (!templateList?.data[debouncedAvatarIndex]) return;
-
-    const sceneId = projectData.scenes?.[0]?.id;
-
-    const updateProjectImage = async () => {
-      try {
-        await patchProjectAvatarImage(
-          projectData.id,
-          sceneId,
-          templateList.data[debouncedAvatarIndex].data.avatar
-        );
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(`아바타 업데이트에 실패했습니다: ${error}`);
-      }
-    };
-
-    updateProjectImage();
-  }, [
-    debouncedAvatarIndex,
-    projectData?.id,
-    projectData?.scenes,
-    templateList?.data,
-  ]);
-
-  // 선택된 아바타 템플릿 메모이제이션
-  const selectedAvatarTemplate = useMemo(() => {
-    if (!templateList?.data || selectedAvatarTemplateIndex === -1) {
-      return null;
+    if (selectedTemplate) {
+      updateAvatar(selectedTemplate);
     }
-    return templateList.data[selectedAvatarTemplateIndex].data.avatar;
-  }, [templateList?.data, selectedAvatarTemplateIndex]);
+  }, [selectedTemplate, updateAvatar]);
 
-  const handleAvatarTemplateImage = (idx: number) => {
-    setSelectedAvatarTemplateIndex(idx);
+  usePatchTemplate({
+    selectedIndex,
+    projectId: projectData?.id,
+    sceneId: projectData?.scenes[0]?.id,
+    templates: templateImages,
+    patchFn: patchProjectAvatarImage,
+  });
+
+  const handleAvatarTemplateClick = (idx: number) => {
+    if (idx !== selectedIndex) {
+      setSelectedIndex(idx);
+    }
   };
 
   if (isLoading) {
-    return <div>로딩중 </div>;
+    return <LoadingSpinner />;
   }
 
   return (
     <S.AvatarContainer>
       <S.AvatarMain>
-        {selectedAvatarTemplate && (
+        {selectedTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
-            imgSrc={selectedAvatarTemplate.fileUrl}
-            imgAlt={selectedAvatarTemplate.name}
+            imgSrc={selectedTemplate.fileUrl}
+            imgAlt={selectedTemplate.name}
             containerRef={backgroundRef}
             isAvatar={true}
           />
@@ -120,15 +87,13 @@ function RouteComponent() {
           </S.LabelSection>
 
           <S.AvatarTemplateList>
-            {templateList?.data.map((template, idx) => (
+            {templateImages.map((template, idx) => (
               <S.AvatarTemplateCard
-                onClick={() => handleAvatarTemplateImage(idx)}
-                key={template.data.avatar.id}>
+                onClick={() => handleAvatarTemplateClick(idx)}
+                key={template.id}>
                 <S.AvatarTemplateImg
-                  isSelected={
-                    selectedAvatarTemplate?.id === template.data.avatar.id
-                  }
-                  src={template.data.avatar.fileUrl}
+                  isSelected={selectedTemplate?.id === template.id}
+                  src={template.fileUrl}
                   autoPlay={true}
                   loop
                 />
@@ -176,7 +141,6 @@ const S = {
       display: none;
     }
   `,
-
   TemplateSection: styled.div`
     width: 90%;
     height: 100%;
