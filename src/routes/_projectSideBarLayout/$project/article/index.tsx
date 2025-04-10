@@ -27,7 +27,12 @@ function RouteComponent() {
   useEffect(() => {
     const postProjectArticle = async () => {
       if (debouncedArticle) {
-        await patchArticle(project, debouncedArticle);
+        try {
+          await patchArticle(project, debouncedArticle);
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error('기사 등록 에러:', error);
+        }
       }
     };
     postProjectArticle();

@@ -1,5 +1,6 @@
-import { fetchTemplate, fetchTemplateCategories } from '@/api/project/api';
 import DropDown from '@/components/common/dropdown';
+import LoadingSpinner from '@/components/loading/LoadingSpinner';
+import { useTemplates } from '@/hook/useTemplateList';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import theme from '@/styles/theme';
 import { FetchTemplateResponse } from '@/types/template';
@@ -15,6 +16,10 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { updateBackground, updateAvatar } = useProjectEditorStore();
+  const { templatesQuery, templateCategoriesQuery } = useTemplates();
+  const { data: templateList, isLoading: templateLoading } = templatesQuery;
+  const { data: templateCategories, isLoading: categoriesLoading } =
+    templateCategoriesQuery;
   const [selectedCategory, setSelectedCategory] = useState<{
     id: number;
     name: string;
@@ -22,34 +27,14 @@ function RouteComponent() {
   const [selectedTemplate, setSelectedTemplate] = useState<
     FetchTemplateResponse['data'][number] | null
   >(null);
-  const [template, setTemplate] = useState<FetchTemplateResponse | undefined>();
-  const [category, setCategory] = useState<
-    {
-      id: number;
-      name: string;
-    }[]
-  >();
-  const filteredTemplates =
-    template?.data.filter(
-      (template) =>
-        selectedCategory && template.data.categoryId === selectedCategory.id
-    ) || [];
 
-  useEffect(() => {
-    const loadCategoryAndTemplate = async () => {
-      try {
-        const categoryData = await fetchTemplateCategories();
-        const templateData = await fetchTemplate();
-
-        setCategory(categoryData.data);
-        setTemplate(templateData);
-      } catch (err) {
-        alert(err);
-      }
-    };
-
-    loadCategoryAndTemplate();
-  }, []);
+  const templatesToShow = templateList
+    ? selectedCategory
+      ? templateList.data.filter(
+          (template) => template.data.categoryId === selectedCategory.id
+        )
+      : templateList.data
+    : [];
 
   useEffect(() => {
     if (selectedTemplate) {
@@ -57,6 +42,11 @@ function RouteComponent() {
       updateAvatar(selectedTemplate?.data.avatar);
     }
   }, [selectedTemplate, updateAvatar, updateBackground]);
+
+  if (templateLoading && categoriesLoading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <S.TemplateContainer>
       <S.TemplateMain>
@@ -70,45 +60,33 @@ function RouteComponent() {
         )}
       </S.TemplateMain>
       <S.TemplateToolbar>
-        {category && (
+        {templateCategories && (
           <DropDown
             placeholder="템플릿 선택"
-            dropDownData={category}
+            dropDownData={templateCategories.data}
             width="90%"
             onSelect={(value) =>
               setSelectedCategory(
-                category?.find((cat) => cat.id === Number(value)) || null
+                templateCategories.data.find(
+                  (category) => category.id === Number(value)
+                ) || null
               )
             }
           />
         )}
         <S.TemplateList>
-          {template ? (
-            filteredTemplates.length > 0 ? (
-              filteredTemplates.map((template) => (
-                <S.TemplateCard
-                  onClick={() => setSelectedTemplate(template)}
-                  key={template.id}>
-                  <S.TemplateImg
-                    isSelected={selectedTemplate?.id === template.id}
-                    src={template.thumbnailUrl}
-                    alt={String(template.id)}
-                  />
-                </S.TemplateCard>
-              ))
-            ) : (
-              template.data.map((template) => (
-                <S.TemplateCard
-                  onClick={() => setSelectedTemplate(template)}
-                  key={template.id}>
-                  <S.TemplateImg
-                    isSelected={selectedTemplate?.id === template.id}
-                    src={template.thumbnailUrl}
-                    alt={String(template.id)}
-                  />
-                </S.TemplateCard>
-              ))
-            )
+          {templatesToShow.length > 0 ? (
+            templatesToShow.map((template) => (
+              <S.TemplateCard
+                key={template.id}
+                onClick={() => setSelectedTemplate(template)}>
+                <S.TemplateImg
+                  isSelected={selectedTemplate?.id === template.id}
+                  src={template.thumbnailUrl}
+                  alt={String(template.id)}
+                />
+              </S.TemplateCard>
+            ))
           ) : (
             <S.EmptyMessage>템플릿이 없습니다.</S.EmptyMessage>
           )}
