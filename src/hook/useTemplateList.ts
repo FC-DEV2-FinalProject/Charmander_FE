@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchTemplate } from '@/api/project/api';
+import { fetchTemplate, fetchTemplateCategories } from '@/api/project/api';
+import { TemplateCategories } from '@/types/template';
 
 const useTemplates = () => {
   const templatesQuery = useQuery({
@@ -7,8 +8,14 @@ const useTemplates = () => {
     queryFn: () => fetchTemplate(),
     staleTime: 1000 * 60 * 5,
   });
+  const templateCategoriesQuery = useQuery<TemplateCategories>({
+    queryKey: ['templateCategories'],
+    queryFn: () => fetchTemplateCategories(),
+    staleTime: 1000 * 60 * 5,
+  });
   return {
     templatesQuery,
+    templateCategoriesQuery,
   };
 };
 

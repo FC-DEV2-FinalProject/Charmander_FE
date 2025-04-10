@@ -29,6 +29,12 @@ export interface Template {
   createdAt: string;
   updatedAt: string;
 }
+export interface TemplateCategories {
+  data: {
+    id: number;
+    name: string;
+  }[];
+}
 
 export interface FetchTemplateResponse {
   data: Template[];

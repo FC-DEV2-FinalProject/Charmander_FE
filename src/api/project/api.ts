@@ -8,8 +8,7 @@ export const fetchProjects = async (projectId: string) => {
     return response.data;
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Error fetching projects:', error);
-    throw error;
+    console.log('프로젝트 데이터 페칭 실패:', error);
   }
 };
 
@@ -22,8 +21,7 @@ export const patchProjectTitle = async (projectId: string, title: string) => {
     return response.data;
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('프로젝트 제목 업데이트 실패:', error);
-    throw error;
+    console.log('프로젝트 제목 업데이트 실패:', error);
   }
 };
 export const postProjectScenes = async (projectId: string) => {
@@ -41,8 +39,7 @@ export const suggestArticle = async (article: string) => {
     return response.data;
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('기사 등록 에러:', error);
-    throw error;
+    console.log('기사 등록 에러:', error);
   }
 };
 export const suggestArticleScript = async (article: string) => {
@@ -53,8 +50,7 @@ export const suggestArticleScript = async (article: string) => {
     return response.data;
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('기사 등록 에러:', error);
-    throw error;
+    console.log('기사 등록 에러:', error);
   }
 };
 
@@ -62,7 +58,7 @@ export const patchArticle = async (projectId: string, article: string) => {
   try {
     const response = await api.patch(
       `/api/v1/projects/${projectId}/newsArticle`,
-      { article }
+      { newsArticle: article }
     );
     return response.data;
   } catch (error) {
