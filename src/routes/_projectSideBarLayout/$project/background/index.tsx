@@ -1,21 +1,21 @@
 import styled from 'styled-components';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import DropDown from '@/components/common/dropdown';
 import theme from '@/styles/theme';
 import { createFileRoute } from '@tanstack/react-router';
 import SidebarBackgroundStyleIcon from '@/assets/projectIcon/background-sidebarIcon.svg?react';
 import BackgroundFileUploadIcon from '@/assets/projectIcon/backgroundFileUploadIcon.svg?react';
-import ImageUploadIcon from '@/assets/projectIcon/imageUploadIcon.svg?react';
 import DeleteBackgroundIcon from '@/assets/projectIcon/deleteBackground.svg?react';
 import GenerateBackgroundIcon from '@/assets/projectIcon/generateBackground.svg?react';
 import DragImage from '@/components/project-editor/dragImage';
 import useAspectRatioStore from '@/store/useAspectRatioStore';
-import { nanoid } from 'nanoid';
 import { useTemplates } from '@/hook/useTemplateList';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import { patchProjectBackgroundImage } from '@/api/project/api';
-import { useDebounce } from '@/hook/useDebounce';
-import { TemplateImage } from '@/types/template';
+import LoadingSpinner from '@/components/loading/LoadingSpinner';
+import ImageUploadButton from '@/components/project-editor/imageUpload';
+import { usePatchTemplate } from '@/hook/usePatchTemplate';
+import { useTemplateSelector } from '@/hook/useTemplateSelector';
 
 export const Route = createFileRoute(
   '/_projectSideBarLayout/$project/background/'
@@ -24,158 +24,66 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { projectData, updateBackground } = useProjectEditorStore();
-
+  const { projectData, updateBackground, resetBackground } =
+    useProjectEditorStore();
+  const { aspectRatio, setAspectRatio } = useAspectRatioStore();
   const { templatesQuery } = useTemplates();
   const { data: templateList, isLoading } = templatesQuery;
-  const [selectedTemplateBgIndex, setSelectedTemplateBgIndex] = useState(-1);
-  const debouncedTemplateBgIndex = useDebounce(selectedTemplateBgIndex, 1000);
-
-  const { aspectRatio, setAspectRatio } = useAspectRatioStore();
-  const [templateImages, setTemplateImages] = useState<TemplateImage[]>([]);
-
-  const generateId = nanoid(10);
-
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [templateImages, setTemplateImages] = useState(
+    templateList?.data.map((template) => template.data.background) || []
+  );
   const backgroundRef = useRef<HTMLDivElement>(null);
 
-  // 초기 템플릿 이미지 설정
   useEffect(() => {
-    if (!templateList?.data) return;
-    const backgrounds = templateList.data.map(
-      (template) => template.data.background
-    );
-    setTemplateImages(backgrounds);
+    if (templateList?.data) {
+      setTemplateImages(
+        templateList.data.map((template) => template.data.background)
+      );
+    }
   }, [templateList?.data]);
 
-  // 초기 선택된 배경 복원
-  useEffect(() => {
-    if (!templateImages.length || !projectData?.scenes[0]?.background?.fileId)
-      return;
-
-    const backgroundFileId = projectData.scenes[0].background.fileId;
-    const savedIndex = templateImages.findIndex(
-      (bg) => bg.fileUrl === backgroundFileId
-    );
-
-    if (savedIndex !== -1 && selectedTemplateBgIndex === -1) {
-      setSelectedTemplateBgIndex(savedIndex);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectData?.scenes[0]?.background?.fileId, templateImages]);
-
-  // 배경 업데이트
-  const selectedBackgroundTemplate = useMemo(() => {
-    if (
-      selectedTemplateBgIndex === -1 ||
-      !templateImages[selectedTemplateBgIndex]
-    ) {
-      return null;
-    }
-    return templateImages[selectedTemplateBgIndex];
-  }, [selectedTemplateBgIndex, templateImages]);
+  const savedBackgroundId = projectData?.scenes[0]?.background?.fileId;
+  const { selectedIndex, setSelectedIndex, selectedTemplate } =
+    useTemplateSelector({
+      templates: templateImages,
+      savedFileId: savedBackgroundId,
+    });
 
   useEffect(() => {
-    if (!selectedBackgroundTemplate) return;
-    updateBackground(selectedBackgroundTemplate);
-  }, [selectedBackgroundTemplate, updateBackground]);
+    if (selectedTemplate) {
+      updateBackground(selectedTemplate);
+    }
+  }, [selectedTemplate, updateBackground]);
 
-  // 서버 업데이트 - 디바운스 적용
-  useEffect(() => {
-    if (
-      !projectData?.id ||
-      !projectData?.scenes[0]?.id ||
-      debouncedTemplateBgIndex === -1 ||
-      !templateImages[debouncedTemplateBgIndex]
-    )
-      return;
+  usePatchTemplate({
+    selectedIndex,
+    projectId: projectData?.id,
+    sceneId: projectData?.scenes[0]?.id,
+    templates: templateImages,
+    patchFn: patchProjectBackgroundImage,
+  });
 
-    const selectedTemplate = templateImages[debouncedTemplateBgIndex];
-
-    const upDateProjectImage = async () => {
-      try {
-        await patchProjectBackgroundImage(
-          projectData.id,
-          projectData.scenes[0].id,
-          selectedTemplate
-        );
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(`이미지 업로드에 실패했습니다: ${error}`);
-      }
-    };
-
-    upDateProjectImage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    debouncedTemplateBgIndex,
-    projectData?.id,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    projectData?.scenes[0]?.id,
-    templateImages,
-  ]);
-
-  const handleBakcgroundTemplateImage = (idx: number) => {
-    if (idx === selectedTemplateBgIndex) return;
-    setSelectedTemplateBgIndex(idx);
-  };
-
-  const handleInput = () => {
-    if (inputRef.current) {
-      inputRef.current.click();
+  const handleTemplateImageClick = (idx: number) => {
+    if (idx !== selectedIndex) {
+      setSelectedIndex(idx);
     }
   };
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const imageUrl = reader.result as string;
-
-      const isDuplicate = templateImages.some(
-        (template) => template.fileUrl === imageUrl
-      );
-      if (isDuplicate) {
-        alert('이미 추가된 이미지입니다.');
-        return;
-      }
-
-      const img = new Image();
-      img.src = imageUrl;
-      img.onload = () => {
-        const newTemplate: TemplateImage = {
-          id: Number(generateId),
-          name: 'New Background',
-          priority: 0,
-          fileUrl: imageUrl,
-          size: { width: img.width, height: img.height },
-          type: '',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
-        setTemplateImages((prev) => [...prev, newTemplate]);
-      };
-    };
-    reader.readAsDataURL(file);
+  const handleRemoveBackground = () => {
+    setSelectedIndex(-1);
+    resetBackground();
   };
 
-  if (isLoading) {
-    return <div>로딩중</div>;
-  }
-
-  const isTemplabeBgSelected =
-    selectedBackgroundTemplate && selectedBackgroundTemplate.fileUrl;
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <S.BackgroundContainer>
       <S.BackgroundMain>
-        {isTemplabeBgSelected && (
+        {selectedTemplate && (
           <DragImage
             aspectRatio={aspectRatio}
-            imgSrc={selectedBackgroundTemplate.fileUrl}
-            imgAlt={selectedBackgroundTemplate.name}
+            imgSrc={selectedTemplate.fileUrl}
+            imgAlt={selectedTemplate.name}
             containerRef={backgroundRef}
           />
         )}
@@ -193,18 +101,10 @@ function RouteComponent() {
             <BackgroundFileUploadIcon />
             <S.SidebarLabel>배경 업로드</S.SidebarLabel>
           </S.LabelSection>
-          <S.UploadButtonSection>
-            <S.ImageUploadButton onClick={handleInput}>
-              <ImageUploadIcon />
-              이미지 업로드
-              <input
-                type="file"
-                accept=".jpg,.png,.svg"
-                ref={inputRef}
-                onChange={handleFileUpload}
-              />
-            </S.ImageUploadButton>
-          </S.UploadButtonSection>
+          <ImageUploadButton
+            templateImages={templateImages}
+            setTemplateImages={setTemplateImages}
+          />
         </S.ImageUploadSection>
         <hr />
         <S.TemplateSection>
@@ -216,10 +116,10 @@ function RouteComponent() {
           <S.BackgroundTemplateList>
             {templateImages.map((template, idx) => (
               <S.BackgroundTemplateCard
-                onClick={() => handleBakcgroundTemplateImage(idx)}
+                onClick={() => handleTemplateImageClick(idx)}
                 key={template.id}>
                 <S.BackgroundTemplateImg
-                  isSelected={selectedBackgroundTemplate?.id === template.id}
+                  isSelected={selectedTemplate?.id === template.id}
                   src={template.fileUrl}
                   alt={template.name}
                 />
@@ -228,8 +128,7 @@ function RouteComponent() {
           </S.BackgroundTemplateList>
 
           <S.BackgroundButtonSection>
-            <S.BackgroundButton
-              onClick={() => handleBakcgroundTemplateImage(-1)}>
+            <S.BackgroundButton onClick={() => handleRemoveBackground()}>
               <DeleteBackgroundIcon />
               배경 제거
             </S.BackgroundButton>
@@ -288,25 +187,6 @@ const S = {
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing.sm};
-  `,
-  UploadButtonSection: styled.div`
-    background-color: ${theme.colors.background2};
-    height: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: ${theme.radius.xlarge};
-  `,
-  ImageUploadButton: styled.button`
-    display: flex;
-    gap: ${theme.spacing.sm};
-    background-color: ${theme.colors.white};
-    border-radius: ${theme.radius.xlarge};
-    padding: ${theme.spacing.md};
-    box-shadow: ${theme.boxShadow.regular};
-    input {
-      display: none;
-    }
   `,
   TemplateSection: styled.div`
     width: 90%;
