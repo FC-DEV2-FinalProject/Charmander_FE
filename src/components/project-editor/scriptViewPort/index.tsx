@@ -117,7 +117,7 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
 
   if (!background && !avatar) {
     return (
-      <S.VideoVeiwPort
+      <S.VideoViewPort
         ref={viewportRef}
         aspectRatio={aspectRatio}
       />
@@ -125,7 +125,7 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
   }
 
   return (
-    <S.VideoVeiwPort
+    <S.VideoViewPort
       ref={viewportRef}
       aspectRatio={aspectRatio}>
       <S.VideoContainer
@@ -157,12 +157,12 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
           />
         )}
       </S.VideoContainer>
-    </S.VideoVeiwPort>
+    </S.VideoViewPort>
   );
 }
 
 const S = {
-  VideoVeiwPort: styled.div<{ aspectRatio: string }>`
+  VideoViewPort: styled.div<{ aspectRatio: string }>`
     ${(props) =>
       props.aspectRatio === '16:9(pc)' ? 'width:100%;' : 'height:100%;'}
     aspect-ratio: ${(props) =>

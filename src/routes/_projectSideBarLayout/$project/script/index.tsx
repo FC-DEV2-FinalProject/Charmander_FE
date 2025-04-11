@@ -13,7 +13,8 @@ import {
   postTranscript,
 } from '@/api/project/api';
 import { useDebounce } from '@/hook/useDebounce';
-import VideoViewPortComponent from '@/components/project-editor/scriptVeiwPort';
+import VideoViewPortComponent from '@/components/project-editor/scriptViewPort';
+import { useSubtitleSync } from '@/hook/useSubtitleSync';
 
 export const Route = createFileRoute('/_projectSideBarLayout/$project/script/')(
   {
@@ -38,6 +39,8 @@ function RouteComponent() {
   }, [projectData]);
 
   const debouncedSubtitles = useDebounce(subtitles, 1000);
+
+  useSubtitleSync({ projectData, debouncedSubtitles, updateTranscripts });
 
   const addSubtitle = async () => {
     try {
@@ -96,27 +99,20 @@ function RouteComponent() {
     setTermValue(value);
   };
 
-  const handleTermValueBlur = async () => {
-    if (selectedSubtitle) {
-      const parsedValue = parseFloat(termValue);
+  const debouncedTermValue = useDebounce(termValue, 1000);
 
-      if (!isNaN(parsedValue)) {
+  useEffect(() => {
+    const saveTermValue = async () => {
+      if (selectedSubtitle && !isNaN(parseFloat(debouncedTermValue))) {
+        const parsedValue = parseFloat(debouncedTermValue);
         const updatedSubtitle = {
           ...selectedSubtitle,
           property: {
             ...selectedSubtitle.property,
-            postDelay: parsedValue * 1000,
+            postDelay: parsedValue * 1000, // 필요한 경우 변환
           },
         };
 
-        // Update the subtitles array
-        setSubtitles((prevSubtitles) =>
-          prevSubtitles.map((subtitle) =>
-            subtitle.id === updatedSubtitle.id ? updatedSubtitle : subtitle
-          )
-        );
-
-        // Trigger the API call
         try {
           await patchTranscript(
             projectData?.id ?? 0,
@@ -126,64 +122,13 @@ function RouteComponent() {
           );
         } catch (error) {
           // eslint-disable-next-line no-console
-          console.error('Failed to update subtitle:', error);
+          console.log('Term 저장 실패:', error);
         }
       }
-    }
-  };
-
-  useEffect(() => {
-    if (!projectData) return;
-
-    debouncedSubtitles.forEach((subtitle) => {
-      const existingSubtitle = projectData.scenes[0].transcripts.find(
-        (t) => t.id === subtitle.id
-      );
-
-      if (
-        existingSubtitle &&
-        JSON.stringify(existingSubtitle) !== JSON.stringify(subtitle)
-      ) {
-        updateTranscripts(projectData.scenes[0].id, subtitle.id, subtitle);
-      }
-    });
-  }, [debouncedSubtitles, updateTranscripts, projectData]);
-
-  useEffect(() => {
-    if (!projectData) return;
-    const patchUpdatedSubtitles = async () => {
-      try {
-        const original = projectData.scenes[0].transcripts ?? [];
-        const modified = (debouncedSubtitles ?? []).filter((subtitle) => {
-          const orig = original.find((t) => t.id === subtitle.id);
-          if (orig) {
-            const isDifferent =
-              orig.text !== subtitle.text ||
-              orig.property.speed !== subtitle.property.speed ||
-              orig.property.postDelay !== subtitle.property.postDelay;
-
-            return isDifferent;
-          }
-          return false;
-        });
-        if (modified.length === 0) return;
-        await Promise.all(
-          modified.map((subtitle) =>
-            patchTranscript(
-              projectData.id,
-              projectData.scenes[0].id,
-              subtitle.id,
-              subtitle
-            )
-          )
-        );
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('자막 업데이트 실패:', error);
-      }
     };
-    patchUpdatedSubtitles();
-  }, [debouncedSubtitles, projectData]);
+
+    saveTermValue();
+  }, [debouncedTermValue, projectData, selectedSubtitle]);
 
   return (
     <S.ScriptContainer>
@@ -217,7 +162,6 @@ function RouteComponent() {
           <ScriptTermInput
             value={termValue}
             setValue={handleTermValueChange}
-            onBlur={handleTermValueBlur}
           />
         </S.ScriptTerm>
       </S.ScriptToolbar>
