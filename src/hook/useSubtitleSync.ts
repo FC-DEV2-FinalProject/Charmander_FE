@@ -4,11 +4,11 @@ import { Project, Scene, Transcript } from '@/types/projectData';
 
 export function useSubtitleSync({
   projectData,
-  debouncedSubtitles,
+  debouncedTranscripts,
   updateTranscripts,
 }: {
   projectData: Project | null;
-  debouncedSubtitles: Transcript[];
+  debouncedTranscripts: Transcript[];
   updateTranscripts: (
     // eslint-disable-next-line no-unused-vars
     sceneId: number,
@@ -24,7 +24,7 @@ export function useSubtitleSync({
     const syncSubtitles = async () => {
       const originalSubtitles = projectData.scenes[0].transcripts ?? [];
 
-      const modifiedSubtitles = debouncedSubtitles.filter((subtitle) => {
+      const modifiedSubtitles = debouncedTranscripts.filter((subtitle) => {
         const original = originalSubtitles.find((t) => t.id === subtitle.id);
         if (!original) return false;
         return (
@@ -57,5 +57,5 @@ export function useSubtitleSync({
     };
 
     syncSubtitles();
-  }, [debouncedSubtitles, projectData, updateTranscripts]);
+  }, [debouncedTranscripts, projectData, updateTranscripts]);
 }

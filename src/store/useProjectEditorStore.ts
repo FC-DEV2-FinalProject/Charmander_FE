@@ -320,7 +320,17 @@ const useProjectEditorStore = create<ProjectState>((set) => ({
           ...state.projectData,
           scenes: state.projectData.scenes.map((scene) =>
             scene.id === sceneId
-              ? { ...scene, subtitle: { ...scene.subtitle, ...newSubtitle } }
+              ? {
+                  ...scene,
+                  subtitle: {
+                    ...scene.subtitle,
+                    text: newSubtitle.text ?? scene.subtitle.text,
+                    property: {
+                      ...scene.subtitle.property,
+                      ...newSubtitle.property,
+                    },
+                  },
+                }
               : scene
           ),
         },

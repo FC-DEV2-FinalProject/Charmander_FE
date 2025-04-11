@@ -21,11 +21,15 @@ export interface ImageType {
 
 export interface Subtitle {
   text: string;
-  fontFamily: string;
-  fontSize: number;
-  fontColor: string;
-  backgroundColor: string;
-  position: Position;
+  property: {
+    fontFamily: string;
+    fontSize: number;
+    fontWeight: string;
+    fontColor: string;
+    backgroundColor: string;
+    backgroundStyle: string;
+    position: Position;
+  };
 }
 export interface Transcript {
   id: number;

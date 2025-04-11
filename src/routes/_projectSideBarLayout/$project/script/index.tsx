@@ -15,6 +15,11 @@ import {
 import { useDebounce } from '@/hook/useDebounce';
 import VideoViewPortComponent from '@/components/project-editor/scriptViewPort';
 import { useSubtitleSync } from '@/hook/useSubtitleSync';
+import ShortScriptTemplate from '@/assets/projectIcon/scriptTemplateShort.svg?react';
+import LongScriptTemplate from '@/assets/projectIcon/scriptTemplateLong.svg?react';
+import TransparentBackground from '@/assets/projectIcon/transparentBackground.svg?react';
+import DropDown from '@/components/common/dropdown';
+import { fontStyle } from '@/constants/fontStyle';
 
 export const Route = createFileRoute('/_projectSideBarLayout/$project/script/')(
   {
@@ -23,24 +28,31 @@ export const Route = createFileRoute('/_projectSideBarLayout/$project/script/')(
 );
 
 function RouteComponent() {
+  const { fonts, weights, sizes } = fontStyle();
   const { aspectRatio } = useAspectRatioStore();
-  const { projectData, updateTranscripts, addTranscript, removeTranscript } =
-    useProjectEditorStore();
+  const {
+    projectData,
+    updateTranscripts,
+    addTranscript,
+    removeTranscript,
+    updateSubtitle,
+  } = useProjectEditorStore();
   const [termValue, setTermValue] = useState(`1`);
-  const [subtitles, setSubtitles] = useState<Transcript[]>([]);
-  const [selectedSubtitle, setSelectedSubtitle] = useState<Transcript | null>(
-    null
-  );
+  const [transcripts, setTranscripts] = useState<Transcript[]>([]);
+  const [selectedTranscript, setSelectedTranscript] =
+    useState<Transcript | null>(null);
+  const [backgroundStyle, setBackgroundStyle] = useState('short');
+  const subtitleData = projectData?.scenes[0].subtitle;
 
   useEffect(() => {
     if (projectData) {
-      setSubtitles(projectData.scenes[0].transcripts);
+      setTranscripts(projectData.scenes[0].transcripts);
     }
   }, [projectData]);
 
-  const debouncedSubtitles = useDebounce(subtitles, 1000);
+  const debouncedTranscripts = useDebounce(transcripts, 1000);
 
-  useSubtitleSync({ projectData, debouncedSubtitles, updateTranscripts });
+  useSubtitleSync({ projectData, debouncedTranscripts, updateTranscripts });
 
   const addSubtitle = async () => {
     try {
@@ -52,7 +64,7 @@ function RouteComponent() {
         projectData?.scenes[0].id
       );
 
-      setSubtitles((prevSubtitles) => [...prevSubtitles, newSubtitle]);
+      setTranscripts((prevTranscript) => [...prevTranscript, newSubtitle]);
       addTranscript(projectData.scenes[0].id, newSubtitle);
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -67,9 +79,9 @@ function RouteComponent() {
   ) => {
     if (!projectData) return;
 
-    setSubtitles((prevSubtitles) =>
-      prevSubtitles.map((subtitle) =>
-        subtitle.id === id ? { ...subtitle, [field]: value } : subtitle
+    setTranscripts((prevTranscript) =>
+      prevTranscript.map((transcript) =>
+        transcript.id === id ? { ...transcript, [field]: value } : transcript
       )
     );
   };
@@ -79,8 +91,8 @@ function RouteComponent() {
 
     try {
       await deleteTranscript(projectData.id, projectData.scenes[0].id, id);
-      setSubtitles((prevSubtitles) =>
-        prevSubtitles.filter((subtitle) => subtitle.id !== id)
+      setTranscripts((prevTranscript) =>
+        prevTranscript.filter((transcript) => transcript.id !== id)
       );
       removeTranscript(projectData.scenes[0].id, id);
     } catch (error) {
@@ -90,10 +102,10 @@ function RouteComponent() {
   };
 
   useEffect(() => {
-    if (selectedSubtitle) {
-      setTermValue((selectedSubtitle.property.postDelay / 1000).toString());
+    if (selectedTranscript) {
+      setTermValue((selectedTranscript.property.postDelay / 1000).toString());
     }
-  }, [selectedSubtitle]);
+  }, [selectedTranscript]);
 
   const handleTermValueChange = (value: string) => {
     setTermValue(value);
@@ -103,12 +115,12 @@ function RouteComponent() {
 
   useEffect(() => {
     const saveTermValue = async () => {
-      if (selectedSubtitle && !isNaN(parseFloat(debouncedTermValue))) {
+      if (selectedTranscript && !isNaN(parseFloat(debouncedTermValue))) {
         const parsedValue = parseFloat(debouncedTermValue);
         const updatedSubtitle = {
-          ...selectedSubtitle,
+          ...selectedTranscript,
           property: {
-            ...selectedSubtitle.property,
+            ...selectedTranscript.property,
             postDelay: parsedValue * 1000, // 필요한 경우 변환
           },
         };
@@ -128,23 +140,23 @@ function RouteComponent() {
     };
 
     saveTermValue();
-  }, [debouncedTermValue, projectData, selectedSubtitle]);
+  }, [debouncedTermValue, projectData, selectedTranscript]);
 
   return (
     <S.ScriptContainer>
       <S.ScriptMain>
         <S.ScriptSection>
-          {subtitles.map((subtitle) => (
+          {transcripts.map((transcript) => (
             <ScriptSection
-              key={subtitle.id}
-              id={subtitle.id}
-              text={subtitle.text}
+              key={transcript.id}
+              id={transcript.id}
+              text={transcript.text}
               onDelete={deleteSubtitle}
               handleSubTitle={handleSubtitle}
               onSelect={() => {
-                setSelectedSubtitle(subtitle);
+                setSelectedTranscript(transcript);
               }}
-              isSelected={selectedSubtitle?.id === subtitle.id}
+              isSelected={selectedTranscript?.id === transcript.id}
             />
           ))}
           <S.AddScriptButton onClick={addSubtitle}>문단 추가</S.AddScriptButton>
@@ -164,6 +176,198 @@ function RouteComponent() {
             setValue={handleTermValueChange}
           />
         </S.ScriptTerm>
+        <S.FontStyleSection>
+          <S.LabelSection>
+            <S.SidebarLabel>자막 스타일</S.SidebarLabel>
+          </S.LabelSection>
+          <S.DropDownContainer>
+            <DropDown
+              dropDownData={fonts}
+              width="100%"
+              onSelect={(data) =>
+                projectData?.scenes[0]?.id !== undefined &&
+                updateSubtitle(projectData.scenes[0].id, {
+                  property: {
+                    fontFamily: data || 'default-font-family',
+                    fontSize: subtitleData?.property?.fontSize ?? 16,
+                    fontWeight: subtitleData?.property?.fontWeight ?? 'normal',
+                    fontColor:
+                      subtitleData?.property?.fontColor ??
+                      `${theme.colors.black}`,
+                    backgroundColor:
+                      subtitleData?.property?.backgroundColor ??
+                      `${theme.colors.primary}`,
+                    backgroundStyle:
+                      subtitleData?.property?.backgroundStyle ?? 'short',
+                    position: subtitleData?.property?.position ?? {
+                      x: 0,
+                      y: 0,
+                    },
+                  },
+                })
+              }
+            />
+            <DropDown
+              dropDownData={weights}
+              width="50%"
+              onSelect={(data) =>
+                projectData?.scenes[0]?.id !== undefined &&
+                updateSubtitle(projectData.scenes[0].id, {
+                  property: {
+                    fontFamily:
+                      subtitleData?.property?.fontFamily ??
+                      'default-font-family',
+                    fontSize: subtitleData?.property?.fontSize ?? 16,
+                    fontWeight: data ?? 'normal',
+                    fontColor:
+                      subtitleData?.property?.fontColor ??
+                      `${theme.colors.black}`,
+                    backgroundColor:
+                      subtitleData?.property?.backgroundColor ??
+                      `${theme.colors.primary}`,
+                    backgroundStyle:
+                      subtitleData?.property?.backgroundStyle ?? 'short',
+                    position: subtitleData?.property?.position ?? {
+                      x: 0,
+                      y: 0,
+                    },
+                  },
+                })
+              }
+            />
+            <DropDown
+              dropDownData={sizes}
+              width="45%"
+              onSelect={(data) => {
+                if (projectData?.scenes[0]?.id !== undefined) {
+                  updateSubtitle(projectData.scenes[0].id, {
+                    property: {
+                      fontFamily:
+                        subtitleData?.property?.fontFamily ??
+                        'default-font-family',
+                      fontSize: parseFloat(data) || 16,
+                      fontWeight:
+                        subtitleData?.property?.fontWeight ?? 'normal',
+                      fontColor:
+                        subtitleData?.property?.fontColor ??
+                        `${theme.colors.black}`,
+                      backgroundColor:
+                        subtitleData?.property?.backgroundColor ??
+                        `${theme.colors.primary}`,
+                      backgroundStyle:
+                        subtitleData?.property?.backgroundStyle ?? 'short',
+                      position: subtitleData?.property?.position ?? {
+                        x: 0,
+                        y: 0,
+                      },
+                    },
+                  });
+                }
+              }}
+            />
+          </S.DropDownContainer>
+        </S.FontStyleSection>
+        <S.TemplateSection>
+          <S.LabelSection>
+            <S.SidebarLabel>자막 배경 스타일</S.SidebarLabel>
+          </S.LabelSection>
+          <S.ScriptTemplateList>
+            <S.ScriptTemplateCard
+              onClick={() => {
+                setBackgroundStyle('short');
+                if (projectData?.scenes[0]?.id !== undefined) {
+                  updateSubtitle(projectData.scenes[0].id, {
+                    property: {
+                      fontFamily:
+                        subtitleData?.property?.fontFamily ??
+                        'default-font-family',
+                      fontSize: subtitleData?.property?.fontSize ?? 16,
+                      fontWeight:
+                        subtitleData?.property?.fontWeight ?? 'normal',
+                      fontColor:
+                        subtitleData?.property?.fontColor ??
+                        `${theme.colors.black}`,
+                      backgroundColor:
+                        subtitleData?.property?.backgroundColor ??
+                        `${theme.colors.primary}`,
+                      backgroundStyle: 'short',
+                      position: subtitleData?.property?.position ?? {
+                        x: 0,
+                        y: 0,
+                      },
+                    },
+                  });
+                }
+              }}
+              isSelected={backgroundStyle === 'short'}>
+              <S.ScriptTemplateName>짧은 배경</S.ScriptTemplateName>
+              <ShortScriptTemplate />
+            </S.ScriptTemplateCard>
+            <S.ScriptTemplateCard
+              onClick={() => {
+                setBackgroundStyle('long');
+                if (projectData?.scenes[0]?.id !== undefined) {
+                  updateSubtitle(projectData.scenes[0].id, {
+                    property: {
+                      fontFamily:
+                        subtitleData?.property?.fontFamily ??
+                        'default-font-family',
+                      fontSize: subtitleData?.property?.fontSize ?? 16,
+                      fontWeight:
+                        subtitleData?.property?.fontWeight ?? 'normal',
+                      fontColor:
+                        subtitleData?.property?.fontColor ??
+                        `${theme.colors.black}`,
+                      backgroundColor:
+                        subtitleData?.property?.backgroundColor ??
+                        `${theme.colors.primary}`,
+                      backgroundStyle: 'long',
+                      position: subtitleData?.property?.position ?? {
+                        x: 0,
+                        y: 0,
+                      },
+                    },
+                  });
+                }
+              }}
+              isSelected={backgroundStyle === 'long'}>
+              <S.ScriptTemplateName>긴 배경</S.ScriptTemplateName>
+              <LongScriptTemplate />
+            </S.ScriptTemplateCard>
+
+            <S.ScriptTemplateCard
+              onClick={() => {
+                setBackgroundStyle('transparent');
+                if (projectData?.scenes[0]?.id !== undefined) {
+                  updateSubtitle(projectData.scenes[0].id, {
+                    property: {
+                      fontFamily:
+                        subtitleData?.property?.fontFamily ??
+                        'default-font-family',
+                      fontSize: subtitleData?.property?.fontSize ?? 16,
+                      fontWeight:
+                        subtitleData?.property?.fontWeight ?? 'normal',
+                      fontColor:
+                        subtitleData?.property?.fontColor ??
+                        `${theme.colors.black}`,
+                      backgroundColor:
+                        subtitleData?.property?.backgroundColor ??
+                        `${theme.colors.primary}`,
+                      backgroundStyle: 'transparent',
+                      position: subtitleData?.property?.position ?? {
+                        x: 0,
+                        y: 0,
+                      },
+                    },
+                  });
+                }
+              }}
+              isSelected={backgroundStyle === 'transparent'}>
+              <S.ScriptTemplateName>배경 없음</S.ScriptTemplateName>
+              <TransparentBackground />
+            </S.ScriptTemplateCard>
+          </S.ScriptTemplateList>
+        </S.TemplateSection>
       </S.ScriptToolbar>
     </S.ScriptContainer>
   );
@@ -210,30 +414,6 @@ const S = {
     align-items: center;
     padding: ${theme.spacing.md};
   `,
-  VideoInnerScriptContainer: styled.div`
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: ${theme.radius.xxlarge};
-    padding: ${theme.spacing.md};
-    z-index: 2;
-  `,
-  VideoInnerScriptWrapper: styled.div<{ backgroundStyle: string }>`
-    width: ${(props) => (props.backgroundStyle === 'short' ? '50%' : '100%')};
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: ${(props) =>
-      props.backgroundStyle !== 'transparent'
-        ? theme.colors.primary
-        : 'transparent'};
-    border-radius: ${theme.radius.xxlarge};
-    padding: ${theme.spacing.sm} ${theme.spacing.md};
-    z-index: 2;
-  `,
-
   ScriptToolbar: styled.div`
     background-color: ${theme.colors.white};
     width: 30%;
@@ -265,5 +445,56 @@ const S = {
     margin-left: ${theme.spacing.sm};
     font-size: ${theme.fontSizes.fz20};
     font-weight: ${theme.fontWeights.medium};
+  `,
+  FontStyleSection: styled.div`
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: ${theme.spacing.sm};
+  `,
+  DropDownContainer: styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5%;
+    row-gap: ${theme.spacing.sm};
+  `,
+  TemplateSection: styled.div`
+    width: 90%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: ${theme.spacing.sm};
+  `,
+  ScriptTemplateList: styled.div`
+    width: 100%;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: ${theme.spacing.sm};
+    gap: ${theme.spacing.sm};
+    overflow-x: hidden;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  `,
+  ScriptTemplateCard: styled.div<{ isSelected: boolean }>`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: ${theme.spacing.sm};
+    width: 100%;
+    height: 100%;
+    border: 2px solid
+      ${(props) =>
+        props.isSelected ? theme.colors.secondary1 : theme.colors.border1};
+    border-radius: ${theme.radius.medium};
+    background-color: ${(props) =>
+      props.isSelected ? theme.colors.background1 : 'transparent'};
+    svg {
+      width: 115px;
+    }
+  `,
+  ScriptTemplateName: styled.span`
+    font-size: ${theme.fontSizes.fz14};
   `,
 };
