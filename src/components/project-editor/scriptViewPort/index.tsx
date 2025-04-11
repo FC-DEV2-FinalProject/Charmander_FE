@@ -1,13 +1,14 @@
-import { useRef, useMemo, useEffect, useState, useLayoutEffect } from 'react';
-import styled from 'styled-components';
-import theme from '@/styles/theme';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
+import styled from 'styled-components';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import theme from '@/styles/theme';
 
 function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
   const { projectData } = useProjectEditorStore();
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const background = projectData?.scenes?.[0]?.background;
   const avatar = projectData?.scenes?.[0]?.avatar;
+  const subtitleStyle = projectData?.scenes[0].subtitle;
   const viewportRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -31,12 +32,7 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
     avatarWidth,
     avatarHeight,
   } = useMemo(() => {
-    if (
-      !containerSize.width ||
-      !containerSize.height ||
-      !background ||
-      !avatar
-    ) {
+    if (!containerSize.width || !containerSize.height) {
       return {
         transform: '',
         backgroundWidth: '100%',
@@ -61,8 +57,8 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
     if (!avatar || !avatar.position || !avatar.size) {
       return {
         transform: '',
-        backgroundWidth: `${containerSize.width}px`,
-        backgroundHeight: `${containerSize.height}px`,
+        backgroundWidth: '100%',
+        backgroundHeight: '100%',
         avatarTransform: '',
         avatarWidth: '100%',
         avatarHeight: '100%',
@@ -102,22 +98,9 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
     };
   }, [containerSize, background, avatar]);
 
-  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
-  useEffect(() => {
-    const handleResize = () => {
-      if (viewportRef.current) {
-        const { width, height } = viewportRef.current.getBoundingClientRect();
-        setViewportSize({ width, height });
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   if (!background && !avatar) {
     return (
-      <S.VideoVeiwPort
+      <S.VideoViewPort
         ref={viewportRef}
         aspectRatio={aspectRatio}
       />
@@ -125,15 +108,12 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
   }
 
   return (
-    <S.VideoVeiwPort
+    <S.VideoViewPort
       ref={viewportRef}
       aspectRatio={aspectRatio}>
-      <S.VideoContainer
-        width={viewportSize.width}
-        height={viewportSize.height}>
+      <S.VideoContainer>
         {background && (
           <S.SelectedBackgroundImage
-            aspectRatio={aspectRatio}
             src={background.fileId}
             alt={background.name}
             style={{
@@ -145,7 +125,6 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
         )}
         {avatar && (
           <S.SelectedAvatarImage
-            aspectRatio={aspectRatio}
             src={avatar.fileId}
             autoPlay
             loop
@@ -156,13 +135,25 @@ function VideoViewPortComponent({ aspectRatio }: { aspectRatio: string }) {
             }}
           />
         )}
+        {subtitleStyle && (
+          <S.SubtitleContainer>
+            <S.SubtitleText
+              font={subtitleStyle.property.fontFamily}
+              weight={subtitleStyle.property.fontWeight}
+              size={subtitleStyle.property.fontSize}
+              color={subtitleStyle.property.fontColor}
+              backgroundStyle={subtitleStyle.property.backgroundStyle}>
+              {projectData?.scenes?.[0]?.transcripts?.[0]?.text || ''}
+            </S.SubtitleText>
+          </S.SubtitleContainer>
+        )}
       </S.VideoContainer>
-    </S.VideoVeiwPort>
+    </S.VideoViewPort>
   );
 }
 
 const S = {
-  VideoVeiwPort: styled.div<{ aspectRatio: string }>`
+  VideoViewPort: styled.div<{ aspectRatio: string }>`
     ${(props) =>
       props.aspectRatio === '16:9(pc)' ? 'width:100%;' : 'height:100%;'}
     aspect-ratio: ${(props) =>
@@ -171,19 +162,53 @@ const S = {
     border: 2px solid ${theme.colors.secondary1};
     overflow: hidden;
   `,
-  VideoContainer: styled.div<{ width: number; height: number }>`
+  VideoContainer: styled.div`
     position: relative;
-    width: ${(props) => props.width}px;
-    height: ${(props) => props.height}px;
+    width: 100%;
+    height: 100%;
   `,
-  SelectedBackgroundImage: styled.img<{ aspectRatio: string }>`
+  SelectedBackgroundImage: styled.img`
     position: absolute;
-    object-fit:;
+    object-fit: cover;
   `,
-  SelectedAvatarImage: styled.video<{ aspectRatio: string }>`
+  SelectedAvatarImage: styled.video`
     position: absolute;
     object-fit: contain;
     z-index: 1;
+  `,
+  SubtitleContainer: styled.div`
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+  `,
+  SubtitleText: styled.span<{
+    font: string;
+    weight: string;
+    size: number;
+    color: string;
+    backgroundStyle: string;
+  }>`
+    width: ${(props) => (props.backgroundStyle === 'long' ? '80%' : '')};
+    font-family: ${(props) => props.font};
+    font-weight: ${(props) =>
+      props.weight === '얇게'
+        ? `${theme.fontWeights.light}`
+        : props.weight === '중간'
+          ? `${theme.fontWeights.medium}`
+          : `${theme.fontWeights.bold}`};
+    font-size: ${(props) => props.size}px;
+    color: ${(props) => props.color};
+    background-color: ${(props) =>
+      props.backgroundStyle !== 'transparent'
+        ? theme.colors.primary
+        : 'transparent'};
+    padding: 5px 10px;
+    border-radius: ${theme.radius.small};
+    text-align: center;
   `,
 };
 
