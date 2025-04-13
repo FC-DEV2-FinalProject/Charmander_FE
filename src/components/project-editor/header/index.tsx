@@ -74,61 +74,63 @@ const ProjectHeader = () => {
   };
 
   if (loading) return <LoadingSpinner />;
-  // eslint-disable-next-line no-console
-  if (error) return console.log(error);
+  if (error) {
+    // eslint-disable-next-line no-console
+    console.log(error);
+
+    return null;
+  }
 
   return (
-    <>
-      <S.HeaderContainer>
-        <S.HeaderLeftContents>
-          <Link to={'/dashboard'}>
-            <BackIcon />
-          </Link>
-          <S.TitleBox>
-            {isEdit ? (
-              <S.ProjectTitle
-                value={projectTitle}
-                onChange={onChangeProjectTitle}
-              />
-            ) : (
-              <S.ViewText onClick={() => setIsEdit(true)}>
-                {projectTitle}
-              </S.ViewText>
-            )}
-            <EditIcon onClick={handleSaveProjectTitle} />
-          </S.TitleBox>
-        </S.HeaderLeftContents>
-        <S.ButtonBox>
-          {location.pathname.endsWith('/article') ? (
-            <>
-              <S.ArticleUploadButton onClick={handleArticleInput}>
-                기사 파일 업로드
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileUpload}
-                  ref={inputRef}
-                />
-              </S.ArticleUploadButton>
-              <Link
-                to="/$project/template"
-                params={{ project: project }}>
-                <S.HeaderButton>템플릿 직접 선택하기</S.HeaderButton>
-              </Link>
-              <Modal openText="템플릿 추천">
-                {(setModalOpen) => (
-                  <ScriptConFirmModal setModalOpen={setModalOpen} />
-                )}
-              </Modal>
-            </>
+    <S.HeaderContainer>
+      <S.HeaderLeftContents>
+        <Link to={'/dashboard'}>
+          <BackIcon />
+        </Link>
+        <S.TitleBox>
+          {isEdit ? (
+            <S.ProjectTitle
+              value={projectTitle}
+              onChange={onChangeProjectTitle}
+            />
           ) : (
-            <Modal openText="제작하기">
-              {(setModalOpen) => <EditModal setModalOpen={setModalOpen} />}
-            </Modal>
+            <S.ViewText onClick={() => setIsEdit(true)}>
+              {projectTitle}
+            </S.ViewText>
           )}
-        </S.ButtonBox>
-      </S.HeaderContainer>
-    </>
+          <EditIcon onClick={handleSaveProjectTitle} />
+        </S.TitleBox>
+      </S.HeaderLeftContents>
+      <S.ButtonBox>
+        {location.pathname.endsWith('/article') ? (
+          <>
+            <S.ArticleUploadButton onClick={handleArticleInput}>
+              기사 파일 업로드
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={handleFileUpload}
+                ref={inputRef}
+              />
+            </S.ArticleUploadButton>
+            <Link
+              to="/$project/template"
+              params={{ project: project }}>
+              <S.HeaderButton>템플릿 직접 선택하기</S.HeaderButton>
+            </Link>
+            <Modal openText="템플릿 추천">
+              {(setModalOpen) => (
+                <ScriptConFirmModal setModalOpen={setModalOpen} />
+              )}
+            </Modal>
+          </>
+        ) : (
+          <Modal openText="제작하기">
+            {(setModalOpen) => <EditModal setModalOpen={setModalOpen} />}
+          </Modal>
+        )}
+      </S.ButtonBox>
+    </S.HeaderContainer>
   );
 };
 
