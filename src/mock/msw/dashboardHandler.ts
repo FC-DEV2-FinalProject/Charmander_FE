@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import projectDummy from './dashboardDummy.json';
+import projectDummy from '../mockData/dashboardDummy.json';
 
 export const dashboardHandlers = [
   http.get(`${import.meta.env.VITE_API_URL}/api/v1/projects`, async () => {

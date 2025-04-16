@@ -1,7 +1,7 @@
 import theme from '@/styles/theme';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import styled from 'styled-components';
-import { loginBanner } from '@/mock/mock';
+import { loginBanner } from '@/mock/mockData/mock';
 import logo from '@/assets/logo/logo.png';
 import KakaoLoginButton from '@/components/kakaoLoginButton';
 import GoogleLoginButton from '@/components/googleLoginButton';

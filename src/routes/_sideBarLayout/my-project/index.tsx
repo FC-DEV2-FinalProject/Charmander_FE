@@ -7,7 +7,7 @@ import EmptyVideoIcon from '@/assets/icons/icon-empty-video.svg?react';
 import { getProjects } from '@/api/dashboard/api';
 import { sortProjects } from '@/utils/sort';
 import { useInfiniteQuery } from 'node_modules/@tanstack/react-query/build/modern';
-import LoadingSpinner from '@/components/loading/LoadingSpinner';
+import LoadingSpinner from '@/components/common/loading/LoadingSpinner';
 
 export const Route = createFileRoute('/_sideBarLayout/my-project/')({
   component: RouteComponent,
