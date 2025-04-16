@@ -1,8 +1,8 @@
 import { http, HttpResponse } from 'msw';
-import projectDummy from './projectDummy.json';
-import suggestArticleDummyData from './suggestArticleDummyData.json';
-import categoryData from './categoryData.json';
-import templateImageData from './templateImage.json';
+import projectDummy from '../mockData/projectDummy.json';
+import suggestArticleDummyData from '../mockData/suggestArticleDummyData.json';
+import categoryData from '../mockData/categoryData.json';
+import templateImageData from '../mockData/templateImage.json';
 
 export const handlers = [
   http.get(
