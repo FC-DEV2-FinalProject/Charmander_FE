@@ -13,7 +13,7 @@ import useProjectEditorStore from '@/store/useProjectEditorStore';
 import { ScriptConFirmModal } from '../modal/scriptConFirmModal';
 import useProjectData from '@/hook/useProjectData';
 import usePDFExtractor from '@/hook/usePDFExtractor';
-import LoadingSpinner from '@/components/loading/LoadingSpinner';
+import LoadingSpinner from '@/components/common/loading/LoadingSpinner';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 

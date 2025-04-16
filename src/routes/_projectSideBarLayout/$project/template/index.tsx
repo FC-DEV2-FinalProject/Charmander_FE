@@ -1,5 +1,5 @@
 import DropDown from '@/components/common/dropdown';
-import LoadingSpinner from '@/components/loading/LoadingSpinner';
+import LoadingSpinner from '@/components/common/loading/LoadingSpinner';
 import { useTemplates } from '@/hook/useTemplateList';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import theme from '@/styles/theme';

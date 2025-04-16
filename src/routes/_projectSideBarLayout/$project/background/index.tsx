@@ -12,7 +12,7 @@ import useAspectRatioStore from '@/store/useAspectRatioStore';
 import { useTemplates } from '@/hook/useTemplateList';
 import useProjectEditorStore from '@/store/useProjectEditorStore';
 import { patchProjectBackgroundImage } from '@/api/project/api';
-import LoadingSpinner from '@/components/loading/LoadingSpinner';
+import LoadingSpinner from '@/components/common/loading/LoadingSpinner';
 import ImageUploadButton from '@/components/project-editor/imageUpload';
 import { usePatchTemplate } from '@/hook/usePatchTemplate';
 import { useTemplateSelector } from '@/hook/useTemplateSelector';

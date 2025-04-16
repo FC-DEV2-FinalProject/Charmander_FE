@@ -1,5 +1,5 @@
 import { patchProjectAvatarImage } from '@/api/project/api';
-import LoadingSpinner from '@/components/loading/LoadingSpinner';
+import LoadingSpinner from '@/components/common/loading/LoadingSpinner';
 import DragImage from '@/components/project-editor/dragImage';
 import { usePatchTemplate } from '@/hook/usePatchTemplate';
 import { useTemplates } from '@/hook/useTemplateList';
