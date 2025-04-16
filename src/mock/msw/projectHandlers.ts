@@ -67,7 +67,7 @@ export const handlers = [
       return HttpResponse.json(
         {
           success: true,
-          message: `프로젝트 ${id}의 기사가가 성공적으로 업데이트되었습니다.`,
+          message: `프로젝트 ${id}의 기사가 성공적으로 업데이트되었습니다.`,
           updatedArticle: name,
         },
         { status: 200 }
