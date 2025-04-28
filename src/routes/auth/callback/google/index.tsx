@@ -28,11 +28,14 @@ function RouteComponent() {
           return;
         }
 
-        const response = await axios.post(import.meta.env.VITE_OAUTH_API_URL, {
-          provider: 'google',
-          code: code,
-          state: state,
-        });
+        const response = await axios.post(
+          import.meta.env.VITE_OAUTH_API_URL + 'google',
+          {
+            provider: 'google',
+            code: code,
+            state: state,
+          }
+        );
 
         if (response.data) {
           const { accessToken } = response.data;

@@ -1,20 +1,15 @@
 import { googleOAuth } from '@/api/login/oAuth-config';
+import { getAuthorizationUrl } from '@/api/login/oauth-service';
 import google from '@/assets/logo/google-logo.png';
 const GoogleLoginButton = () => {
-  const initiateGoogleLogin = () => {
-    const params = new URLSearchParams({
-      client_id: googleOAuth.clientId,
-      redirect_uri: googleOAuth.redirectUri,
-      response_type: 'code',
-      scope: googleOAuth.scope,
-    });
-
-    window.location.href = `${googleOAuth.authUrl}?${params.toString()}`;
+  const handleGoogleLogin = () => {
+    const authUrl = getAuthorizationUrl(googleOAuth);
+    window.location.href = authUrl;
   };
 
   return (
     <button
-      onClick={initiateGoogleLogin}
+      onClick={handleGoogleLogin}
       style={{
         display: 'flex',
         alignItems: 'center',
